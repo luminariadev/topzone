@@ -1,0 +1,51 @@
+<!-- src/components/Hero.astro -->
+---
+import Button from './Button.astro';
+---
+
+<section id="hero" class="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+  <!-- Background image with overlay -->
+  <div class="absolute inset-0">
+    <img src="/hero_background.png" alt="Hero background" class="w-full h-full object-cover opacity-40"/>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
+  </div>
+
+  <!-- Neubrutalism decorative border frame -->
+  <div class="absolute inset-4 border-4 border-white/20 pointer-events-none hidden md:block"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 text-center px-6 max-w-5xl mx-auto">
+    <!-- Badge -->
+    <div class="inline-block mb-6 px-4 py-1 bg-neon-yellow text-black font-black text-sm uppercase tracking-widest border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+      🎮 #1 Gaming Store Indonesia
+    </div>
+
+    <h1 class="text-5xl sm:text-6xl md:text-8xl font-black uppercase leading-none tracking-tighter mb-6">
+      <span class="block text-white">TOP UP &</span>
+      <span class="block" style="color:#39FF14; -webkit-text-stroke: 2px #000;">GEAR UP</span>
+    </h1>
+
+    <p class="text-lg md:text-2xl font-bold mb-10 text-gray-200 max-w-2xl mx-auto">
+      Diamonds, gems, and premium gaming gear — delivered instantly with no hassle.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <Button variant="green" size="lg" href="#games">Explore Games</Button>
+      <Button variant="yellow" size="lg" href="#gear">Shop Gear</Button>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="mt-16 flex flex-wrap justify-center gap-6 md:gap-12">
+      {[
+        { label: 'Transactions', value: '500K+' },
+        { label: 'Games Supported', value: '50+' },
+        { label: 'Happy Customers', value: '200K+' },
+      ].map(stat => (
+        <div class="border-2 border-white/30 px-6 py-3 bg-black/40 backdrop-blur-sm">
+          <div class="text-3xl font-black" style="color:#39FF14;">{stat.value}</div>
+          <div class="text-sm text-gray-400 font-bold uppercase tracking-wider">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,16 @@
+<!-- src/components/Marquee.astro -->
+---
+import '../styles/global.css';
+---
+<style>
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+</style>
+
+<div class="overflow-hidden border-4 border-black bg-white py-2">
+  <div class="whitespace-nowrap inline-block animate-[marquee_20s_linear_infinite] text-2xl font-bold text-neon-pink" style="text-shadow: 2px 2px 0 #000;">
+    🎮 New Releases! | ⚙️ Gear Sale! | 🚀 Launch Event! | 🎉 Join the Community!
+  </div>
+</div>

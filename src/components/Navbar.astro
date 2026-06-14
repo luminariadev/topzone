@@ -1,0 +1,21 @@
+---
+import Button from '../components/Button.astro';
+---
+
+<header class="border-b-4 border-black bg-white sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <a href="/" class="text-2xl md:text-3xl font-black tracking-tight hover:skew-x-2 transition-transform inline-block">
+      🎮 TOP<span class="bg-neon-yellow px-2 border-2 border-black shadow-[2px_2px_0px_0px_#000000]" style="color:#000000;">ZONE</span>
+    </a>
+    <nav class="hidden md:flex space-x-6 items-center">
+      <a href="#hero" class="font-bold hover:text-neon-pink transition-colors">Home</a>
+      <a href="#games" class="font-bold hover:text-neon-pink transition-colors">Games</a>
+      <a href="#gear" class="font-bold hover:text-neon-pink transition-colors">Gear</a>
+      <a href="#promo" class="font-bold hover:text-neon-pink transition-colors">Promo</a>
+    </nav>
+    <div class="flex items-center space-x-3">
+      <Button variant="white" size="sm" class="hidden sm:inline-flex">Sign In</Button>
+      <Button variant="green" size="sm">Get Started</Button>
+    </div>
+  </div>
+</header>

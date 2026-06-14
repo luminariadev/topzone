@@ -1,0 +1,61 @@
+<!-- src/components/Footer.astro -->
+---
+// Static footer
+---
+
+<footer class="bg-black text-white border-t-4 border-white pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      <!-- Brand -->
+      <div class="md:col-span-1">
+        <a href="/" class="text-3xl font-black">
+          🎮 TOP<span class="bg-neon-yellow text-black px-2 border-2 border-black">ZONE</span>
+        </a>
+        <p class="mt-4 text-gray-400 font-medium leading-relaxed">
+          Your ultimate destination for game top-ups and premium gaming gear in Indonesia.
+        </p>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h4 class="text-neon-yellow font-black uppercase tracking-wider mb-4 border-b-2 border-neon-yellow pb-2">Games</h4>
+        <ul class="space-y-2 text-gray-400 font-medium">
+          <li><a href="#" class="hover:text-neon-green transition-colors">Mobile Legends</a></li>
+          <li><a href="#" class="hover:text-neon-green transition-colors">Valorant</a></li>
+          <li><a href="#" class="hover:text-neon-green transition-colors">Free Fire</a></li>
+          <li><a href="#" class="hover:text-neon-green transition-colors">All Games</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-neon-pink font-black uppercase tracking-wider mb-4 border-b-2 border-neon-pink pb-2">Gear</h4>
+        <ul class="space-y-2 text-gray-400 font-medium">
+          <li><a href="#" class="hover:text-neon-pink transition-colors">Keyboards</a></li>
+          <li><a href="#" class="hover:text-neon-pink transition-colors">Mice</a></li>
+          <li><a href="#" class="hover:text-neon-pink transition-colors">Headsets</a></li>
+          <li><a href="#" class="hover:text-neon-pink transition-colors">All Gear</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-black uppercase tracking-wider mb-4 border-b-2 border-white pb-2">Company</h4>
+        <ul class="space-y-2 text-gray-400 font-medium">
+          <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t-2 border-white/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-gray-500 text-sm">
+        &copy; {new Date().getFullYear()} TopZone by <a href="https://github.com/luminariadev" class="text-neon-yellow hover:underline font-bold">LuminariaDev</a>. All rights reserved.
+      </p>
+      <div class="flex gap-4">
+        <a href="https://github.com/luminariadev/TopZone" class="text-gray-400 hover:text-white transition-colors font-bold text-sm">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
