@@ -8,7 +8,7 @@ import CartIcon from './CartIcon.astro';
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
     <!-- Logo -->
     <a href="/" class="text-2xl md:text-3xl font-black tracking-tight hover:skew-x-2 transition-transform inline-block">
-      🎮 TOP<span class="bg-neon-yellow px-2 border-2 border-black shadow-[2px_2px_0px_0px_#000000]">ZONE</span>
+      &#x1F3AE; TOP<span class="bg-neon-yellow px-2 border-2 border-black shadow-[2px_2px_0px_0px_#000000]">ZONE</span>
     </a>
 
     <!-- Desktop Nav -->
@@ -19,12 +19,10 @@ import CartIcon from './CartIcon.astro';
       <a href="/#promo" class="font-bold hover:text-neon-pink transition-colors">Promo</a>
     </nav>
 
-    <!-- Right: Cart + CTA + Hamburger -->
+    <!-- Right: Auth + Cart + Hamburger -->
     <div class="flex items-center gap-3">
+      <div id="auth-desktop" class="hidden md:flex items-center gap-2"></div>
       <CartIcon />
-      <Button variant="green" size="sm" class="hidden sm:inline-flex">Get Started</Button>
-
-      <!-- Hamburger (mobile only) -->
       <button
         id="hamburger-btn"
         class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -38,53 +36,58 @@ import CartIcon from './CartIcon.astro';
     </div>
   </div>
 
-  <!-- Mobile Menu -->
-  <div
-    id="mobile-menu"
-    class="hidden md:hidden border-t-4 border-black bg-white"
-  >
+  <div id="mobile-menu" class="hidden md:hidden border-t-4 border-black bg-white">
     <nav class="flex flex-col p-4 gap-3">
       <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Home</a>
       <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Games</a>
       <a href="/#gear" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Gear</a>
       <a href="/#promo" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Promo</a>
-      <Button variant="green" size="sm" class="mt-2 w-full">Get Started</Button>
+      <div id="auth-mobile" class="flex flex-col gap-2 mt-2"></div>
     </nav>
   </div>
 </header>
 
 <script>
-  const btn = document.getElementById('hamburger-btn');
-  const menu = document.getElementById('mobile-menu');
-  const line1 = document.getElementById('ham-line-1');
-  const line2 = document.getElementById('ham-line-2');
-  const line3 = document.getElementById('ham-line-3');
+  import { supabase } from '../lib/supabase';
+  import { user, setUser, setLoading } from '../stores/auth';
 
-  btn?.addEventListener('click', () => {
-    const isOpen = menu?.classList.contains('hidden') === false;
-    if (isOpen) {
-      menu?.classList.add('hidden');
-      btn.setAttribute('aria-expanded', 'false');
-      line1?.classList.remove('rotate-45', 'translate-y-[7px]');
-      line2?.classList.remove('opacity-0');
-      line3?.classList.remove('-rotate-45', '-translate-y-[7px]');
+  function renderAuth(userData) {
+    const desktop = document.getElementById('auth-desktop');
+    const mobile = document.getElementById('auth-mobile');
+    if (!desktop || !mobile) return;
+
+    if (userData) {
+      const displayName = userData.user_metadata?.full_name || userData.email;
+      desktop.innerHTML = '<span class="text-sm font-bold text-gray-500 mr-1">' + displayName + '</span>' +
+        '<button id="logout-btn-desk" class="px-3 py-1 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Logout</button>';
+      mobile.innerHTML = '<span class="font-bold text-sm text-gray-500 px-1">' + displayName + '</span>' +
+        '<button id="logout-btn-mobile" class="w-full px-3 py-2 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Logout</button>';
+      document.getElementById('logout-btn-desk')?.addEventListener('click', logout);
+      document.getElementById('logout-btn-mobile')?.addEventListener('click', logout);
     } else {
-      menu?.classList.remove('hidden');
-      btn.setAttribute('aria-expanded', 'true');
-      line1?.classList.add('rotate-45', 'translate-y-[7px]');
-      line2?.classList.add('opacity-0');
-      line3?.classList.add('-rotate-45', '-translate-y-[7px]');
+      desktop.innerHTML = '<a href="/login" class="px-3 py-1 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Masuk</a>' +
+        '<a href="/register" class="px-3 py-1 font-black text-sm bg-neon-yellow border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Daftar</a>';
+      mobile.innerHTML = '<a href="/login" class="w-full text-center px-3 py-2 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Masuk</a>' +
+        '<a href="/register" class="w-full text-center px-3 py-2 font-black text-sm bg-neon-yellow border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Daftar</a>';
     }
-  });
+  }
 
-  // Close menu when any mobile nav link is clicked
-  menu?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      menu?.classList.add('hidden');
-      btn?.setAttribute('aria-expanded', 'false');
-      line1?.classList.remove('rotate-45', 'translate-y-[7px]');
-      line2?.classList.remove('opacity-0');
-      line3?.classList.remove('-rotate-45', '-translate-y-[7px]');
+  async function logout() {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  }
+
+  (async () => {
+    setLoading(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUser = session?.user ?? null;
+    setUser(currentUser);
+    renderAuth(currentUser);
+    setLoading(false);
+    supabase.auth.onAuthStateChange((event, newSession) => {
+      const newUser = newSession?.user ?? null;
+      setUser(newUser);
+      renderAuth(newUser);
     });
-  });
+  })();
 </script>
