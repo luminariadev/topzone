@@ -1,0 +1,210 @@
+---
+// src/pages/admin.astro
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+
+  <section class="py-16 min-h-screen bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-5xl font-black mb-2">Admin <span style="color:#39FF14; -webkit-text-stroke:1px #000;">Dashboard</span></h1>
+      <p class="text-gray-500 font-medium mb-10">Kelola pesanan dan produk TopZone.</p>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-8">
+        <button id="tab-orders" class="tab-btn px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all" data-tab="orders">Pesanan</button>
+        <button id="tab-products" class="tab-btn px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all" data-tab="products">Produk</button>
+      </div>
+
+      <!-- Orders Tab -->
+      <div id="panel-orders" class="border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000] overflow-hidden">
+        <div class="bg-black text-white px-6 py-3">
+          <h2 class="text-lg font-black">Daftar Pesanan <span id="order-count" class="text-neon-yellow"></span></h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b-4 border-black bg-gray-50">
+                <th class="px-4 py-3 font-black text-sm">Order ID</th>
+                <th class="px-4 py-3 font-black text-sm">Pembeli</th>
+                <th class="px-4 py-3 font-black text-sm">Item</th>
+                <th class="px-4 py-3 font-black text-sm">Total</th>
+                <th class="px-4 py-3 font-black text-sm">Status</th>
+                <th class="px-4 py-3 font-black text-sm">Tanggal</th>
+                <th class="px-4 py-3 font-black text-sm">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body"></tbody>
+          </table>
+        </div>
+        <div id="orders-empty-table" class="text-center py-12 hidden">
+          <p class="text-xl font-black text-gray-400">Belum ada pesanan.</p>
+        </div>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="panel-products" class="hidden border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000] overflow-hidden">
+        <div class="bg-black text-white px-6 py-3">
+          <h2 class="text-lg font-black">Katalog Produk</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b-4 border-black bg-gray-50">
+                <th class="px-4 py-3 font-black text-sm">Nama</th>
+                <th class="px-4 py-3 font-black text-sm">Tipe</th>
+                <th class="px-4 py-3 font-black text-sm">Kategori</th>
+                <th class="px-4 py-3 font-black text-sm">Harga</th>
+                <th class="px-4 py-3 font-black text-sm">Badge/Tag</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Status Update Modal -->
+      <div id="status-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-white border-4 border-black p-6 max-w-sm w-full mx-4 shadow-[8px_8px_0px_0px_#000]">
+          <h3 class="text-2xl font-black mb-4">Ubah Status</h3>
+          <p class="font-bold mb-4" id="modal-order-ref"></p>
+          <select id="modal-status-select" class="w-full px-4 py-3 border-3 border-black font-bold mb-4 bg-white">
+            <option value="pending">Pending</option>
+            <option value="processing">Diproses</option>
+            <option value="completed">Selesai</option>
+            <option value="cancelled">Dibatalkan</option>
+          </select>
+          <div class="flex gap-3">
+            <button id="modal-save" class="flex-1 py-3 font-black bg-neon-green border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Simpan</button>
+            <button id="modal-close" class="flex-1 py-3 font-black bg-gray-200 border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Batal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<script>
+  // --- Tab Switching -------------------------------------
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach((b) => {
+        b.style.background = '#fff';
+      });
+      btn.style.background = '#39FF14';
+      document.getElementById('panel-orders')?.classList.add('hidden');
+      document.getElementById('panel-products')?.classList.add('hidden');
+      document.getElementById('panel-' + tab)?.classList.remove('hidden');
+    });
+  });
+
+  // --- Status Helpers ------------------------------------
+  function statusBadge(s) {
+    const m = { pending: 'bg-yellow-400', processing: 'bg-blue-400', completed: 'bg-neon-green', cancelled: 'bg-red-400' };
+    const l = { pending: 'Pending', processing: 'Diproses', completed: 'Selesai', cancelled: 'Dibatalkan' };
+    return '<span class="inline-block px-2 py-1 text-xs font-black uppercase tracking-wider border-2 border-black ' + (m[s]||'bg-gray-400') + '">' + (l[s]||s) + '</span>';
+  }
+
+  function formatRp(n) {
+    return 'Rp ' + Number(n).toLocaleString('id-ID');
+  }
+
+  // --- Orders Table --------------------------------------
+  function renderOrders() {
+    const orders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+    const tbody = document.getElementById('orders-table-body');
+    const empty = document.getElementById('orders-empty-table');
+    const count = document.getElementById('order-count');
+
+    if (count) count.textContent = '(' + orders.length + ')';
+
+    if (orders.length === 0) {
+      if (tbody) tbody.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+
+    if (empty) empty.classList.add('hidden');
+
+    if (tbody) {
+      tbody.innerHTML = orders.map((o) => '<tr class="border-b-2 border-black/10 hover:bg-gray-50">' +
+        '<td class="px-4 py-3 font-bold text-sm">' + o.id + '</td>' +
+        '<td class="px-4 py-3 font-bold">' + o.name + '</td>' +
+        '<td class="px-4 py-3 text-sm">' + (o.items?.length || 0) + ' item</td>' +
+        '<td class="px-4 py-3 font-black text-neon-pink">' + formatRp(o.total) + '</td>' +
+        '<td class="px-4 py-3">' + statusBadge(o.status) + '</td>' +
+        '<td class="px-4 py-3 text-sm text-gray-500">' + new Date(o.createdAt).toLocaleDateString('id-ID') + '</td>' +
+        '<td class="px-4 py-3"><button class="status-edit px-3 py-1 text-xs font-black border-2 border-black hover:bg-black hover:text-white transition-all" data-id="' + o.id + '">Ubah</button></td>' +
+        '</tr>').join('');
+
+      // Bind status edit buttons
+      tbody.querySelectorAll('.status-edit').forEach((btn) => {
+        btn.addEventListener('click', () => openModal(btn.dataset.id));
+      });
+    }
+  }
+
+  // --- Status Modal --------------------------------------
+  let editingOrderId = null;
+
+  function openModal(id) {
+    editingOrderId = id;
+    const orders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+    const order = orders.find((o) => o.id === id);
+    if (!order) return;
+    document.getElementById('modal-order-ref').textContent = 'Order #' + id;
+    document.getElementById('modal-status-select').value = order.status;
+    document.getElementById('status-modal').classList.remove('hidden');
+  }
+
+  document.getElementById('modal-close')?.addEventListener('click', () => {
+    document.getElementById('status-modal').classList.add('hidden');
+  });
+
+  document.getElementById('modal-save')?.addEventListener('click', () => {
+    if (!editingOrderId) return;
+    const newStatus = document.getElementById('modal-status-select').value;
+    let orders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+    orders = orders.map((o) => o.id === editingOrderId ? { ...o, status: newStatus } : o);
+    localStorage.setItem('topzone_orders', JSON.stringify(orders));
+    document.getElementById('status-modal').classList.add('hidden');
+    renderOrders();
+  });
+
+  // --- Products Table ------------------------------------
+  function renderProducts() {
+    const tbody = document.getElementById('products-table-body');
+    if (!tbody) return;
+
+    // Use fallback data from window (set at build time via inline data)
+    const games = [
+      { name: 'Mobile Legends', type: 'game', category: 'mobile', price: '-', badge: 'Terlaris' },
+      { name: 'Valorant', type: 'game', category: 'pc', price: '-', badge: 'Trending' },
+      { name: 'Free Fire', type: 'game', category: 'mobile', price: '-', badge: 'Hot Deal' },
+    ];
+    const gears = [
+      { name: 'Mechanical Keyboard', type: 'gear', category: 'keyboard', price: 350000, badge: 'RGB Ready' },
+      { name: 'Gaming Mouse', type: 'gear', category: 'mouse', price: 250000, badge: '12000 DPI' },
+      { name: 'RGB Headset', type: 'gear', category: 'headset', price: 300000, badge: 'Surround Sound' },
+    ];
+    const products = [...games, ...gears];
+
+    tbody.innerHTML = products.map((p) => '<tr class="border-b-2 border-black/10 hover:bg-gray-50">' +
+      '<td class="px-4 py-3 font-bold">' + p.name + '</td>' +
+      '<td class="px-4 py-3"><span class="inline-block px-2 py-1 text-xs font-black uppercase border-2 border-black ' + (p.type === 'game' ? 'bg-neon-green' : 'bg-neon-yellow') + '">' + p.type + '</span></td>' +
+      '<td class="px-4 py-3 font-medium">' + p.category + '</td>' +
+      '<td class="px-4 py-3 font-black">' + (p.type === 'gear' ? formatRp(p.price) : '-') + '</td>' +
+      '<td class="px-4 py-3 font-bold text-sm">' + p.badge + '</td>' +
+      '</tr>').join('');
+  }
+
+  // --- Init ----------------------------------------------
+  renderOrders();
+  renderProducts();
+</script>
