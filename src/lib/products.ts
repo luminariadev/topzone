@@ -7,6 +7,11 @@ function getSb() { if (!supabase) return null; return supabase; }
 
 export async function fetchGames() {
   const sb = getSb();
+  // Check localStorage for admin-updated games
+  try {
+    const localGames = JSON.parse(localStorage.getItem("topzone_games") || "[]");
+    if (localGames && localGames.length > 0) return localGames;
+  } catch (e) {}
   if (!sb) return games;
   const { data: products, error } = await sb.from('products').select('*').eq('type', 'game');
   if (error || !products || products.length === 0) return games;
@@ -26,6 +31,11 @@ export async function fetchGames() {
 
 export async function fetchGears() {
   const sb = getSb();
+  // Check localStorage for admin-updated gear
+  try {
+    const localGears = JSON.parse(localStorage.getItem("topzone_gears") || "[]");
+    if (localGears && localGears.length > 0) return localGears;
+  } catch (e) {}
   if (!sb) return gears;
   const { data: products, error } = await sb.from('products').select('*').eq('type', 'gear');
   if (error || !products || products.length === 0) return gears;

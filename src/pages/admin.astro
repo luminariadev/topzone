@@ -171,8 +171,100 @@ import Footer from '../components/Footer.astro';
   const ADMIN_PASS = 'admin123';
   const SESSION_KEY = 'topzone_admin_session';
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
-  const STORAGE_GAMES = 'topzone_admin_games';
-  const STORAGE_GEAR = 'topzone_admin_gear';
+  const STORAGE_GAMES = 'topzone_games';
+  const DEFAULT_GAMES = [
+  {
+    "slug": "mobile-legends",
+    "name": "Mobile Legends",
+    "img": "/assets/mlbb.png",
+    "color": "#39FF14",
+    "badge": "Terlaris",
+    "category": "mobile",
+    "currency": "Diamond",
+    "description": "Top up diamond Mobile Legends Bang Bang dengan harga terbaik. Instan, aman, dan terpercaya.",
+    "packages": [
+      { "id": "mlbb-86", "label": "86 Diamond", "price": 19000 },
+      { "id": "mlbb-172", "label": "172 Diamond", "price": 37000 },
+      { "id": "mlbb-257", "label": "257 Diamond", "price": 55000 },
+      { "id": "mlbb-344", "label": "344 Diamond", "price": 72000 },
+      { "id": "mlbb-514", "label": "514 Diamond", "price": 108000 },
+      { "id": "mlbb-706", "label": "706 Diamond", "price": 147000 }]},
+  {
+    "slug": "valorant",
+    "name": "Valorant",
+    "img": "/assets/valorant.png",
+    "color": "#FF007F",
+    "badge": "Trending",
+    "category": "pc",
+    "currency": "VP",
+    "description": "Beli Valorant Points (VP) untuk unlock agent, skin senjata, dan battle pass favoritmu.",
+    "packages": [
+      { "id": "valo-420", "label": "420 VP", "price": 55000 },
+      { "id": "valo-740", "label": "740 VP", "price": 95000 },
+      { "id": "valo-1200", "label": "1.200 VP", "price": 150000 },
+      { "id": "valo-2050", "label": "2.050 VP", "price": 255000 },
+      { "id": "valo-3650", "label": "3.650 VP", "price": 450000 },
+      { "id": "valo-5350", "label": "5.350 VP", "price": 650000 }]},
+  {
+    "slug": "free-fire",
+    "name": "Free Fire",
+    "img": "/assets/freefire.png",
+    "color": "#FFE600",
+    "badge": "Hot Deal",
+    "category": "mobile",
+    "currency": "Diamond",
+    "description": "Top up diamond Free Fire untuk beli skin karakter, senjata, dan item eksklusif lainnya.",
+    "packages": [
+      { "id": "ff-70", "label": "70 Diamond", "price": 14000 },
+      { "id": "ff-140", "label": "140 Diamond", "price": 27000 },
+      { "id": "ff-355", "label": "355 Diamond", "price": 66000 },
+      { "id": "ff-720", "label": "720 Diamond", "price": 132000 },
+      { "id": "ff-1450", "label": "1.450 Diamond", "price": 260000 },
+      { "id": "ff-2180", "label": "2.180 Diamond", "price": 385000 }]}];
+  const DEFAULT_GEARS = [
+  {
+    "slug": "mechanical-keyboard",
+    "name": "Mechanical Keyboard",
+    "img": "/assets/keyboard.png",
+    "price": 350000,
+    "tag": "RGB Ready",
+    "category": "keyboard",
+    "description": "Keyboard mekanikal 75% compact dengan switch taktil dan RGB per-key. Cocok untuk gaming marathon.",
+    "specs": [
+      { "label": "Layout", "value": "75% Compact" },
+      { "label": "Switch", "value": "Blue Tactile" },
+      { "label": "Backlight", "value": "Per-key RGB" },
+      { "label": "Interface", "value": "USB-C + Wireless" },
+      { "label": "Battery", "value": "4000 mAh" }]},
+  {
+    "slug": "gaming-mouse",
+    "name": "Gaming Mouse",
+    "img": "/assets/mouse.png",
+    "price": 250000,
+    "tag": "12000 DPI",
+    "category": "mouse",
+    "description": "Mouse gaming ergonomis dengan sensor optik presisi tinggi, 7 tombol programmable, dan RGB side strip.",
+    "specs": [
+      { "label": "DPI", "value": "200 – 12.000" },
+      { "label": "Polling Rate", "value": "1000 Hz" },
+      { "label": "Buttons", "value": "7 programmable" },
+      { "label": "Weight", "value": "88g" },
+      { "label": "Interface", "value": "USB 2.0" }]},
+  {
+    "slug": "rgb-headset",
+    "name": "RGB Headset",
+    "img": "/assets/headset.png",
+    "price": 300000,
+    "tag": "Surround Sound",
+    "category": "headset",
+    "description": "Headset gaming dengan virtual 7.1 surround sound, mikrofon noise-cancelling, dan RGB earcup.",
+    "specs": [
+      { "label": "Driver", "value": "50mm Neodymium" },
+      { "label": "Frequency", "value": "20Hz – 20kHz" },
+      { "label": "Microphone", "value": "Noise-cancelling" },
+      { "label": "Audio", "value": "Virtual 7.1 Surround" },
+      { "label": "Interface", "value": "3.5mm + USB" }]}];
+  const STORAGE_GEAR = 'topzone_gears';
 
   // -------------------------------------------------------
   // SECURITY: Session Management
