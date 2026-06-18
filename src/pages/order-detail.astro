@@ -48,7 +48,8 @@ import Button from '../components/Button.astro';
 </Layout>
 
 <script>
-  const orders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+  import { getOrdersKey } from '../stores/auth';
+  const orders = JSON.parse(localStorage.getItem('getOrdersKey()') || '[]');
   const orderId = new URLSearchParams(window.location.search).get('id');
   const loadingEl = document.getElementById('order-loading');
   const notfoundEl = document.getElementById('order-notfound');

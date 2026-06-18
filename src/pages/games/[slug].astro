@@ -64,7 +64,216 @@ const { game } = Astro.props;
     </div>
   </section>
 
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- REVIEWS & RATINGS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section class="py-12 bg-gray-50 border-t-4 border-black">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-black mb-2">⭐ Ulasan & Rating</h2>
+      <p class="text-gray-500 font-medium mb-6">Kata para pembeli tentang game ini.</p>
+
+      <!-- Average Rating -->
+      <div class="border-4 border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] mb-6">
+        <div class="flex items-center gap-6">
+          <div class="text-center">
+            <span class="text-5xl font-black" id="avg-rating">0</span>
+            <span class="text-2xl">/5</span>
+            <div class="text-lg" id="avg-stars">☆☆☆☆☆</div>
+            <span class="text-sm font-bold text-gray-500" id="review-count">0 ulasan</span>
+          </div>
+          <div class="flex-1">
+            <div id="rating-bars" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Form -->
+      <div id="review-form-section" class="hidden border-4 border-black bg-neon-yellow p-5 shadow-[4px_4px_0px_0px_#000] mb-6">
+        <h3 class="font-black text-lg mb-3">✍️ Tulis Ulasan</h3>
+        <div class="flex gap-1 text-3xl mb-3" id="star-rating">
+          <span class="star cursor-pointer hover:scale-110 transition-transform" data-val="1">☆</span>
+          <span class="star cursor-pointer hover:scale-110 transition-transform" data-val="2">☆</span>
+          <span class="star cursor-pointer hover:scale-110 transition-transform" data-val="3">☆</span>
+          <span class="star cursor-pointer hover:scale-110 transition-transform" data-val="4">☆</span>
+          <span class="star cursor-pointer hover:scale-110 transition-transform" data-val="5">☆</span>
+        </div>
+        <textarea id="review-text" rows="3" class="w-full px-4 py-3 border-3 border-black font-bold text-sm shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] outline-none transition-all" placeholder="Bagikan pengalamanmu..."></textarea>
+        <button id="submit-review" class="mt-3 px-6 py-3 font-black border-2 border-black bg-black text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Kirim Ulasan</button>
+        <p id="review-status" class="mt-2 text-sm font-bold hidden"></p>
+      </div>
+
+      <!-- Login Prompt -->
+      <div id="review-login-prompt" class="hidden border-4 border-dashed border-black p-6 text-center mb-6">
+        <p class="font-black text-lg mb-2">🔒 Login untuk memberi ulasan</p>
+        <a href="/login" class="inline-block px-6 py-2 font-black border-2 border-black bg-neon-green shadow-[2px_2px_0px_0px_#000]">Masuk</a>
+      </div>
+
+      <!-- Purchase Required -->
+      <div id="review-purchase-prompt" class="hidden border-4 border-dashed border-black p-6 text-center mb-6">
+        <p class="font-black text-lg mb-2">🎮 Beli game ini dulu untuk memberi ulasan!</p>
+      </div>
+
+      <!-- Reviews List -->
+      <div id="reviews-list" class="space-y-4"></div>
+      <div id="reviews-empty" class="text-center py-8 border-4 border-dashed border-black">
+        <p class="text-lg font-black text-gray-400">Belum ada ulasan. Jadilah yang pertama!</p>
+      </div>
+    </div>
+  </section>
   <Footer />
+<script>
+  const productSlug = window.location.pathname.split('/').pop();
+  const STORAGE_REVIEWS = 'topzone_reviews';
+
+  function getReviews() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_REVIEWS) || '[]'); } catch { return []; }
+  }
+
+  function getProductReviews() {
+    return getReviews().filter(function(r) { return r.productSlug === productSlug; });
+  }
+
+  function getAvgRating() {
+    var revs = getProductReviews();
+    if (revs.length === 0) return { avg: 0, count: 0, distribution: {} };
+    var sum = revs.reduce(function(s, r) { return s + (r.rating||0); }, 0);
+    var dist = {};
+    for (var i = 1; i <= 5; i++) dist[i] = revs.filter(function(r) { return r.rating === i; }).length;
+    return { avg: (sum / revs.length).toFixed(1), count: revs.length, distribution: dist };
+  }
+
+  function renderStars(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) s += i <= Math.round(n) ? '★' : '☆';
+    return s;
+  }
+
+  function renderReviews() {
+    var revs = getProductReviews();
+    var avg = getAvgRating();
+    document.getElementById('avg-rating').textContent = avg.avg;
+    document.getElementById('avg-stars').textContent = renderStars(avg.avg);
+    document.getElementById('review-count').textContent = avg.count + ' ulasan';
+
+    // Distribution bars
+    var barsEl = document.getElementById('rating-bars');
+    barsEl.innerHTML = '';
+    for (var i = 5; i >= 1; i--) {
+      var count = avg.distribution[i] || 0;
+      var pct = avg.count > 0 ? (count / avg.count * 100) : 0;
+      barsEl.innerHTML += '<div class=\"flex items-center gap-2 text-sm\"><span class=\"w-4 font-bold\">' + i + '</span><div class=\"flex-1 h-3 bg-gray-200 border border-black\"><div class=\"h-full bg-neon-yellow\" style=\"width:' + pct + '%\"></div></div><span class=\"w-8 text-right text-xs font-bold\">' + count + '</span></div>';
+    }
+
+    // Reviews list
+    var list = document.getElementById('reviews-list');
+    var empty = document.getElementById('reviews-empty');
+    if (revs.length === 0) {
+      list.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    list.innerHTML = revs.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); }).map(function(r) {
+      return '<div class=\"border-4 border-black bg-white p-5 shadow-[2px_2px_0px_0px_#000]\">' +
+        '<div class=\"flex justify-between items-start mb-2\">' +
+          '<div><span class=\"font-black\">' + (r.userName || 'Anonymous') + '</span>' +
+          ' <span class=\"text-yellow-500\">' + renderStars(r.rating) + '</span></div>' +
+          '<span class=\"text-xs text-gray-400 font-bold\">' + new Date(r.createdAt).toLocaleDateString('id-ID') + '</span>' +
+        '</div>' +
+        '<p class=\"font-medium text-gray-700\">' + (r.comment || '') + '</p></div>';
+    }).join('');
+  }
+
+  // Check if current user can review (logged in + purchased)
+  function canReview() {
+    try {
+      var userData = JSON.parse(localStorage.getItem('topzone_current_user'));
+      if (!userData || !userData.isLoggedIn) return { can: false, reason: 'login' };
+
+      var email = userData.email.replace(/[^a-zA-Z0-9]/g, '_');
+      // Check user's orders
+      var ordersKey = 'topzone_orders_' + email;
+      var orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+      var hasPurchased = orders.some(function(o) {
+        return o.items && o.items.some(function(i) { return i.type === 'game'; });
+      });
+
+      if (!hasPurchased) {
+        // Also check anonymous key
+        var anonOrders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+        hasPurchased = anonOrders.some(function(o) {
+          return o.items && o.items.some(function(i) { return i.type === 'game'; });
+        });
+      }
+
+      return { can: hasPurchased, reason: hasPurchased ? 'ok' : 'purchase' };
+    } catch(e) { return { can: false, reason: 'login' }; }
+  }
+
+  // Init review UI
+  var check = canReview();
+  var formSection = document.getElementById('review-form-section');
+  var loginPrompt = document.getElementById('review-login-prompt');
+  var purchasePrompt = document.getElementById('review-purchase-prompt');
+
+  if (check.can) {
+    formSection.classList.remove('hidden');
+  } else if (check.reason === 'login') {
+    loginPrompt.classList.remove('hidden');
+  } else {
+    purchasePrompt.classList.remove('hidden');
+  }
+
+  // Star rating interaction
+  var selectedRating = 0;
+  document.querySelectorAll('.star').forEach(function(s) {
+    s.addEventListener('click', function() {
+      selectedRating = parseInt(this.dataset.val);
+      document.querySelectorAll('.star').forEach(function(st) {
+        st.textContent = parseInt(st.dataset.val) <= selectedRating ? '★' : '☆';
+      });
+    });
+  });
+
+  // Submit review
+  document.getElementById('submit-review').addEventListener('click', function() {
+    var status = document.getElementById('review-status');
+    if (selectedRating === 0) {
+      status.className = 'mt-2 text-sm font-bold text-red-500';
+      status.textContent = 'Pilih rating dulu!';
+      status.classList.remove('hidden');
+      return;
+    }
+    var comment = document.getElementById('review-text').value.trim();
+    if (!comment) {
+      status.className = 'mt-2 text-sm font-bold text-red-500';
+      status.textContent = 'Tulis ulasan dulu!';
+      status.classList.remove('hidden');
+      return;
+    }
+
+    var revs = getReviews();
+    var userData = JSON.parse(localStorage.getItem('topzone_current_user') || '{}');
+    revs.push({
+      id: Date.now().toString(36),
+      productSlug: productSlug,
+      rating: selectedRating,
+      comment: comment,
+      userName: userData.full_name || userData.email?.split('@')[0] || 'User',
+      userEmail: userData.email || '',
+      createdAt: new Date().toISOString(),
+    });
+    localStorage.setItem(STORAGE_REVIEWS, JSON.stringify(revs));
+
+    status.className = 'mt-2 text-sm font-bold text-black bg-neon-green px-3 py-2 border-2 border-black';
+    status.textContent = '✅ Ulasan berhasil dikirim!';
+    status.classList.remove('hidden');
+    document.getElementById('review-text').value = '';
+    renderReviews();
+  });
+
+  renderReviews();
+</script>
 </Layout>
 
 <script>

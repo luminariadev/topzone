@@ -51,7 +51,7 @@ import CartIcon from './CartIcon.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
-  import { user, setUser, setLoading } from '../stores/auth';
+  import { user, setLocalUser, logoutUser, setLoading } from '../stores/auth';
 
   function renderAuth(userData) {
     const desktop = document.getElementById('auth-desktop');

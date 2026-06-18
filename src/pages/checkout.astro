@@ -76,6 +76,7 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <script>
+  import { getOrdersKey, getCurrentEmail } from '../stores/auth';
   import { cartItems, cartTotal, clearCart } from '../stores/cart';
 
   const emptyEl = document.getElementById('checkout-empty');
@@ -198,6 +199,7 @@ import Footer from '../components/Footer.astro';
     const order = {
       id: orderId,
       createdAt: new Date().toISOString(),
+      userEmail: getCurrentEmail() || '',
       name,
       phone,
       payment,
@@ -206,9 +208,9 @@ import Footer from '../components/Footer.astro';
       items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, type: i.type })),
     };
 
-    let orders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
+    let orders = JSON.parse(localStorage.getItem('getOrdersKey()') || '[]');
     orders.unshift(order);
-    localStorage.setItem('topzone_orders', JSON.stringify(orders));
+    localStorage.setItem('getOrdersKey()', JSON.stringify(orders));
 
     clearCart();
     window.location.href = '/checkout/success?id=' + orderId;

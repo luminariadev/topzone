@@ -102,6 +102,7 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <script>
+  import { setLocalUser } from '../stores/auth';
   import { supabase } from '../lib/supabase';
 
   const form = document.getElementById('register-form') as HTMLFormElement;
@@ -158,6 +159,7 @@ import Footer from '../components/Footer.astro';
       successMsg?.classList.remove('hidden');
       registerBtn.textContent = 'Berhasil!';
     } else {
+      setLocalUser(email, fullname);
       window.location.href = '/';
     }
   });

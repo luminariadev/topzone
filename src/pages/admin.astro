@@ -531,6 +531,25 @@ import Footer from '../components/Footer.astro';
   // INIT
   // -------------------------------------------------------
 
+    function getAllOrders() {
+    // Collect orders from all user accounts
+    var allOrders = [];
+    try {
+      // Check default key (anonymous)
+      try { var d = JSON.parse(localStorage.getItem('topzone_orders')); if (d) allOrders = allOrders.concat(d); } catch(e) {}
+      // Check user-specific keys
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key && key.startsWith('topzone_orders_')) {
+          try { var d = JSON.parse(localStorage.getItem(key)); if (d) allOrders = allOrders.concat(d); } catch(e) {}
+        }
+      }
+    } catch(e) {}
+    // Sort by date descending
+    allOrders.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+    return allOrders;
+  }
+
   function renderAll() {
     renderGames();
     renderGear();
