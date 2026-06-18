@@ -9,17 +9,27 @@ export interface AppUser {
 
 const AUTH_KEY = 'topzone_current_user';
 
+function isBrowser() {
+  try { return typeof window !== 'undefined'; } catch { return false; }
+}
+
 function loadUser(): AppUser | null {
   try {
-    if (typeof localStorage === 'undefined') return null;
+    if (!isBrowser()) return null;
     const raw = localStorage.getItem(AUTH_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
 
-export const user = atom<AppUser | null>(loadUser());
+export const user = atom<AppUser | null>(null);
+
+// Lazy init - only in browser
+if (isBrowser()) {
+  user.set(loadUser());
+}
 
 export function setLocalUser(email: string, name?: string) {
+  if (!isBrowser()) return;
   const u: AppUser = { email, full_name: name || email.split('@')[0], isLoggedIn: true };
   localStorage.setItem(AUTH_KEY, JSON.stringify(u));
   user.set(u);
@@ -38,6 +48,7 @@ export function setLoading(val: boolean) {
 }
 
 export function logoutUser() {
+  if (!isBrowser()) return;
   localStorage.removeItem(AUTH_KEY);
   user.set(null);
 }
@@ -45,7 +56,6 @@ export function logoutUser() {
 export function getOrdersKey(): string {
   const u = user.get();
   if (u && u.isLoggedIn) return 'topzone_orders_' + u.email.replace(/[^a-zA-Z0-9]/g, '_');
-  // Fallback for anonymous: shared key
   return 'topzone_orders';
 }
 

@@ -32,7 +32,7 @@ import Button from '../components/Button.astro';
 
 <script>
   import { getOrdersKey } from '../stores/auth';
-  const orders = JSON.parse(localStorage.getItem(getOrdersKey()) || '[]');
+  const orders = JSON.parse(localStorage.getItem('getOrdersKey()') || '[]');
   const emptyEl = document.getElementById('orders-empty');
   const listEl = document.getElementById('orders-list');
 

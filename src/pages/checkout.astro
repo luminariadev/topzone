@@ -14,7 +14,13 @@ import Footer from '../components/Footer.astro';
       <p class="text-gray-500 font-medium mb-10">Isi data pesanan dan pilih metode pembayaran.</p>
 
       <!-- Empty state -->
-      <div id="checkout-empty" class="hidden text-center py-24 border-4 border-dashed border-black">
+        <!-- Login Required -->
+  <div id="checkout-login-required" class="hidden text-center py-24 border-4 border-dashed border-black">
+    <div class="text-6xl mb-4">🔒</div>
+    <p class="text-2xl font-black mb-2">Login Diperlukan</p>
+    <p class="text-gray-500 font-bold mb-6">Kamu harus login dulu untuk checkout.</p>
+    <a href="/login" class="inline-block px-8 py-3 font-black uppercase border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Masuk Sekarang</a>
+  </div>`n      <div id="checkout-empty" class="hidden text-center py-24 border-4 border-dashed border-black">
         <p class="text-2xl font-black mb-6">Keranjangmu masih kosong!</p>
         <a href="/" class="inline-block px-8 py-3 font-black uppercase border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Mulai Belanja</a>
       </div>
@@ -89,6 +95,21 @@ import Footer from '../components/Footer.astro';
 
   function formatRp(n) {
     return 'Rp ' + n.toLocaleString('id-ID');
+  }
+
+  // Check login
+  var currentUser = user.get();
+  var loginRequired = document.getElementById('checkout-login-required');
+  var checkoutEmpty = document.getElementById('checkout-empty');
+  var checkoutContent = document.getElementById('checkout-content');
+
+  if (!currentUser || !currentUser.isLoggedIn) {
+    // Show login prompt instead of checkout
+    loginRequired?.classList.remove('hidden');
+    checkoutEmpty?.classList.add('hidden');
+    checkoutContent?.classList.add('hidden');
+  } else {
+    loginRequired?.classList.add('hidden');
   }
 
   function renderSummary() {
@@ -213,6 +234,6 @@ import Footer from '../components/Footer.astro';
     localStorage.setItem('getOrdersKey()', JSON.stringify(orders));
 
     clearCart();
-    window.location.href = '/checkout/success?id=' + orderId;
+    window.location.href = '/orders';
   });
 </script>
