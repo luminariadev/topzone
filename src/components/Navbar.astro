@@ -59,7 +59,7 @@ import CartIcon from './CartIcon.astro';
     if (!desktop || !mobile) return;
 
     if (userData) {
-      const displayName = userData.user_metadata?.full_name || userData.email;
+      const displayName = userData.user_metadata?.full_name || userData.full_name || userData.email;
       desktop.innerHTML = '<span class="text-sm font-bold text-gray-500 mr-1">' + displayName + '</span>' +
         '<button id="logout-btn-desk" class="px-3 py-1 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Logout</button>';
       mobile.innerHTML = '<span class="font-bold text-sm text-gray-500 px-1">' + displayName + '</span>' +
@@ -76,6 +76,7 @@ import CartIcon from './CartIcon.astro';
 
   async function logout() {
     if (supabase) { await supabase.auth.signOut(); }
+    logoutUser();
     window.location.href = '/';
   }
 

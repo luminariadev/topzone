@@ -412,7 +412,14 @@ import Footer from '../components/Footer.astro';
   // GAMES CRUD
   // -------------------------------------------------------
 
-  function getGames() { try { return JSON.parse(localStorage.getItem(STORAGE_GAMES) || '[]'); } catch { return []; } }
+  function getGames() {
+    try {
+      var raw = localStorage.getItem(STORAGE_GAMES);
+      if (raw) { var d = JSON.parse(raw); if (d && d.length > 0) return d; }
+    } catch(e) {}
+    saveGames(DEFAULT_GAMES);
+    return DEFAULT_GAMES;
+  }
   function saveGames(d) { localStorage.setItem(STORAGE_GAMES, JSON.stringify(d)); }
 
   function renderGames() {
@@ -495,7 +502,14 @@ import Footer from '../components/Footer.astro';
   // GEAR CRUD
   // -------------------------------------------------------
 
-  function getGearItems() { try { return JSON.parse(localStorage.getItem(STORAGE_GEAR) || '[]'); } catch { return []; } }
+  function getGearItems() {
+    try {
+      var raw = localStorage.getItem(STORAGE_GEAR);
+      if (raw) { var d = JSON.parse(raw); if (d && d.length > 0) return d; }
+    } catch(e) {}
+    saveGearItems(DEFAULT_GEARS);
+    return DEFAULT_GEARS;
+  }
   function saveGearItems(d) { localStorage.setItem(STORAGE_GEAR, JSON.stringify(d)); }
 
   function renderGear() {
