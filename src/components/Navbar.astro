@@ -50,20 +50,21 @@ import CartIcon from './CartIcon.astro';
 </header>
 
 <script>
-  import { supabase } from '../lib/supabase';
-  import { user, setLocalUser, logoutUser, setLoading } from '../stores/auth';
+  import { user, logoutUser } from '../stores/auth';
 
-  function renderAuth(userData) {
+  function renderAuth(currentUser) {
     const desktop = document.getElementById('auth-desktop');
     const mobile = document.getElementById('auth-mobile');
     if (!desktop || !mobile) return;
 
-    if (userData) {
-      const displayName = userData.user_metadata?.full_name || userData.full_name || userData.email;
+    if (currentUser) {
+      const displayName = currentUser.full_name || currentUser.email || 'User';
       desktop.innerHTML = '<span class="text-sm font-bold text-gray-500 mr-1">' + displayName + '</span>' +
-        '<button id="logout-btn-desk" class="px-3 py-1 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Logout</button>';
+        '<a href="/orders" class="px-3 py-1 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Pesanan</a>' +
+        '<button id="logout-btn-desk" class="px-3 py-1 font-black text-sm border-2 border-black bg-neon-yellow hover:bg-black hover:text-white transition-all">Logout</button>';
       mobile.innerHTML = '<span class="font-bold text-sm text-gray-500 px-1">' + displayName + '</span>' +
-        '<button id="logout-btn-mobile" class="w-full px-3 py-2 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Logout</button>';
+        '<a href="/orders" class="w-full text-center px-3 py-2 font-black text-sm border-2 border-black hover:bg-black hover:text-white transition-all">Pesanan</a>' +
+        '<button id="logout-btn-mobile" class="w-full px-3 py-2 font-black text-sm border-2 border-black bg-neon-yellow hover:bg-black hover:text-white transition-all">Logout</button>';
       document.getElementById('logout-btn-desk')?.addEventListener('click', logout);
       document.getElementById('logout-btn-mobile')?.addEventListener('click', logout);
     } else {
@@ -74,49 +75,13 @@ import CartIcon from './CartIcon.astro';
     }
   }
 
-  async function logout() {
-    if (supabase) { await supabase.auth.signOut(); }
+  function logout() {
     logoutUser();
     window.location.href = '/';
   }
 
-  (async () => {
-    setLoading(true);
-    // Try Supabase session first
-    let session = null;
-    if (supabase) {
-      const r = await supabase.auth.getSession();
-      session = r.data?.session;
-    }
-    let currentUser = session?.user ?? null;
-
-    // Fallback to localStorage auth if no Supabase session
-    if (!currentUser) {
-      try {
-        const localAuth = localStorage.getItem('topzone_current_user');
-        if (localAuth) {
-          const parsed = JSON.parse(localAuth);
-          if (parsed?.isLoggedIn) {
-            currentUser = { email: parsed.email, user_metadata: { full_name: parsed.full_name } };
-          }
-        }
-      } catch (e) {}
-    }
-
-    // Only call setUser if we have a user, otherwise don't overwrite
-    if (currentUser) {
-      setUser(currentUser);
-    }
-    renderAuth(currentUser);
-    setLoading(false);
-    supabase?.auth?.onAuthStateChange((event, newSession) => {
-      const newUser = newSession?.user ?? null;
-      if (newUser) {
-        setUser(newUser);
-        renderAuth(newUser);
-      }
-    });
-  })();
+  // Subscribe ke user atom ? auto re-render setiap kali auth state berubah
+  user.subscribe(renderAuth);
 </script>
 
 
