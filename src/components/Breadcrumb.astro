@@ -1,0 +1,26 @@
+---
+import { type BreadcrumbItem } from '../types';
+
+export interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="text-sm font-bold">
+  <ol class="flex items-center gap-2">
+    {items.map((item, index) => (
+      <li class="flex items-center gap-2">
+        {index > 0 && <span class="text-gray-400">/</span>}
+        {item.href && !item.isCurrent ? (
+          <a href={item.href} class="hover:text-neon-pink transition-colors">
+            {item.label}
+          </a>
+        ) : (
+          <span class={item.isCurrent ? "text-gray-600" : "text-black"}>{item.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
