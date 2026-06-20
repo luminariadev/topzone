@@ -1,19 +1,57 @@
 ---
 import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'TopZone — Top Up Game & Gear Gaming Termurah',
+  description = 'TopZone adalah platform top up game dan belanja gear gaming termurah, tercepat, dan terpercaya di Indonesia. Mobile Legends, Valorant, Free Fire dan banyak lagi.',
+  image = '/hero_background.png',
+  canonical,
+} = Astro.props as Props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="id">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#39FF14" />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={new URL(image, Astro.url).href} />
+		{canonical && <meta property="og:url" content={canonical} />}
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={new URL(image, Astro.url).href} />
+
+		<!-- Canonical -->
+		{canonical && <link rel="canonical" href={canonical} />}
+
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>TopZone</title>
+		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
+		<a href="#main-content" class="skip-link sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-black focus:text-neon-green focus:font-black focus:border-2 focus:border-neon-green">
+			Lompat ke konten utama
+		</a>
+		<main id="main-content">
+			<slot />
+		</main>
 	</body>
 </html>
 
