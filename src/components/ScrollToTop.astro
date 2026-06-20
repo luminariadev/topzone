@@ -1,0 +1,32 @@
+---
+// Scroll to top button
+---
+
+<button
+  id="scroll-to-top"
+  class="fixed bottom-6 left-6 z-50 hidden items-center justify-center w-12 h-12 border-4 border-black bg-neon-green text-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all font-bold text-xl"
+  aria-label="Scroll to top"
+  title="Kembali ke atas"
+>
+  ↑
+</button>
+
+<script>
+  function initScrollToTop() {
+    const btn = document.getElementById('scroll-to-top');
+    if (!btn) return;
+    const onScroll = () => {
+      if (window.scrollY > 300) {
+        btn.classList.remove('hidden');
+        btn.classList.add('flex');
+      } else {
+        btn.classList.add('hidden');
+        btn.classList.remove('flex');
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+  document.addEventListener('astro:page-load', initScrollToTop);
+  initScrollToTop();
+</script>
