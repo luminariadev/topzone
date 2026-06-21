@@ -1,0 +1,123 @@
+<!-- src/components/Newsletter.astro -->
+---
+/**
+ * Newsletter Subscription Component
+ * Saves subscribers to localStorage with neubrutalism design.
+ */
+interface Subscriber {
+  email: string;
+  subscribedAt: string;
+}
+---
+
+<section class="py-16 bg-neon-green border-t-4 border-black" aria-labelledby="newsletter-heading">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="border-4 border-black shadow-[6px_6px_0px_0px_#000] p-10 bg-white dark:bg-gray-900">
+      <span class="inline-block mb-4 px-4 py-1 bg-black text-neon-green font-black text-sm uppercase tracking-widest border-2 border-black">
+        Stay Updated
+      </span>
+      <h2 id="newsletter-heading" class="text-3xl md:text-4xl font-black uppercase mb-3">
+        Newsletter <span class="bg-neon-yellow px-2 border-2 border-black">TopZone</span>
+      </h2>
+      <p class="text-gray-600 font-medium mb-6">
+        Dapatkan info promo terbaru, game top-up deals, dan gear exclusive langsung di inbox kamu!
+      </p>
+
+      <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 justify-center" aria-label="Newsletter subscription">
+        <label for="newsletter-email" class="sr-only">Email address</label>
+        <input
+          id="newsletter-email"
+          type="email"
+          placeholder="email@kamu.com"
+          required
+          aria-required="true"
+          aria-describedby="newsletter-privacy"
+          class="px-5 py-3 border-4 border-black font-bold text-sm shadow-[3px_3px_0px_0px_#000] w-full sm:w-80 focus:outline-none focus:shadow-[4px_4px_0px_0px_#39FF14] focus:border-neon-green transition-all"
+        />
+        <button
+          type="submit"
+          class="px-8 py-3 bg-black text-neon-green font-black uppercase tracking-wider border-4 border-black shadow-[3px_3px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_#39FF14] active:translate-y-0 active:shadow-[1px_1px_0px_0px_#39FF14] transition-all"
+        >
+          Subscribe &rarr;
+        </button>
+      </form>
+
+      <!-- Status messages -->
+      <p id="newsletter-success" class="hidden mt-4 font-black text-sm text-green-700 border-2 border-green-700 px-4 py-2" role="alert">
+        Terima kasih! Kamu sudah subscribe. Cek inbox kamu ya.
+      </p>
+      <p id="newsletter-duplicate" class="hidden mt-4 font-black text-sm text-yellow-600 border-2 border-yellow-600 px-4 py-2" role="alert">
+        Email ini sudah terdaftar. Welcome back!
+      </p>
+      <p id="newsletter-error" class="hidden mt-4 font-black text-sm text-neon-pink border-2 border-neon-pink px-4 py-2" role="alert">
+        Masukkan email yang valid ya.
+      </p>
+
+      <p id="newsletter-privacy" class="text-xs text-gray-400 mt-4">
+        Kami tidak spam. Unsubscribe kapan saja.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const STORAGE_KEY = 'topzone_subscribers';
+
+  interface StoredSubscriber {
+    email: string;
+    subscribedAt: string;
+  }
+
+  function getSubscribers(): StoredSubscriber[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addSubscriber(email: string): 'added' | 'duplicate' {
+    const list = getSubscribers();
+    const exists = list.some((s) => s.email.toLowerCase() === email.toLowerCase());
+    if (exists) return 'duplicate';
+    list.push({ email, subscribedAt: new Date().toISOString() });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return 'added';
+  }
+
+  function hideAllMessages() {
+    document.getElementById('newsletter-success')?.classList.add('hidden');
+    document.getElementById('newsletter-duplicate')?.classList.add('hidden');
+    document.getElementById('newsletter-error')?.classList.add('hidden');
+  }
+
+  function initNewsletter() {
+    const form = document.getElementById('newsletter-form') as HTMLFormElement | null;
+    const emailInput = document.getElementById('newsletter-email') as HTMLInputElement | null;
+    if (!form || !emailInput) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideAllMessages();
+
+      const email = emailInput.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('newsletter-error')?.classList.remove('hidden');
+        return;
+      }
+
+      const result = addSubscriber(email);
+      emailInput.value = '';
+
+      if (result === 'added') {
+        document.getElementById('newsletter-success')?.classList.remove('hidden');
+      } else {
+        document.getElementById('newsletter-duplicate')?.classList.remove('hidden');
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initNewsletter);
+  initNewsletter();
+</script>
