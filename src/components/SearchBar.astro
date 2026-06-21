@@ -1,0 +1,87 @@
+<!-- src/components/SearchBar.astro -->
+<div class="relative w-full max-w-md hidden md:block">
+  <label for="search-input" class="sr-only">Cari game atau gear</label>
+  <div class="relative">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8" />
+      <path d="M21 21l-4.35-4.35" />
+    </svg>
+    <input
+      id="search-input"
+      type="search"
+      placeholder="Cari Mobile Legends, Valorant, Keyboard..."
+      class="w-full pl-10 pr-4 py-2.5 border-2 border-black bg-white text-black placeholder-gray-500 font-medium text-sm shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all"
+      autocomplete="off"
+      aria-label="Cari produk"
+    />
+    <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] z-50 max-h-96 overflow-y-auto"></div>
+  </div>
+</div>
+
+<script>
+  import { games } from '../data/games';
+  import { gears } from '../data/gears';
+
+  const input = document.getElementById('search-input') as HTMLInputElement;
+  const results = document.getElementById('search-results') as HTMLDivElement;
+
+  const allProducts = [
+    ...games.map(g => ({ ...g, type: 'game', url: `/games/${g.slug}` })),
+    ...gears.map(g => ({ ...g, type: 'gear', url: `/gear/${g.slug}` }))
+  ];
+
+  function renderResults(query: string) {
+    const q = query.toLowerCase().trim();
+    if (!q) {
+      results.classList.add('hidden');
+      return;
+    }
+
+    const matches = allProducts.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.category && p.category.toLowerCase().includes(q)) ||
+      (p.badge && p.badge.toLowerCase().includes(q))
+    ).slice(0, 6);
+
+    if (matches.length === 0) {
+      results.innerHTML = '<div class="px-4 py-3 text-gray-500 text-sm font-medium">Tidak ditemukan</div>';
+      results.classList.remove('hidden');
+      return;
+    }
+
+    results.innerHTML = matches.map(p => `
+      <a href="${p.url}" class="block px-4 py-3 hover:bg-neon-yellow hover:shadow-[2px_2px_0px_0px_#000] transition-all border-b border-black/10 last:border-0 flex items-center gap-3">
+        <img src="${p.img}" alt="${p.name}" class="w-10 h-10 object-cover border border-black/20" />
+        <div class="min-w-0 flex-1">
+          <p class="font-black text-sm truncate">${p.name}</p>
+          <p class="text-xs text-gray-500 capitalize">${p.type === 'game' ? 'Game' : 'Gear'} · ${p.category}</p>
+        </div>
+        ${p.type === 'game' && p.packages ? `
+          <span class="text-xs font-bold text-neon-pink">Rp ${p.packages[0].price.toLocaleString('id-ID')}+</span>
+        ` : p.type === 'gear' ? `
+          <span class="text-xs font-bold text-neon-pink">Rp ${p.price.toLocaleString('id-ID')}</span>
+        ` : ''}
+      </a>
+    `).join('');
+
+    results.classList.remove('hidden');
+  }
+
+  input.addEventListener('input', (e) => {
+    renderResults((e.target as HTMLInputElement).value);
+  });
+
+  input.addEventListener('focus', () => renderResults(input.value));
+  document.addEventListener('click', (e) => {
+    if (!results.contains(e.target as Node) && e.target !== input) {
+      results.classList.add('hidden');
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const firstLink = results.querySelector('a') as HTMLAnchorElement;
+      if (firstLink) window.location.href = firstLink.href;
+    }
+  });
+</script>

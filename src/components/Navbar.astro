@@ -2,6 +2,8 @@
 ---
 import Button from './Button.astro';
 import CartIcon from './CartIcon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import SearchBar from './SearchBar.astro';
 ---
 
 <header class="border-b-4 border-black bg-white sticky top-0 z-50">
@@ -17,8 +19,8 @@ import CartIcon from './CartIcon.astro';
       <a href="/#games" class="font-bold hover:text-neon-pink transition-colors">Games</a>
       <a href="/#gear" class="font-bold hover:text-neon-pink transition-colors">Gear</a>
       <a href="/#promo" class="font-bold hover:text-neon-pink transition-colors">Promo</a>
-      
     </nav>
+    <SearchBar />
 
     <!-- Right: Auth + Cart + Theme + Hamburger -->
     <div class="flex items-center gap-3">
