@@ -1,0 +1,141 @@
+---
+/**
+ * FAQ Accordion Component
+ * 5 gaming-related questions with accordion toggle, neubrutalism styling.
+ * Each item has a different accent color.
+ */
+interface FaqItem {
+  question: string;
+  answer: string;
+  accent: string;
+}
+
+const faqItems: FaqItem[] = [
+  {
+    question: 'Bagaimana cara top up diamonds di Mobile Legends?',
+    answer: 'Pilih game Mobile Legends, masukkan User ID dan Zone ID kamu, pilih jumlah diamond yang diinginkan, lalu lakukan pembayaran. Diamond akan masuk ke akun kamu dalam hitungan detik!',
+    accent: '#39FF14',
+  },
+  {
+    question: 'Apakah gear gaming yang dijual original?',
+    answer: '100% original! Semua gear gaming di TopZone diambil langsung dari distributor resmi. Kami memberikan garansi resmi untuk setiap pembelian keyboard, mouse, headset, dan monitor.',
+    accent: '#FF007F',
+  },
+  {
+    question: 'Metode pembayaran apa saja yang diterima?',
+    answer: 'Kami menerima berbagai metode pembayaran: transfer bank (BCA, Mandiri, BRI, BNI), e-wallet (GoPay, OVO, Dana, ShopeePay), kartu kredit/debit, dan QRIS. Semua transaksi dijamin aman.',
+    accent: '#FFFF00',
+  },
+  {
+    question: 'Berapa lama proses top up game?',
+    answer: 'Proses top up game biasanya selesai dalam 1-5 menit setelah pembayaran dikonfirmasi. Untuk beberapa game tertentu, proses bisa memakan waktu hingga 30 menit pada jam ramai.',
+    accent: '#39FF14',
+  },
+  {
+    question: 'Bagaimana jika terjadi masalah dengan pesanan saya?',
+    answer: 'Hubungi tim support kami melalui live chat atau email ke support@topzone.id. Tim kami online 24/7 dan akan membantu menyelesaikan masalah kamu secepat mungkin. Kami juga menyediakan sistem refund untuk kasus tertentu.',
+    accent: '#FF007F',
+  },
+];
+---
+
+<section class="py-16 bg-white border-t-4 border-black" id="faq" aria-labelledby="faq-heading">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <h2 id="faq-heading" class="text-5xl font-black uppercase tracking-tighter mb-3">
+        Frequently <span class="bg-neon-pink px-2 border-2 border-black text-white">Asked</span>
+      </h2>
+      <p class="text-gray-600 font-bold text-lg">Pertanyaan yang sering ditanyain gamers.</p>
+    </div>
+
+    <div class="space-y-4">
+      {faqItems.map((item, index) => (
+        <div
+          class="faq-item border-4 border-black shadow-[4px_4px_0px_0px_#000] bg-white dark:bg-gray-900 transition-all"
+          data-index={index}
+        >
+          <button
+            class="faq-toggle w-full flex items-center justify-between p-5 text-left font-black text-lg uppercase tracking-wide hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            aria-expanded="false"
+            aria-controls={`faq-answer-${index}`}
+            id={`faq-question-${index}`}
+          >
+            <span class="flex items-center gap-3">
+              <span
+                class="inline-flex items-center justify-center w-8 h-8 border-2 border-black font-black text-sm"
+                style={`background:${item.accent};`}
+              >
+                {index + 1}
+              </span>
+              <span>{item.question}</span>
+            </span>
+            <span
+              class="faq-icon flex-shrink-0 w-8 h-8 border-2 border-black flex items-center justify-center font-black text-xl leading-none transition-transform duration-200"
+              style={`background:${item.accent};`}
+              aria-hidden="true"
+            >
+              +
+            </span>
+          </button>
+          <div
+            id={`faq-answer-${index}`}
+            class="faq-answer hidden overflow-hidden border-t-4 border-black"
+            role="region"
+            aria-labelledby={`faq-question-${index}`}
+          >
+            <p class="p-5 text-gray-700 font-medium leading-relaxed">
+              {item.answer}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initFaqAccordion() {
+    const items = document.querySelectorAll('.faq-item');
+
+    items.forEach((item) => {
+      const toggle = item.querySelector('.faq-toggle') as HTMLButtonElement | null;
+      const answer = item.querySelector('.faq-answer') as HTMLElement | null;
+      const icon = item.querySelector('.faq-icon') as HTMLElement | null;
+      if (!toggle || !answer || !icon) return;
+
+      toggle.addEventListener('click', () => {
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+        // Close all other items
+        document.querySelectorAll('.faq-item').forEach((other) => {
+          if (other !== item) {
+            const otherToggle = other.querySelector('.faq-toggle') as HTMLButtonElement | null;
+            const otherAnswer = other.querySelector('.faq-answer') as HTMLElement | null;
+            const otherIcon = other.querySelector('.faq-icon') as HTMLElement | null;
+            if (otherToggle && otherAnswer && otherIcon) {
+              otherToggle.setAttribute('aria-expanded', 'false');
+              otherAnswer.classList.add('hidden');
+              otherIcon.textContent = '+';
+              otherIcon.style.transform = '';
+            }
+          }
+        });
+
+        if (isExpanded) {
+          toggle.setAttribute('aria-expanded', 'false');
+          answer.classList.add('hidden');
+          icon.textContent = '+';
+          icon.style.transform = '';
+        } else {
+          toggle.setAttribute('aria-expanded', 'true');
+          answer.classList.remove('hidden');
+          icon.textContent = '−';
+          icon.style.transform = 'rotate(180deg)';
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initFaqAccordion);
+  initFaqAccordion();
+</script>

@@ -39,6 +39,8 @@ html.dark footer {
   background-color: #0a0a0a;
 }
 html.dark .border-2 { border-color: #444; }
+html.dark input,
+html.dark .bg-white { background-color: #1a1a1a; color: #f0f0f0; }
 
 /* Base typography presets for Neubrutalism */
 h1, h2, h3, h4, h5, h6 {
