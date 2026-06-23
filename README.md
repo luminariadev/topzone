@@ -37,6 +37,29 @@
 | [Nanostores](https://github.com/nanostores/nanostores) | State management (cart, auth) |
 | [Supabase](https://supabase.com) | Backend opsional (auth + database) |
 | [TypeScript](https://typescriptlang.org) | Type safety |
+| [Vite](https://vitejs.dev) | Build tool & dev server |
+
+## ?? Fitur Unggulan
+
+- **Dark Mode** — Toggle tema terang/gelap dengan localStorage persistence & flicker prevention
+- **PWA Ready** — Manifest, meta tags, dan apple-touch-icon untuk install ke home screen
+- **Komponen Aksesibilitas** — SkipNav untuk keyboard navigation, SrOnly untuk screen readers
+- **Breadcrumb Navigation** — SEO-friendly breadcrumb dengan active state
+- **Image Optimization** — lazy loading + decoding async
+- **FAQ Accordion** — Interaktif dengan animasi
+- **Newsletter** — Subscribe dengan localStorage persistence
+- **Testimonials** — Social proof dengan star ratings
+- **Trust Badges** — Payment security indicators
+- **Scroll to Top** — Smooth scroll navigation
+
+## ?? SEO Optimization
+
+- **JSON-LD Structured Data** — WebSite schema dengan SearchAction
+- **Sitemap XML** — 14+ URLs terdaftar dengan prioritas
+- **Robots.txt** — Konfigurasi crawl untuk crawler
+- **Open Graph & Twitter Cards** — Meta tags di Layout.astro
+- **Canonical URLs** — Mencegah duplicate content
+- **Semantic HTML** — ARIA labels, landmarks, heading hierarchy
 
 ## ?? Instalasi
 
