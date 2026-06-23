@@ -172,14 +172,14 @@ import Footer from '../components/Footer.astro';
       ordersEmpty?.classList.add('hidden');
       ordersList?.classList.remove('hidden');
       ordersList.innerHTML = orders.slice(0, 20).map(function(o) {
-        return '<a href="/order-detail?id=' + (o.id||'') + '" class="block border-4 border-black p-5 bg-white shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">' +
+        return '<a href="/order-detail?id=' + (o.id||'') + '" class="block border-4 border-black p-5 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">' +
           '<div class="flex justify-between items-start mb-2">' +
-            '<div><p class="font-black text-lg">' + (o.name||'') + '</p>' +
-            '<p class="text-xs font-bold text-gray-500">' + (o.id||'') + ' &middot; ' + new Date(o.createdAt).toLocaleDateString('id-ID') + '</p></div>' +
+            '<div><p class="font-black text-lg text-black dark:text-white">' + (o.name||'') + '</p>' +
+            '<p class="text-xs font-bold text-gray-500 dark:text-gray-400">' + (o.id||'') + ' &middot; ' + new Date(o.createdAt).toLocaleDateString('id-ID') + '</p></div>' +
             statusBadge(o.status) +
           '</div>' +
-          '<div class="flex justify-between items-center mt-3 pt-3 border-t-2 border-black/10">' +
-            '<span class="text-sm font-bold text-gray-500">' + (o.items?.length || 0) + ' item</span>' +
+          '<div class="flex justify-between items-center mt-3 pt-3 border-t-2 border-black/10 dark:border-gray-600">' +
+            '<span class="text-sm font-bold text-gray-500 dark:text-gray-400">' + (o.items?.length || 0) + ' item</span>' +
             '<span class="text-xl font-black text-neon-pink">' + formatRp(o.total) + '</span>' +
           '</div></a>';
       }).join('');

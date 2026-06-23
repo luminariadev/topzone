@@ -15,10 +15,10 @@ import SearchBar from './SearchBar.astro';
 
     <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center gap-6">
-      <a href="/#hero" class="font-bold hover:text-neon-pink transition-colors">Home</a>
-      <a href="/#games" class="font-bold hover:text-neon-pink transition-colors">Games</a>
-      <a href="/#gear" class="font-bold hover:text-neon-pink transition-colors">Gear</a>
-      <a href="/#promo" class="font-bold hover:text-neon-pink transition-colors">Promo</a>
+      <a href="/#hero" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Home</a>
+      <a href="/#games" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Games</a>
+      <a href="/#gear" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Gear</a>
+      <a href="/#promo" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Promo</a>
     </nav>
     <SearchBar />
 
@@ -29,7 +29,7 @@ import SearchBar from './SearchBar.astro';
       <ThemeToggle />
       <button
         id="hamburger-btn"
-        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black bg-white dark:bg-gray-800 dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -41,12 +41,12 @@ import SearchBar from './SearchBar.astro';
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden border-t-4 border-black bg-white">
+  <div id="mobile-menu" class="hidden md:hidden border-t-4 border-black bg-white dark:bg-gray-800 dark:text-white">
     <nav class="flex flex-col p-4 gap-3">
-      <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Home</a>
-      <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Games</a>
-      <a href="/#gear" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Gear</a>
-      <a href="/#promo" class="font-bold py-2 border-b-2 border-black/10 hover:text-neon-pink transition-colors">Promo</a>
+      <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Home</a>
+      <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Games</a>
+      <a href="/#gear" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Gear</a>
+      <a href="/#promo" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Promo</a>
       
       <div id="auth-mobile" class="flex flex-col gap-2 mt-2"></div>
     </nav>

@@ -5,29 +5,31 @@ import Footer from '../components/Footer.astro';
 ---
 
 <Layout>
+  <!-- Force admin to light mode only - prevent global dark mode affecting it -->
+  <script is:inline>
+    document.documentElement.classList.remove('dark');
+  </script>
+
   <!-- Login Gate -->
   <div id="login-gate" class="min-h-screen flex items-center justify-center bg-neon-yellow py-16 px-4">
     <div class="w-full max-w-md border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_#000]">
       <div class="text-center mb-6">
         <div class="text-5xl mb-2">&#x1F512;</div>
-        <h1 class="text-4xl font-black">Admin <span style="color:#39FF14; -webkit-text-stroke:1px #000;">Panel</span></h1>
-        <p class="text-gray-600 font-bold text-sm mt-1">Akses terbatas untuk administrator</p>
+        <h1 class="text-4xl font-black text-black">Admin <span style="color:#39FF14; -webkit-text-stroke:1px #000;">Panel</span></h1>
+        <p class="font-bold text-sm text-black mt-1">Akses terbatas untuk administrator</p>
       </div>
       <form id="admin-login-form" class="space-y-4">
         <div>
-          <label class="text-sm font-black uppercase tracking-wider mb-2 block">Email</label>
-          <input type="email" id="admin-email" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all" placeholder="admin@topzone.com" />
+          <label class="text-sm font-black uppercase tracking-wider mb-2 block text-black">Email</label>
+          <input type="email" id="admin-email" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-black" placeholder="admin@topzone.com" />
         </div>
         <div>
-          <label class="text-sm font-black uppercase tracking-wider mb-2 block">Password</label>
-          <input type="password" id="admin-password" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" />
+          <label class="text-sm font-black uppercase tracking-wider mb-2 block text-black">Password</label>
+          <input type="password" id="admin-password" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-black" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" />
         </div>
         <div id="admin-login-error" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm text-center"></div>
         <button type="submit" id="admin-login-btn" class="w-full py-4 font-black uppercase tracking-wider text-lg bg-black text-neon-green border-4 border-black shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#39FF14] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#39FF14] transition-all">Masuk ke Admin</button>
       </form>
-      <div class="mt-6 text-center">
-        <a href="/" class="text-sm font-black underline hover:text-neon-pink transition-colors">&larr; Kembali ke Beranda</a>
-      </div>
     </div>
   </div>
 

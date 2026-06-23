@@ -50,8 +50,9 @@ html.dark .bg-gray-50 { background-color: #1a1a1a; }
 html.dark .border-dashed { border-color: #555; }
 html.dark table,
 html.dark tbody tr:hover { background-color: transparent; }
-html.dark .bg-neon-yellow { background-color: #a38300; }
-html.dark .bg-neon-green { background-color: #1a8a00; }
+html.dark .bg-neon-yellow { background-color: #FFFF00; }
+html.dark .bg-neon-green { background-color: #39FF14; }
+html.dark header nav a { color: #f0f0f0; }
 html.dark select, html.dark textarea { background-color: #1a1a1a; color: #f0f0f0; border-color: #444; }
 
 /* Focus visible styles for accessibility (light & dark) */

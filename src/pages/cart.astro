@@ -70,15 +70,15 @@ import Button from '../components/Button.astro';
 
     if (listEl) {
       listEl.innerHTML = items.map((item) => `
-        <div class="flex items-center gap-4 border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+        <div class="flex items-center gap-4 border-4 border-black p-4 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">
           <img src="${item.img}" alt="${item.name}" class="w-20 h-20 object-cover border-2 border-black flex-shrink-0" />
           <div class="flex-1 min-w-0">
-            <h3 class="font-black text-lg leading-tight mb-1">${item.name}</h3>
+            <h3 class="font-black text-lg leading-tight mb-1 text-black dark:text-white">${item.name}</h3>
             <p class="font-bold text-neon-pink text-lg">${formatRp(item.price)}</p>
           </div>
           <div class="flex items-center gap-2">
             <button class="qty-btn w-8 h-8 border-2 border-black font-black text-lg hover:bg-black hover:text-white transition-colors" data-id="${item.id}" data-action="dec">−</button>
-            <span class="w-8 text-center font-black">${item.qty}</span>
+            <span class="w-8 text-center font-black text-black dark:text-white">${item.qty}</span>
             <button class="qty-btn w-8 h-8 border-2 border-black font-black text-lg hover:bg-black hover:text-white transition-colors" data-id="${item.id}" data-action="inc">+</button>
           </div>
           <button class="remove-btn ml-2 w-8 h-8 bg-neon-pink text-white border-2 border-black font-black hover:bg-red-600 transition-colors" data-id="${item.id}">×</button>
