@@ -25,12 +25,12 @@ create table if not exists order_items (
 
 -- Auto-update updated_at trigger
 create or replace function update_updated_at()
-returns trigger as 
+returns trigger as $$
 begin
   new.updated_at = now();
   return new;
 end;
- language plpgsql;
+$$ language plpgsql;
 
 create trigger trigger_orders_updated_at
   before update on orders

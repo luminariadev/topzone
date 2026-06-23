@@ -51,6 +51,14 @@ create policy "Products are viewable by everyone"
   on products for select
   using (true);
 
+-- Grant permissions for REST API access
+GRANT SELECT ON products TO anon;
+GRANT SELECT ON product_packages TO anon;
+GRANT SELECT ON gear_specs TO anon;
+GRANT SELECT ON products TO service_role;
+GRANT SELECT ON product_packages TO service_role;
+GRANT SELECT ON gear_specs TO service_role;
+
 -- Public read access for packages
 create policy "Packages are viewable by everyone"
   on product_packages for select
