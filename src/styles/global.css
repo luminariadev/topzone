@@ -41,6 +41,18 @@ html.dark footer {
 html.dark .border-2 { border-color: #444; }
 html.dark input,
 html.dark .bg-white { background-color: #1a1a1a; color: #f0f0f0; }
+html.dark p.text-gray-600,
+html.dark .text-gray-600 { color: #9ca3af; }
+html.dark .text-gray-500 { color: #9ca3af; }
+html.dark .text-gray-700 { color: #d1d5db; }
+html.dark .bg-gray-100 { background-color: #111; }
+html.dark .bg-gray-50 { background-color: #1a1a1a; }
+html.dark .border-dashed { border-color: #555; }
+html.dark table,
+html.dark tbody tr:hover { background-color: transparent; }
+html.dark .bg-neon-yellow { background-color: #a38300; }
+html.dark .bg-neon-green { background-color: #1a8a00; }
+html.dark select, html.dark textarea { background-color: #1a1a1a; color: #f0f0f0; border-color: #444; }
 
 /* Focus visible styles for accessibility (light & dark) */
 :focus-visible {
