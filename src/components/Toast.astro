@@ -62,4 +62,26 @@
   }
 
   (window as any).showToast = showToast;
+
+// Network error specific toast
+export function showNetworkErrorToast(retryFn?: () => void) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-item flex items-center gap-3 px-5 py-3 border-4 border-black shadow-[4px_4px_0px_0px_#000] font-black text-sm bg-red-500 text-white border-red-600';
+  toast.innerHTML = `
+    <span class="text-lg">⚠</span>
+    <span class="flex-1">Koneksi gagal. Menggunakan data offline.</span>
+    ${retryFn ? '<button class="px-3 py-1 text-xs font-black bg-white text-red-500 border-2 border-white hover:bg-red-50 hover:text-white transition-all" onclick="this.closest(\'.toast-item\').classList.add(\'removing\'); setTimeout(() => this.closest(\'.toast-item\').remove(), 300); (' + retryFn.toString() + ')()">Coba Lagi</button>' : ''}
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+(window as any).showNetworkErrorToast = showNetworkErrorToast;
 </script>
