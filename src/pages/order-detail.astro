@@ -1,9 +1,9 @@
----
+﻿---
 // src/pages/order-detail.astro
-import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
-import Button from '../components/Button.astro';
+import Layout from '"'"'../layouts/Layout.astro'"'"';
+import Navbar from '"'"'../components/Navbar.astro'"'"';
+import Footer from '"'"'../components/Footer.astro'"'"';
+import Button from '"'"'../components/Button.astro'"'"';
 ---
 
 <Layout>
@@ -13,7 +13,7 @@ import Button from '../components/Button.astro';
       <a href="/orders" class="inline-flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-black transition-colors mb-6">&larr; Kembali ke Riwayat</a>
       <div id="order-loading" class="text-center py-24"><p class="text-2xl font-black">Memuat pesanan...</p></div>
       <div id="order-notfound" class="hidden text-center py-24 border-4 border-dashed border-black">
-        <div class="text-6xl mb-4">??</div>
+        <div class="text-6xl mb-4">❓</div>
         <p class="text-2xl font-black mb-2">Pesanan tidak ditemukan!</p>
         <Button variant="green" size="lg" href="/orders">Lihat Riwayat</Button>
       </div>
@@ -41,6 +41,18 @@ import Button from '../components/Button.astro';
             <span class="text-3xl font-black" id="order-total"></span>
           </div>
         </div>
+
+        <!-- Transaction History -->
+        <div id="transaction-history" class="border-4 border-black p-5 bg-white shadow-[4px_4px_0px_0px_#000] mb-6 hidden">
+          <h2 class="text-lg font-black mb-4">📋 Riwayat Transaksi</h2>
+          <div id="transaction-list" class="flex flex-col gap-2"></div>
+        </div>
+
+        <!-- Retry Payment -->
+        <div id="retry-section" class="hidden mb-6 text-center">
+          <p class="text-red-600 font-black mb-3">Pembayaran gagal atau kedaluwarsa</p>
+          <button id="retry-btn" class="px-6 py-3 font-black border-3 border-black bg-red-400 text-white hover:bg-red-600 transition-all">💳 Coba Bayar Lagi</button>
+        </div>
       </div>
     </div>
   </section>
@@ -48,37 +60,68 @@ import Button from '../components/Button.astro';
 </Layout>
 
 <script>
-  import { getOrdersKey } from '../stores/auth';
-  const orders = JSON.parse(localStorage.getItem(getOrdersKey()) || '[]');
-  const orderId = new URLSearchParams(window.location.search).get('id');
-  const loadingEl = document.getElementById('order-loading');
-  const notfoundEl = document.getElementById('order-notfound');
-  const detailEl = document.getElementById('order-detail');
+  import { getOrdersKey } from '"'"'../stores/auth'"'"';
+  const orders = JSON.parse(localStorage.getItem(getOrdersKey()) || '"'"'[]'"'"');
+  const orderId = new URLSearchParams(window.location.search).get('"'"'id'"'"');
+  const loadingEl = document.getElementById('"'"'order-loading'"'"');
+  const notfoundEl = document.getElementById('"'"'order-notfound'"'"');
+  const detailEl = document.getElementById('"'"'order-detail'"'"');
   const order = orders.find((o) => o.id === orderId);
 
   if (!order) {
-    loadingEl?.classList.add('hidden');
-    notfoundEl?.classList.remove('hidden');
+    loadingEl?.classList.add('"'"'hidden'"'"');
+    notfoundEl?.classList.remove('"'"'hidden'"'"');
   } else {
-    loadingEl?.classList.add('hidden');
-    detailEl?.classList.remove('hidden');
-    function formatRp(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+    loadingEl?.classList.add('"'"'hidden'"'"');
+    detailEl?.classList.remove('"'"'hidden'"'"');
+    function formatRp(n) { return '"'"'Rp '"'"' + n.toLocaleString('"'"'id-ID'"'"'); }
     function statusBadge(s) {
-      const m = { pending: 'bg-yellow-400', processing: 'bg-blue-400', completed: 'bg-neon-green', cancelled: 'bg-red-400' };
-      const l = { pending: 'Pending', processing: 'Diproses', completed: 'Selesai', cancelled: 'Dibatalkan' };
-      return '<span class="inline-block px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black ' + (m[s]||'bg-gray-400') + '">' + (l[s]||s) + '</span>';
+      const m = { pending: '"'"'bg-yellow-400'"'"', processing: '"'"'bg-blue-400'"'"', completed: '"'"'bg-neon-green'"'"', cancelled: '"'"'bg-red-400'"'"' };
+      const l = { pending: '"'"'Pending'"'"', processing: '"'"'Diproses'"'"', completed: '"'"'Selesai'"'"', cancelled: '"'"'Dibatalkan'"'"' };
+      return '"'"'<span class="inline-block px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black '"'"' + (m[s]||'"'"'bg-gray-400'"'"') + '"'"'">' + (l[s]||s) + '"'"'</span>';
     }
-    function payLabel(v) { return ({ bank: 'Transfer Bank', ewallet: 'E-Wallet', gopay: 'GoPay' })[v]||v; }
-    document.getElementById('order-id-display').textContent = 'Order #' + order.id;
-    document.getElementById('order-date').textContent = new Date(order.createdAt).toLocaleString('id-ID');
-    document.getElementById('order-status').innerHTML = statusBadge(order.status);
-    document.getElementById('order-name').textContent = order.name;
-    document.getElementById('order-phone').textContent = order.phone;
-    document.getElementById('order-payment').textContent = payLabel(order.payment);
-    document.getElementById('order-total').textContent = formatRp(order.total);
-    const itemsEl = document.getElementById('order-items');
+    function payLabel(v) { return ({ bank: '"'"'Transfer Bank'"'"', ewallet: '"'"'E-Wallet'"'"', gopay: '"'"'GoPay'"'"' })[v]||v; }
+    document.getElementById('"'"'order-id-display'"'"').textContent = '"'"'Order #'"'"' + order.id;
+    document.getElementById('"'"'order-date'"'"').textContent = new Date(order.createdAt).toLocaleString('"'"'id-ID'"'"');
+    document.getElementById('"'"'order-status'"'"').innerHTML = statusBadge(order.status);
+    document.getElementById('"'"'order-name'"'"').textContent = order.name;
+    document.getElementById('"'"'order-phone'"'"').textContent = order.phone;
+    document.getElementById('"'"'order-payment'"'"').textContent = payLabel(order.payment);
+    document.getElementById('"'"'order-total'"'"').textContent = formatRp(order.total);
+    const itemsEl = document.getElementById('"'"'order-items'"'"');
     if (itemsEl && order.items) {
-      itemsEl.innerHTML = order.items.map((item) => '<div class=\"flex items-center gap-4 py-2\"><div class=\"flex-1\"><p class=\"font-black\">' + item.name + '</p><p class=\"text-xs font-bold text-gray-500\">Qty: ' + item.qty + ' x ' + formatRp(item.price) + '</p></div><p class=\"font-black text-neon-pink\">' + formatRp(item.price * item.qty) + '</p></div>').join('');
+      itemsEl.innerHTML = order.items.map((item) => '"'"'<div class="flex items-center gap-4 py-2"><div class="flex-1"><p class="font-black">'"'"' + item.name + '"'"'</p><p class="text-xs font-bold text-gray-500">Qty: '"'"' + item.qty + '"'"' x '"'"' + formatRp(item.price) + '"'"'</p></div><p class="font-black text-neon-pink">'"'"' + formatRp(item.price * item.qty) + '"'"'</p></div>'"'"').join('"'"'"'"'"');
     }
+
+    // Transaction History
+    const txEl = document.getElementById('"'"'transaction-list'"'"');
+    const txHistory = document.getElementById('"'"'transaction-history'"'"');
+    if (txEl && order.transactions && order.transactions.length > 0) {
+      txHistory.classList.remove('"'"'hidden'"'"');
+      txEl.innerHTML = order.transactions.map((tx) => '"'"'<div class="border-2 border-black p-3 bg-gray-50"><div class="flex justify-between"><span class="font-black text-sm">'"'"' + (tx.type||'"'"'Pembayaran'"'"') + '"'"'</span><span class="font-bold text-xs text-gray-500">'"'"' + new Date(tx.date || tx.createdAt).toLocaleString('"'"'id-ID'"'"') + '"'"'</span></div><p class="text-sm font-bold">'"'"' + formatRp(tx.amount || 0) + '"'"' — '"'"' + (tx.status || tx.note || '"'"'-'"'"') + '"'"'</p></div>'"'"').join('"'"'"'"'"');
+    }
+
+    // Show retry for pending orders
+    if (order.status === '"'"'pending'"'"' || order.status === '"'"'expired'"'"') {
+      document.getElementById('"'"'retry-section'"'"')?.classList.remove('"'"'hidden'"'"');
+    }
+
+    document.getElementById('"'"'retry-btn'"'"')?.addEventListener('"'"'click'"'"', async () => {
+      const btn = document.getElementById('"'"'retry-btn'"'"');
+      btn.textContent = '"'"'Memuat...'"'"';
+      btn.disabled = true;
+      try {
+        const res = await fetch('"'"'/api/checkout/retry'"'"', {
+          method: '"'"'POST'"'"',
+          headers: { '"'"'Content-Type'"'"': '"'"'application/json'"'"' },
+          body: JSON.stringify({ orderId: order.id, total: order.total, customer: { name: order.name, email: order.userEmail || '"'"'"'"'"', phone: order.phone } })
+        });
+        const data = await res.json();
+        if (data.redirect_url) window.location.href = data.redirect_url;
+        else if (data.success) { alert('"'"'Pembayaran baru dibuat. Silakan coba lagi.'"'"'); }
+      } catch (e) {
+        alert('"'"'Gagal memuat ulang pembayaran.'"'"');
+      }
+    });
   }
 </script>
