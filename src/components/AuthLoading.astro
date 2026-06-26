@@ -1,0 +1,27 @@
+---
+/**
+ * AuthLoading component: neubrutalism-styled loading spinner for auth operations.
+ * Props: text (string) — loading message to display.
+ */
+interface Props {
+  text?: string;
+}
+const { text = 'Memuat...' } = Astro.props;
+---
+
+<div class="auth-loading flex flex-col items-center justify-center gap-4 py-12">
+  <div class="relative w-16 h-16">
+    <!-- Outer ring (black border) -->
+    <div class="absolute inset-0 rounded-full border-4 border-black animate-spin border-t-neon-green border-r-transparent"></div>
+    <!-- Inner dot -->
+    <div class="absolute inset-3 rounded-full bg-neon-green/20 animate-pulse"></div>
+  </div>
+  <p class="font-black text-lg text-black dark:text-white">{text}</p>
+  <p class="font-bold text-sm text-gray-500 dark:text-gray-400">Tunggu sebentar...</p>
+</div>
+
+<style>
+  .auth-loading {
+    min-height: 200px;
+  }
+</style>
