@@ -109,6 +109,13 @@ describe('User Flow: Browse → Cart → Checkout', () => {
       const total = emptyCart.reduce((sum, i) => sum + i.price * i.qty, 0);
       expect(total).toBe(0);
     });
+
+    it('should calculate cart discount correctly', () => {
+      const subtotal = 100000;
+      const discount = 10;
+      const finalTotal = Math.round(subtotal * (100 - discount) / 100);
+      expect(finalTotal).toBe(90000);
+    });
   });
 
   describe('Checkout Flow', () => {
