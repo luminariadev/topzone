@@ -36,8 +36,10 @@ export function setLocalUser(email: string, name?: string) {
 }
 
 export function setUser(u: AppUser | null) {
+  if (!isBrowser()) return;
   if (u) {
-    setLocalUser(u.email, u.full_name);
+    localStorage.setItem(AUTH_KEY, JSON.stringify(u));
+    user.set(u);
   } else {
     logoutUser();
   }
