@@ -76,12 +76,28 @@ import Button from '../components/Button.astro';
 </Layout>
 
 <script>
-  import { setLocalUser } from '../stores/auth';
-  import { supabase } from '../lib/supabase';
+  import { setLocalUser, setUser } from '../stores/auth';
+  import { supabase, signInWithPassword, onAuthStateChange } from '../lib/supabase';
 
   const form = document.getElementById('login-form') as HTMLFormElement;
   const errorMsg = document.getElementById('error-msg');
   const loginBtn = document.getElementById('login-btn') as HTMLButtonElement;
+
+  // Subscribe to Supabase auth state changes
+  let authUnsubscribe: (() => void) | undefined;
+  if (supabase) {
+    authUnsubscribe = onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        setUser({
+          email: session.user.email ?? '',
+          full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
+          isLoggedIn: true,
+        });
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -93,18 +109,12 @@ import Button from '../components/Button.astro';
     loginBtn.textContent = 'Masuk...';
     loginBtn.disabled = true;
 
-    // Try Supabase first (if configured)
-    let error = null;
-    if (supabase) {
-      const result = await supabase.auth.signInWithPassword({ email, password });
-      error = result.error;
-    } else {
-      error = new Error('Supabase not configured');
-    }
+    // Try Supabase Auth first
+    const { data, error } = await signInWithPassword(email, password);
 
     if (error) {
-      // localStorage fallback: accept any email with password >= 3 chars for demo
-      if (password.length >= 3) {
+      // localStorage fallback when Supabase not configured
+      if (!supabase && password.length >= 3) {
         setLocalUser(email);
         var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
         window.location.href = redirectUrl;
@@ -118,9 +128,15 @@ import Button from '../components/Button.astro';
       return;
     }
 
-    // Supabase success - save to localStorage too
-    setLocalUser(email);
+    // Supabase success — session synced via onAuthStateChange
+    if (!supabase) {
+      setLocalUser(email, data.user?.user_metadata?.full_name);
+    }
+
     var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
     window.location.href = redirectUrl;
   });
+
+  // Cleanup on unload
+  window.addEventListener('beforeunload', () => authUnsubscribe?.());
 </script>
