@@ -1,0 +1,63 @@
+---
+// AuthGuard component: redirects to /login?redirect=... if not authenticated
+// Usage: import AuthGuard from '../components/AuthGuard.astro' in page frontmatter
+// or use via <AuthGuard /> in template
+---
+
+<div id="auth-guard-overlay" class="fixed inset-0 z-[9999] bg-white dark:bg-gray-900 flex items-center justify-center">
+  <div class="text-center">
+    <div class="w-16 h-16 mx-auto mb-4 border-4 border-black rounded-full animate-spin border-t-neon-green"></div>
+    <p class="font-black text-xl text-black dark:text-white">Memeriksa sesi...</p>
+    <p class="font-bold text-sm text-gray-500 mt-2">Dialihkan ke halaman login jika belum masuk</p>
+  </div>
+</div>
+
+<script>
+  import { user } from '../stores/auth';
+  import { supabase, onAuthStateChange, getSession } from '../lib/supabase';
+
+  const overlay = document.getElementById('auth-guard-overlay');
+
+  async function checkAuth() {
+    // Check Supabase session first
+    if (supabase) {
+      const session = await getSession();
+      if (session?.user) {
+        hideOverlay();
+        return;
+      }
+    }
+
+    // Fallback to local user state
+    const currentUser = user.get();
+    if (currentUser?.isLoggedIn) {
+      hideOverlay();
+      return;
+    }
+
+    // Not authenticated — redirect to login with current path
+    const currentPath = window.location.pathname;
+    window.location.href = '/login?redirect=' + encodeURIComponent(currentPath);
+  }
+
+  function hideOverlay() {
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  }
+
+  // Listen for auth state changes
+  let unsub: (() => void) | undefined;
+  if (supabase) {
+    unsub = onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        hideOverlay();
+      }
+    });
+  }
+
+  checkAuth();
+
+  // Cleanup
+  window.addEventListener('beforeunload', () => unsub?.());
+</script>
