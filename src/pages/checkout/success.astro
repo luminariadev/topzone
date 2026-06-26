@@ -1,14 +1,11 @@
 ---
-// src/pages/checkout/success.astro
 import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
-import Button from '../../components/Button.astro';
 ---
 
 <Layout>
   <Navbar />
-
   <section class="py-24 min-h-screen bg-neon-green flex items-center justify-center">
     <div class="max-w-2xl mx-auto px-4 text-center">
       <div class="text-8xl mb-4">✑</div>
@@ -16,15 +13,30 @@ import Button from '../../components/Button.astro';
       <p class="text-xl font-bold mb-2">Terima Kasih</p>
       <div class="border-4 border-black bg-white p-8 my-8 shadow-[6px_6px_0px_0px_#000]">
         <p class="text-lg font-bold mb-2">Nomor Pesanan</p>
-        <p class="text-xl font-black" id="order-id"></p><p class="text-sm font-bold mt-2" id="order-status">Status: <span class="text-neon-pink">Menunggu Konfirmasi</span></p>
+        <p class="text-xl font-black" id="order-id">-</p>
+        <p class="text-sm font-bold mt-2" id="order-status">Status: <span class="text-yellow-500" id="status-badge">Menunggu Pembayaran</span></p>
         <p class="text-xs text-gray-500 font-bold mt-2">Simpan nomor pesanan untuk konfirmasi pembayaran</p>
+        <div id="payment-info" class="hidden mt-4 border-4 border-black bg-white p-6 shadow-[4px_4px_0px_0px_#000] text-left">
+          <h3 class="font-black text-lg mb-3">💳 Petunjuk Pembayaran</h3>
+          <ul class="text-sm font-bold space-y-2 text-gray-700" id="payment-instructions"></ul>
+        </div>
+        <div id="payment-polling" class="hidden mt-4">
+          <p class="text-sm font-bold text-gray-600">Memeriksa status pembayaran...</p>
+          <div class="w-full h-2 bg-gray-200 border-2 border-black mt-2 rounded-full overflow-hidden">
+            <div class="h-full bg-neon-pink animate-pulse" style="width: 100%"></div>
+          </div>
+        </div>
+        <div id="payment-retry" class="hidden mt-4">
+          <p class="text-red-600 font-black mb-2">Pembayaran gagal atau kedaluwarsa</p>
+          <button id="retry-btn" class="px-6 py-3 font-black border-3 border-black bg-red-400 text-white hover:bg-red-600 transition-all">Coba Bayar Lagi</button>
+        </div>
       </div>
-      <div class="border-4 border-black bg-white p-6 mb-6 shadow-[4px_4px_0px_0px_#000] text-left" id="payment-info"><h3 class="font-black text-lg mb-3">💳 Petunjuk Pembayaran</h3><ul class="text-sm font-bold space-y-2 text-gray-700"><li>1. Transfer ke rekening <span class="font-black text-black">BCA 1234567890 a/n TopZone</span></li><li>2. Konfirmasi pembayaran ke <span class="font-black text-black">WhatsApp 0812-3456-7890</span></li><li>3. Pesanan akan diproses setelah pembayaran dikonfirmasi admin</li></ul></div><div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button variant="black" size="lg" href="/">Kembali ke Beranda</Button>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="px-8 py-3 font-black uppercase tracking-wider text-lg bg-black text-neon-green border-4 border-black shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#39FF14] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#39FF14] transition-all text-center">Kembali ke Beranda</a>
+        <a href="/orders" class="px-8 py-3 font-black uppercase tracking-wider text-lg bg-neon-pink text-white border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all text-center">Lihat Pesanan</a>
       </div>
     </div>
   </section>
-
   <Footer />
 </Layout>
 
@@ -33,9 +45,60 @@ import Button from '../../components/Button.astro';
   const orderId = urlParams.get('id');
   document.getElementById('order-id').textContent = orderId ? '#' + orderId : '-';
 
-  // Show payment instructions
-  if (orderId) {
-    var paymentInfo = document.getElementById('payment-info');
-    if (paymentInfo) paymentInfo.classList.remove('hidden');
+  async function pollStatus() {
+    if (!orderId) return;
+    const pollingEl = document.getElementById('payment-polling');
+    const retryEl = document.getElementById('payment-retry');
+    const statusBadge = document.getElementById('status-badge');
+    const paymentInfo = document.getElementById('payment-info');
+    const paymentInstructions = document.getElementById('payment-instructions');
+
+    try {
+      const res = await fetch('/api/checkout/status?orderId=' + orderId);
+      const data = await res.json();
+      if (data.status === 'completed') {
+        statusBadge.textContent = 'Berhasil';
+        statusBadge.className = 'text-neon-green';
+        pollingEl?.classList.add('hidden');
+        retryEl?.classList.add('hidden');
+        paymentInfo?.classList.remove('hidden');
+        paymentInstructions!.innerHTML = '<li>✅ Pembayaran dikonfirmasi</li><li>Pesanan akan segera diproses</li>';
+      } else if (data.status === 'cancelled' || data.status === 'expired') {
+        statusBadge.textContent = 'Gagal / Kedaluwarsa';
+        statusBadge.className = 'text-red-600';
+        pollingEl?.classList.add('hidden');
+        retryEl?.classList.remove('hidden');
+      } else {
+        pollingEl?.classList.remove('hidden');
+      }
+    } catch (e) {
+      console.error('Polling error:', e);
+    }
   }
+
+  // Poll every 3 seconds for 5 minutes max
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    pollStatus();
+    if (attempts > 100) clearInterval(interval);
+  }, 3000);
+
+  document.getElementById('retry-btn')?.addEventListener('click', async () => {
+    if (!orderId) return;
+    const btn = document.getElementById('retry-btn');
+    btn.textContent = 'Memuat...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/checkout/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, total: 0, customer: { name: '', email: '', phone: '' } })
+      });
+      const data = await res.json();
+      if (data.redirect_url) window.location.href = data.redirect_url;
+    } catch (e) {
+      console.error('Retry failed:', e);
+    }
+  });
 </script>
