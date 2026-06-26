@@ -74,17 +74,20 @@ import Footer from '../components/Footer.astro';
 
 <script>
   import { setLocalUser } from '../stores/auth';
-  import { supabase } from '../lib/supabase';
+  import { supabase, signUp } from '../lib/supabase';
 
   const form = document.getElementById('register-form') as HTMLFormElement;
   const errorMsg = document.getElementById('error-msg');
   const successMsg = document.getElementById('success-msg');
+  const voucherInfo = document.getElementById('voucher-info');
+  const voucherCodeDisplay = document.getElementById('voucher-code-display');
   const registerBtn = document.getElementById('register-btn') as HTMLButtonElement;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMsg?.classList.add('hidden');
     successMsg?.classList.add('hidden');
+    voucherInfo?.classList.add('hidden');
 
     const fullname = (document.getElementById('fullname') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
@@ -97,50 +100,53 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
+    if (password.length < 6) {
+      errorMsg.textContent = 'Password minimal 6 karakter!';
+      errorMsg?.classList.remove('hidden');
+      return;
+    }
+
     registerBtn.textContent = 'Mendaftarkan...';
     registerBtn.disabled = true;
 
-    // Generate welcome voucher for both Supabase and localStorage fallback
+    // Generate welcome voucher
     var welcomeCode = 'WELCOME-' + Math.random().toString(36).substr(2,8).toUpperCase();
     var voucher = { code: welcomeCode, discount: 10, used: false, createdAt: new Date().toISOString() };
 
-    // Try Supabase if configured
-    if (supabase) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullname,
-          },
-        },
-      });
+    // Try Supabase Auth
+    const { data, error } = await signUp(email, password, fullname);
 
-      if (error) {
-        // If it's a network/config error, fallback to local
-        // If the error is about the user existing, still allow local login
-        errorMsg.textContent = error.message;
-        errorMsg?.classList.remove('hidden');
-        registerBtn.textContent = 'Daftar Sekarang';
-        registerBtn.disabled = false;
-        return;
-      }
-
-      if (data.user && !data.user.confirmed_at) {
-        successMsg.textContent = 'Akun berhasil dibuat! Cek email kamu untuk verifikasi, lalu masuk.';
-        localStorage.setItem('topzone_voucher', JSON.stringify(voucher));
-        document.getElementById('voucher-info').classList.remove('hidden');
-        document.getElementById('voucher-code-display').textContent = welcomeCode;
-        successMsg?.classList.remove('hidden');
-        registerBtn.textContent = 'Berhasil!';
-        return;
-      }
+    if (error) {
+      errorMsg.textContent = error.message;
+      errorMsg?.classList.remove('hidden');
+      registerBtn.textContent = 'Daftar Sekarang';
+      registerBtn.disabled = false;
+      return;
     }
 
-    // localStorage fallback: save user locally + generate voucher + redirect
+    // Supabase success — unconfirmed email
+    if (data.user && !data.user.confirmed_at) {
+      successMsg.textContent = 'Akun berhasil dibuat! Cek email kamu untuk verifikasi, lalu masuk.';
+      localStorage.setItem('topzone_voucher', JSON.stringify(voucher));
+      voucherInfo?.classList.remove('hidden');
+      if (voucherCodeDisplay) voucherCodeDisplay.textContent = welcomeCode;
+      successMsg?.classList.remove('hidden');
+      registerBtn.textContent = 'Berhasil!';
+      return;
+    }
+
+    // Auto-confirmed or localStorage fallback
     setLocalUser(email, fullname);
     localStorage.setItem('topzone_voucher', JSON.stringify(voucher));
-    var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
-    window.location.href = redirectUrl;
+    voucherInfo?.classList.remove('hidden');
+    if (voucherCodeDisplay) voucherCodeDisplay.textContent = welcomeCode;
+    successMsg.textContent = 'Akun berhasil dibuat! Selamat datang di TopZone 🎮';
+    successMsg?.classList.remove('hidden');
+    registerBtn.textContent = 'Berhasil!';
+
+    setTimeout(() => {
+      var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
+      window.location.href = redirectUrl;
+    }, 2000);
   });
 </script>

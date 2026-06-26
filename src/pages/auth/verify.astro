@@ -1,0 +1,102 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+
+  <section class="min-h-screen flex items-center justify-center bg-neon-yellow dark:bg-gray-900 py-16 px-4">
+    <div class="w-full max-w-md">
+      <div class="border-4 border-black bg-white dark:bg-gray-800 p-8 shadow-[8px_8px_0px_0px_#000]">
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 mx-auto mb-6 bg-neon-green/10 border-4 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_#000]">
+            <svg class="w-10 h-10 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 class="text-4xl font-black mb-2 text-black dark:text-white">Verifikasi <span class="text-neon-pink" style="-webkit-text-stroke:1px #000;">Berhasil!</span></h1>
+          <p class="font-bold text-gray-600 dark:text-gray-300">Email kamu sudah diverifikasi</p>
+        </div>
+
+        <div id="success-state" class="bg-green-50 dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 p-6 rounded-lg mb-6">
+          <p class="font-bold text-black dark:text-white mb-4">
+            🎉 Selamat! Email <span id="email-display" class="font-mono text-neon-pink"></span> sudah diverifikasi.
+          </p>
+          <p class="font-bold text-gray-700 dark:text-gray-300 mb-4">
+            Sekarang kamu bisa login ke TopZone dan mulai belanja game & gear favoritmu!
+          </p>
+          <div class="bg-neon-yellow text-black font-black px-4 py-3 border-2 border-black text-sm text-center mb-4 shadow-[2px_2px_0px_0px_#000]">
+            🎁 Voucher <span id="voucher-code" class="bg-black text-white px-2 py-1"></span> (10% diskon) sudah siap di akunmu!
+          </div>
+        </div>
+
+        <div id="error-state" class="hidden bg-red-50 dark:bg-red-900/20 border-2 border-red-500 dark:border-red-700 p-6 rounded-lg mb-6">
+          <p class="font-bold text-red-700 dark:text-red-300 mb-4" id="error-message"></p>
+        </div>
+
+        <div class="space-y-3">
+          <a href="/login" class="block w-full py-4 font-black uppercase tracking-wider text-lg bg-neon-pink text-white border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all text-center">
+            Masuk Sekarang
+          </a>
+          <a href="/" class="block w-full py-4 font-black uppercase tracking-wider text-lg bg-black text-neon-green border-4 border-black shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#39FF14] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#39FF14] transition-all text-center">
+            Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+
+      <div class="text-center mt-6">
+        <a href="/" class="inline-flex items-center gap-2 font-black text-sm hover:underline text-black dark:text-white">
+          ← Kembali ke Beranda
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Extract email and type from URL hash (Supabase returns tokens in hash)
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const type = params.get('type');
+  const error = params.get('error');
+  const errorDescription = params.get('error_description');
+  const email = params.get('email') || localStorage.getItem('topzone_verify_email') || '';
+
+  const successState = document.getElementById('success-state');
+  const errorState = document.getElementById('error-state');
+  const errorMsg = document.getElementById('error-message');
+  const emailDisplay = document.getElementById('email-display');
+  const voucherCode = document.getElementById('voucher-code');
+
+  if (error) {
+    // Error from Supabase
+    successState?.classList.add('hidden');
+    errorState?.classList.remove('hidden');
+    errorMsg.textContent = errorDescription || 'Verifikasi gagal. Coba minta email verifikasi ulang.';
+  } else if (type === 'signup' || type === 'email_change') {
+    // Successful verification
+    if (email) {
+      emailDisplay.textContent = email;
+    }
+    // Show voucher code
+    const voucher = localStorage.getItem('topzone_voucher');
+    if (voucher) {
+      try {
+        const v = JSON.parse(voucher);
+        if (voucherCode) voucherCode.textContent = v.code;
+      } catch {}
+    }
+  } else {
+    // Generic success or unknown state
+    if (email) {
+      emailDisplay.textContent = email;
+    }
+  }
+
+  // Also listen for hash changes (Supabase might redirect with hash)
+  window.addEventListener('hashchange', () => location.reload());
+</script>
