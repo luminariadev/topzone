@@ -1,7 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /checkout/success
 Disallow: /api/
+Disallow: /checkout/
+Disallow: /auth/
+Disallow: /_astro/
 
-Sitemap: https://topzone.id/sitemap.xml
+Sitemap: https://topzone.vercel.app/sitemap.xml
