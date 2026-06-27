@@ -122,33 +122,35 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Add @astrojs/sitemap with auto-generation | feat | â–¡ |
-| 2 | Add @astrojs/robots-txt integration | feat | â–¡ |
-| 3 | Add @astrojs/image with responsive WebP output | feat | â–¡ |
-| 4 | Add vite-plugin-pwa for service worker | feat | â–¡ |
-| 5 | Setup env validation with zod | feat | â–¡ |
-| 6 | Add CSP & security headers via Astro middleware | feat | â–¡ |
+| 1 | Add @astrojs/sitemap with auto-generation | feat | ✅ |
+| 2 | Add @astrojs/robots-txt integration | feat | ✅ |
+| 3 | Add @astrojs/image with responsive WebP output | feat | ✅ |
+| 4 | Add vite-plugin-pwa for service worker | feat | ✅ |
+| 5 | Setup env validation with zod | feat | ✅ |
+| 6 | Add CSP & security headers via Astro middleware | feat | ✅ |
 
-### â–¡ 1.5 Admin Panel Core (16 commit)
+### â–¡ 1.5 Admin Panel Core (18 commit)
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Create admin table with role column in Supabase | feat | â–¡ |
-| 2 | Implement admin login with Supabase Auth (not hardcoded) | feat | â–¡ |
-| 3 | Add admin session with 30-min timeout & refresh | feat | â–¡ |
-| 4 | Add admin rate limiting (5 attempts â†’ lock) | feat | â–¡ |
-| 5 | Replace localStorage CRUD with Supabase mutations | refactor | â–¡ |
-| 6 | Add admin CRUD: create game with packages | feat | â–¡ |
-| 7 | Add admin CRUD: edit game/update packages | feat | â–¡ |
-| 8 | Add admin CRUD: delete game (soft delete) | feat | â–¡ |
-| 9 | Add admin CRUD: create gear with specs | feat | â–¡ |
-| 10 | Add admin CRUD: edit gear/update specs | feat | â–¡ |
-| 11 | Add admin CRUD: delete gear (soft delete) | feat | â–¡ |
-| 12 | Order management: view all orders from DB | feat | â–¡ |
-| 13 | Order management: update order status | feat | â–¡ |
-| 14 | Reports: total orders, revenue, charts | feat | â–¡ |
-| 15 | Reports: CSV export from real data | feat | â–¡ |
-| 16 | Add audit log for every admin action | feat | â–¡ |
+| 1 | Create admin table with role column in Supabase | feat | ✅ |
+| 2 | Implement admin login with Supabase Auth (not hardcoded) | feat | ✅ |
+| 3 | Add admin session with 30-min timeout & refresh | feat | ✅ |
+| 4 | Add admin rate limiting (5 attempts â†’ lock) | feat | ✅ |
+| 5 | Replace localStorage CRUD with Supabase mutations | refactor | ✅ |
+| 6 | Add admin CRUD: create game with packages | feat | ✅ |
+| 7 | Add admin CRUD: edit game/update packages | feat | ✅ |
+| 8 | Add admin CRUD: delete game (soft delete) | feat | ✅ |
+| 9 | Add admin CRUD: create gear with specs | feat | ✅ |
+| 10 | Add admin CRUD: edit gear/update specs | feat | ✅ |
+| 11 | Add admin CRUD: delete gear (soft delete) | feat | ✅ |
+| 12 | Order management: view all orders from DB | feat | ✅ |
+| 13 | Order management: update order status | feat | ✅ |
+| 14 | Reports: total orders, revenue, charts | feat | ✅ |
+| 15 | Reports: CSV export from real data | feat | ✅ |
+| 16 | Add audit log for every admin action | feat | ✅ |
+| 17 | Add voucher management CRUD in admin | feat | ✅ |
+| 18 | Add admin orders & reports API endpoints | feat | ✅ |
 
 ---
 
@@ -903,7 +905,7 @@ git push origin main
 
 ---
 
-*Last Updated: 2026-06-27*
+*Last Updated: 2026-06-28*
 *Author: Claude Code AI Assistant*
 *TopZone Project v0.0.1*
 
