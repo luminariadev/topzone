@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
   const game = await request.json();
   if (!game.name || !game.slug) return new Response(JSON.stringify({ error: 'Name and slug required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   if (supabase) {
-    const { data, error } = await supabase.from('products').insert({ slug: game.slug, name: game.name, type: 'game', img: game.img || '/assets/default-game.png', color: game.color || '#39FF14', badge: game.badge || 'New', category: game.category || 'mobile', currency: game.currency || 'Diamond', description: game.description || '', packages: game.packages || [], created_at: new Date().toISOString() }).select().single();
+    const { data, error } = await supabase.from('products').insert({ slug: game.slug, name: game.name, type: 'game', img: game.img || '/assets/default-game.png', color: game.color || '#39FF14', badge: game.badge || 'New', category: game.category || 'mobile', currency: game.currency || 'Diamond', description: game.description || '', packages: game.packages || [], status: game.status || 'published', created_at: new Date().toISOString() }).select().single();
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     return new Response(JSON.stringify({ success: true, game: data }), { status: 201, headers: { 'Content-Type': 'application/json' } });
   }

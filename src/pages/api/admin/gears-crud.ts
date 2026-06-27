@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
   const gear = await request.json();
   if (!gear.name || !gear.slug) return new Response(JSON.stringify({ error: 'Name and slug required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   if (supabase) {
-    const { data, error } = await supabase.from('products').insert({ slug: gear.slug, name: gear.name, type: 'gear', img: gear.img || '/assets/default-gear.png', price: gear.price || 0, tag: gear.tag || 'Gaming', category: gear.category || 'keyboard', description: gear.description || '', specs: gear.specs || [], created_at: new Date().toISOString() }).select().single();
+    const { data, error } = await supabase.from('products').insert({ slug: gear.slug, name: gear.name, type: 'gear', img: gear.img || '/assets/default-gear.png', price: gear.price || 0, tag: gear.tag || 'Gaming', category: gear.category || 'keyboard', description: gear.description || '', specs: gear.specs || [], status: gear.status || 'published', created_at: new Date().toISOString() }).select().single();
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     return new Response(JSON.stringify({ success: true, gear: data }), { status: 201, headers: { 'Content-Type': 'application/json' } });
   }
