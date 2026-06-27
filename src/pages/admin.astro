@@ -50,11 +50,32 @@ import Footer from '../components/Footer.astro';
     </header>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+          <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Orders</p>
+          <p class="text-3xl font-black" id="laporan-total-orders">0</p>
+        </div>
+        <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+          <p class="text-xs font-black uppercase tracking-wider text-gray-500">Revenue</p>
+          <p class="text-3xl font-black text-neon-pink" id="laporan-total-revenue">Rp 0</p>
+        </div>
+        <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+          <p class="text-xs font-black uppercase tracking-wider text-gray-500">Pending</p>
+          <p class="text-3xl font-black text-yellow-500" id="laporan-pending">0</p>
+        </div>
+        <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+          <p class="text-xs font-black uppercase tracking-wider text-gray-500">Selesai</p>
+          <p class="text-3xl font-black text-neon-green" id="laporan-completed">0</p>
+        </div>
+      </div>
+
       <!-- Nav Tabs -->
       <div class="flex flex-wrap gap-2 mb-6 border-b-4 border-black pb-2">
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-yellow shadow-[2px_2px_0px_0px_#000]" data-tab="games">&#x1F3AE; Games</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="gear">&#x1F3B5; Gear</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="orders">&#x1F4E6; Orders</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">&#x1F3B0; Vouchers</button>
       </div>
 
       <!-- GAMES -->
@@ -96,6 +117,56 @@ import Footer from '../components/Footer.astro';
           <div id="orders-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada pesanan.</p></div>
         </div>
       </div>
+
+      <!-- VOUCHERS -->
+      <div id="panel-vouchers" class="hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <h2 class="text-3xl font-black">&#x1F3B0; Vouchers</h2>
+          <button id="voucher-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Voucher</button>
+        </div>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="border-b-4 border-black bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 font-black text-sm">Kode</th>
+                <th class="px-4 py-3 font-black text-sm">Diskon</th>
+                <th class="px-4 py-3 font-black text-sm">Min. Belanja</th>
+                <th class="px-4 py-3 font-black text-sm">Digunakan</th>
+                <th class="px-4 py-3 font-black text-sm">Maks</th>
+                <th class="px-4 py-3 font-black text-sm">Status</th>
+                <th class="px-4 py-3 font-black text-sm">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="vouchers-table-body"></tbody>
+          </table>
+          <div id="vouchers-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada voucher.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Voucher -->
+  <div id="voucher-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-black p-6 w-full max-w-lg shadow-[8px_8px_0px_0px_#000]">
+      <h3 class="text-2xl font-black mb-4" id="voucher-modal-title">Tambah Voucher</h3>
+      <form id="voucher-form" class="space-y-3">
+        <input type="hidden" id="voucher-edit-id" />
+        <div><label class="text-xs font-black uppercase tracking-wider block mb-1">Kode Voucher</label><input id="voucher-code" required class="w-full px-3 py-2 border-3 border-black font-bold uppercase shadow-[2px_2px_0px_0px_#000]" placeholder="WELCOME10" /></div>
+        <div class="flex gap-3">
+          <div class="flex-1"><label class="text-xs font-black uppercase tracking-wider block mb-1">Diskon</label><input id="voucher-discount" type="number" required class="w-full px-3 py-2 border-3 border-black font-bold" /></div>
+          <div class="flex-1"><label class="text-xs font-black uppercase tracking-wider block mb-1">Tipe</label>
+            <select id="voucher-type" class="w-full px-3 py-2 border-3 border-black font-bold bg-white">
+              <option value="percentage">Persen (%)</option><option value="nominal">Nominal (Rp)</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1"><label class="text-xs font-black uppercase tracking-wider block mb-1">Min. Belanja</label><input id="voucher-min" type="number" value="0" class="w-full px-3 py-2 border-3 border-black font-bold" /></div>
+          <div class="flex-1"><label class="text-xs font-black uppercase tracking-wider block mb-1">Maks Penggunaan</label><input id="voucher-max" type="number" value="0" class="w-full px-3 py-2 border-3 border-black font-bold" placeholder="0 = unlimited" /></div>
+        </div>
+        <div><label class="text-xs font-black uppercase tracking-wider block mb-1">Kadaluarsa</label><input id="voucher-expires" type="date" class="w-full px-3 py-2 border-3 border-black font-bold" /></div>
+        <div class="flex gap-3 pt-2"><button type="submit" class="flex-1 py-3 font-black bg-neon-green border-2 border-black shadow-[2px_2px_0px_0px_#000]">Save</button><button type="button" id="voucher-modal-close" class="flex-1 py-3 font-black bg-gray-200 border-2 border-black">Cancel</button></div>
+      </form>
     </div>
   </div>
 
@@ -169,11 +240,19 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <script>
-  const ADMIN_EMAIL = 'admin@topzone.com';
-  const ADMIN_PASS = 'admin123';
-  const SESSION_KEY = 'topzone_admin_session';
+  // ---- Supabase API-based Admin ----
+  const API = {
+    login: '/api/auth/admin-login',
+    logout: '/api/auth/admin-logout',
+    me: '/api/auth/admin-me',
+    games: '/api/admin/games-crud',
+    gears: '/api/admin/gears-crud',
+    orders: '/api/admin/orders',
+    vouchers: '/api/admin/vouchers',
+    audit: '/api/admin/audit-log',
+    reports: '/api/admin/reports',
+  };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
-  const STORAGE_GAMES = 'topzone_games';
   const DEFAULT_GAMES = [
   {
     "slug": "mobile-legends",
@@ -266,60 +345,93 @@ import Footer from '../components/Footer.astro';
       { "label": "Microphone", "value": "Noise-cancelling" },
       { "label": "Audio", "value": "Virtual 7.1 Surround" },
       { "label": "Interface", "value": "3.5mm + USB" }]}];
-  const STORAGE_GEAR = 'topzone_gears';
-
   // -------------------------------------------------------
-  // SECURITY: Session Management
+  // SECURITY: Session Management (API-based)
   // -------------------------------------------------------
 
-  function getSession() {
+  let adminUser = null;
+  let sessionExpiry = 0;
+
+  /** Fetch /api/auth/admin-me to verify session server-side */
+  async function checkSession() {
     try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      const s = JSON.parse(raw);
-      if (!s || !s.email || !s.time) return null;
-      const elapsed = Date.now() - s.time;
-      if (elapsed > SESSION_TIME) {
-        localStorage.removeItem(SESSION_KEY);
-        return null;
+      const res = await fetch(API.me);
+      const data = await res.json();
+      if (data.admin) {
+        adminUser = data.admin;
+        sessionExpiry = Date.now() + SESSION_TIME;
+        return true;
       }
-      return s;
-    } catch { return null; }
+    } catch(e) {}
+    adminUser = null;
+    return false;
   }
 
-  function setSession() {
-    const s = { email: ADMIN_EMAIL, time: Date.now() };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  /** Login via Supabase Auth API */
+  async function loginAdmin(email, password) {
+    const res = await fetch(API.login, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    return res.json();
   }
 
-  function refreshSession() {
-    const s = getSession();
-    if (s) { s.time = Date.now(); localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+  /** Logout via API */
+  async function logoutAdmin() {
+    await fetch(API.logout, { method: 'POST' });
+    adminUser = null;
   }
 
-  function clearSession() {
-    localStorage.removeItem(SESSION_KEY);
+  /** Log admin action to audit trail */
+  async function logAudit(action, entityType, entityId, details = {}) {
+    if (!adminUser) return;
+    try {
+      await fetch(API.audit, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          admin_email: adminUser.email,
+          action,
+          entity_type: entityType,
+          entity_id: entityId || null,
+          details,
+        }),
+      });
+    } catch(e) {} // silent fail for audit
   }
 
-  // Auto-refresh session on user activity
-  document.addEventListener('click', () => refreshSession());
-  document.addEventListener('keydown', () => refreshSession());
+  /** Generic fetch helper with admin session check */
+  async function apiFetch(url, options = {}) {
+    const res = await fetch(url, {
+      ...options,
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+    });
+    if (res.status === 401) {
+      adminUser = null;
+      showGate();
+      throw new Error('Session expired');
+    }
+    return res.json();
+  }
 
   // Session timer display
   function updateSessionTimer() {
     const el = document.getElementById('session-timer');
     if (!el) return;
-    const s = getSession();
-    if (!s) { el.textContent = ''; return; }
-    const remaining = Math.max(0, SESSION_TIME - (Date.now() - s.time));
+    if (!adminUser) { el.textContent = ''; return; }
+    const remaining = Math.max(0, sessionExpiry - Date.now());
     const min = Math.floor(remaining / 60000);
     const sec = Math.floor((remaining % 60000) / 1000);
     el.textContent = 'Sesi: ' + min + 'm ' + sec.toString().padStart(2,'0') + 's';
+    if (remaining <= 0 && adminUser) {
+      logoutAdmin().then(() => showGate());
+    }
   }
   setInterval(updateSessionTimer, 1000);
 
   // -------------------------------------------------------
-  // AUTH
+  // AUTH (API-based)
   // -------------------------------------------------------
 
   let loginAttempts = 0;
@@ -330,16 +442,17 @@ import Footer from '../components/Footer.astro';
     document.getElementById('admin-dashboard').classList.add('hidden');
   }
 
-  function showDashboard() {
+  async function showDashboard() {
     document.getElementById('login-gate').classList.add('hidden');
     document.getElementById('admin-dashboard').classList.remove('hidden');
-    renderAll();
-    refreshSession();
+    sessionExpiry = Date.now() + SESSION_TIME;
+    await renderAll();
   }
 
-  if (getSession()) { showDashboard(); }
+  // Check session on load
+  checkSession().then((valid) => { if (valid) showDashboard(); });
 
-  document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+  document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const err = document.getElementById('admin-login-error');
     const btn = document.getElementById('admin-login-btn');
@@ -352,21 +465,34 @@ import Footer from '../components/Footer.astro';
 
     const email = document.getElementById('admin-email').value;
     const pass = document.getElementById('admin-password').value;
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
 
-    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-      loginAttempts = 0;
-      setSession();
-      showDashboard();
-    } else {
-      loginAttempts++;
-      err.textContent = 'Email atau password salah! (Percobaan: ' + loginAttempts + ')';
+    try {
+      const result = await loginAdmin(email, pass);
+      if (result.success && result.admin) {
+        loginAttempts = 0;
+        adminUser = result.admin;
+        showDashboard();
+        err.classList.add('hidden');
+      } else {
+        loginAttempts++;
+        err.textContent = result.error || 'Email atau password salah! (Percobaan: ' + loginAttempts + ')';
+        err.classList.remove('hidden');
+      }
+    } catch(e) {
+      err.textContent = 'Gagal terhubung ke server. Coba lagi.';
       err.classList.remove('hidden');
-      if (loginAttempts >= 5) {
-        loginCooldown = true;
-        btn.disabled = true;
-        btn.textContent = 'Tunggu 30 detik...';
-        setTimeout(() => {
-          loginCooldown = false;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Masuk ke Admin';
+
+    if (loginAttempts >= 5) {
+      loginCooldown = true;
+      btn.disabled = true;
+      btn.textContent = 'Tunggu 30 detik...';
+      setTimeout(() => {
+        loginCooldown = false;
           loginAttempts = 0;
           btn.disabled = false;
           btn.textContent = 'Masuk ke Admin';
@@ -376,8 +502,8 @@ import Footer from '../components/Footer.astro';
     }
   });
 
-  document.getElementById('admin-logout').addEventListener('click', () => {
-    clearSession();
+  document.getElementById('admin-logout').addEventListener('click', async () => {
+    await logoutAdmin();
     showGate();
   });
 
@@ -389,7 +515,7 @@ import Footer from '../components/Footer.astro';
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach((b) => { b.style.background = '#fff'; });
       btn.style.background = '#39FF14';
-      ['games','gear','orders'].forEach((p) => {
+      ['games','gear','orders','vouchers'].forEach((p) => {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
@@ -411,22 +537,42 @@ import Footer from '../components/Footer.astro';
   function randomId() { return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2,6); }
 
   // -------------------------------------------------------
-  // GAMES CRUD
+  // GAMES CRUD (API-based)
   // -------------------------------------------------------
 
-  function getGames() {
-    try {
-      var raw = localStorage.getItem(STORAGE_GAMES);
-      if (raw) { var d = JSON.parse(raw); if (d && d.length > 0) return d; }
-    } catch(e) {}
-    saveGames(DEFAULT_GAMES);
-    return DEFAULT_GAMES;
-  }
-  function saveGames(d) { localStorage.setItem(STORAGE_GAMES, JSON.stringify(d)); }
+  let cachedGames = [];
 
-  function renderGames() {
+  async function getGames() {
+    try {
+      const data = await apiFetch(API.games);
+      cachedGames = data.games || [];
+      return cachedGames;
+    } catch(e) {
+      return cachedGames;
+    }
+  }
+
+  async function saveGame(gameData, isEdit) {
+    if (isEdit) {
+      return apiFetch(API.games, {
+        method: 'PUT',
+        body: JSON.stringify(gameData),
+      });
+    } else {
+      return apiFetch(API.games, {
+        method: 'POST',
+        body: JSON.stringify(gameData),
+      });
+    }
+  }
+
+  async function deleteGame(slug) {
+    return apiFetch(API.games + '?slug=' + encodeURIComponent(slug), { method: 'DELETE' });
+  }
+
+  async function renderGames() {
     const list = document.getElementById('games-list');
-    const games = getGames();
+    const games = await getGames();
     if (games.length === 0) {
       list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Belum ada game. Klik + Tambah Game untuk mulai.</p></div>';
       return;
@@ -435,14 +581,25 @@ import Footer from '../components/Footer.astro';
       '<div class="flex justify-between items-start mb-3">' +
         '<div><h3 class="text-xl font-black">' + (g.name||'') + '</h3>' +
         '<p class="text-xs text-gray-500 font-bold">/' + (g.slug||'') + ' &middot; ' + (g.currency||'') + '</p></div>' +
-        '<span class="px-2 py-1 text-xs font-black border-2 border-black" style="background:' + (g.color||'#39FF14') + '">' + (g.badge||'') + '</span></div>' +
+        '<div class="flex gap-1 items-center">' +
+        '<span class="px-2 py-1 text-xs font-black border-2 border-black" style="background:' + (g.color||'#39FF14') + '">' + (g.badge||'') + '</span>' +
+        (g.status ? '<span class="px-2 py-1 text-xs font-black border-2 border-black ' + (g.status === 'published' ? 'bg-neon-green' : g.status === 'draft' ? 'bg-yellow-400' : 'bg-gray-400') + '">' + g.status + '</span>' : '') +
+        '</div></div>' +
       '<p class="text-sm font-medium text-gray-600 mb-2">' + (g.description||'') + '</p>' +
       '<p class="text-sm font-bold mb-1">Packages (' + (g.packages||[]).length + ')</p>' +
       '<div class="text-xs text-gray-500 mb-3">' + (g.packages||[]).map(function(p) { return p.label + ': ' + formatRp(p.price); }).join(', ') + '</div>' +
       '<div class="flex gap-2"><button class="game-edit px-4 py-2 text-xs font-black border-2 border-black bg-neon-green hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + i + '">Edit</button>' +
       '<button class="game-del px-4 py-2 text-xs font-black border-2 border-black bg-red-400 text-white hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + i + '">Hapus</button></div></div>').join('');
     list.querySelectorAll('.game-edit').forEach((b) => b.addEventListener('click', function() { openGameModal(parseInt(this.dataset.idx)); }));
-    list.querySelectorAll('.game-del').forEach((b) => b.addEventListener('click', function() { if (confirm('Hapus game ' + (getGames()[parseInt(this.dataset.idx)]||{}).name + '?')) { var g = getGames(); g.splice(parseInt(this.dataset.idx),1); saveGames(g); renderGames(); }}));
+    list.querySelectorAll('.game-del').forEach((b) => b.addEventListener('click', async function() {
+      const games = await getGames();
+      const g = games[parseInt(this.dataset.idx)];
+      if (g && confirm('Hapus game ' + (g.name||'') + '?')) {
+        await deleteGame(g.slug);
+        await logAudit('delete', 'game', g.slug, { name: g.name });
+        await renderGames();
+      }
+    }));
   }
 
   var gameEditingIdx = -1;
@@ -478,9 +635,8 @@ import Footer from '../components/Footer.astro';
 
   document.getElementById('game-add-pkg').addEventListener('click', function() { var p = getPkgData(); p.push({label:'',price:0}); renderGamePackages(p); });
 
-  document.getElementById('game-form').addEventListener('submit', function(e) {
+  document.getElementById('game-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    var games = getGames();
     var data = {
       slug: document.getElementById('game-slug').value,
       name: document.getElementById('game-name').value,
@@ -492,31 +648,44 @@ import Footer from '../components/Footer.astro';
       description: document.getElementById('game-desc').value,
       packages: getPkgData().filter(function(p) { return p.label; }),
     };
-    if (gameEditingIdx >= 0) { games[gameEditingIdx] = data; } else { games.push(data); }
-    saveGames(games);
+    await saveGame(data, gameEditingIdx >= 0);
+    await logAudit(gameEditingIdx >= 0 ? 'update' : 'create', 'game', data.slug, { name: data.name });
     document.getElementById('game-modal').classList.add('hidden');
-    renderGames();
+    await renderGames();
   });
 
   document.getElementById('game-modal-close').addEventListener('click', function() { document.getElementById('game-modal').classList.add('hidden'); });
 
   // -------------------------------------------------------
-  // GEAR CRUD
+  // GEAR CRUD (API-based)
   // -------------------------------------------------------
 
-  function getGearItems() {
-    try {
-      var raw = localStorage.getItem(STORAGE_GEAR);
-      if (raw) { var d = JSON.parse(raw); if (d && d.length > 0) return d; }
-    } catch(e) {}
-    saveGearItems(DEFAULT_GEARS);
-    return DEFAULT_GEARS;
-  }
-  function saveGearItems(d) { localStorage.setItem(STORAGE_GEAR, JSON.stringify(d)); }
+  let cachedGears = [];
 
-  function renderGear() {
+  async function getGearItems() {
+    try {
+      const data = await apiFetch(API.gears);
+      cachedGears = data.gears || [];
+      return cachedGears;
+    } catch(e) {
+      return cachedGears;
+    }
+  }
+
+  async function saveGearItem(gearData, isEdit) {
+    return apiFetch(API.gears, {
+      method: isEdit ? 'PUT' : 'POST',
+      body: JSON.stringify(gearData),
+    });
+  }
+
+  async function deleteGear(slug) {
+    return apiFetch(API.gears + '?slug=' + encodeURIComponent(slug), { method: 'DELETE' });
+  }
+
+  async function renderGear() {
     var list = document.getElementById('gear-list');
-    var items = getGearItems();
+    var items = await getGearItems();
     if (items.length === 0) {
       list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Belum ada gear. Klik + Tambah Gear untuk mulai.</p></div>';
       return;
@@ -525,7 +694,10 @@ import Footer from '../components/Footer.astro';
       '<div class="flex justify-between items-start mb-3">' +
         '<div><h3 class="text-xl font-black">' + (g.name||'') + '</h3>' +
         '<p class="text-xs text-gray-500 font-bold">/' + (g.slug||'') + ' &middot; ' + (g.category||'') + '</p></div>' +
-        '<span class="px-2 py-1 text-xs font-black border-2 border-black bg-neon-yellow">' + (g.tag||'') + '</span></div>' +
+        '<div class="flex gap-1 items-center">' +
+        '<span class="px-2 py-1 text-xs font-black border-2 border-black bg-neon-yellow">' + (g.tag||'') + '</span>' +
+        (g.status ? '<span class="px-2 py-1 text-xs font-black border-2 border-black ' + (g.status === 'published' ? 'bg-neon-green' : g.status === 'draft' ? 'bg-yellow-400' : 'bg-gray-400') + '">' + g.status + '</span>' : '') +
+        '</div></div>' +
       '<p class="text-sm font-medium text-gray-600 mb-2">' + (g.description||'') + '</p>' +
       '<p class="text-xl font-black text-neon-pink mb-2">' + formatRp(g.price) + '</p>' +
       '<p class="text-sm font-bold mb-1">Specs (' + (g.specs||[]).length + ')</p>' +
@@ -533,7 +705,15 @@ import Footer from '../components/Footer.astro';
       '<div class="flex gap-2"><button class="gear-edit px-4 py-2 text-xs font-black border-2 border-black bg-neon-green hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + i + '">Edit</button>' +
       '<button class="gear-del px-4 py-2 text-xs font-black border-2 border-black bg-red-400 text-white hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + i + '">Hapus</button></div></div>'; }).join('');
     list.querySelectorAll('.gear-edit').forEach(function(b) { b.addEventListener('click', function() { openGearModal(parseInt(this.dataset.idx)); }); });
-    list.querySelectorAll('.gear-del').forEach(function(b) { b.addEventListener('click', function() { if (confirm('Hapus gear ' + (getGearItems()[parseInt(this.dataset.idx)]||{}).name + '?')) { var g = getGearItems(); g.splice(parseInt(this.dataset.idx),1); saveGearItems(g); renderGear(); }}); });
+    list.querySelectorAll('.gear-del').forEach(function(b) { b.addEventListener('click', async function() {
+      const items = await getGearItems();
+      const g = items[parseInt(this.dataset.idx)];
+      if (g && confirm('Hapus gear ' + (g.name||'') + '?')) {
+        await deleteGear(g.slug);
+        await logAudit('delete', 'gear', g.slug, { name: g.name });
+        await renderGear();
+      }
+    }); });
   }
 
   var gearEditingIdx = -1;
@@ -568,9 +748,8 @@ import Footer from '../components/Footer.astro';
 
   document.getElementById('gear-add-spec').addEventListener('click', function() { var s = getSpecData(); s.push({label:'',value:''}); renderGearSpecs(s); });
 
-  document.getElementById('gear-form').addEventListener('submit', function(e) {
+  document.getElementById('gear-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    var items = getGearItems();
     var data = {
       slug: document.getElementById('gear-slug').value,
       name: document.getElementById('gear-name').value,
@@ -581,20 +760,39 @@ import Footer from '../components/Footer.astro';
       description: document.getElementById('gear-desc').value,
       specs: getSpecData().filter(function(s) { return s.label; }),
     };
-    if (gearEditingIdx >= 0) { items[gearEditingIdx] = data; } else { items.push(data); }
-    saveGearItems(items);
+    await saveGearItem(data, gearEditingIdx >= 0);
+    await logAudit(gearEditingIdx >= 0 ? 'update' : 'create', 'gear', data.slug, { name: data.name, price: data.price });
     document.getElementById('gear-modal').classList.add('hidden');
-    renderGear();
+    await renderGear();
   });
 
   document.getElementById('gear-modal-close').addEventListener('click', function() { document.getElementById('gear-modal').classList.add('hidden'); });
 
   // -------------------------------------------------------
-  // ORDERS
+  // ORDERS (API-based)
   // -------------------------------------------------------
 
-  function renderOrders() {
-    var orders = getAllOrders();
+  let allOrders = [];
+
+  async function fetchOrders() {
+    try {
+      const data = await apiFetch(API.orders);
+      allOrders = data.orders || [];
+      return allOrders;
+    } catch(e) {
+      return allOrders;
+    }
+  }
+
+  async function updateOrderStatus(orderId, newStatus) {
+    return apiFetch(API.orders, {
+      method: 'PUT',
+      body: JSON.stringify({ order_id: orderId, status: newStatus }),
+    });
+  }
+
+  async function renderOrders() {
+    var orders = await fetchOrders();
     var tbody = document.getElementById('orders-table-body');
     var empty = document.getElementById('orders-empty');
     if (orders.length === 0) {
@@ -615,70 +813,44 @@ import Footer from '../components/Footer.astro';
   }
 
   var editingOrderId = null;
-  function findOrderInAllKeys(id) {
-    for (var i = 0; i < localStorage.length; i++) {
-      var key = localStorage.key(i);
-      if (key && (key === 'topzone_orders' || key.startsWith('topzone_orders_'))) {
-        try {
-          var arr = JSON.parse(localStorage.getItem(key));
-          if (arr) {
-            var found = arr.find(function(x) { return x.id === id; });
-            if (found) return { order: found, key: key, arr: arr };
-          }
-        } catch(e) {}
-      }
-    }
-    return null;
-  }
-  function openStatusModal(id) {
+
+  async function openStatusModal(id) {
     editingOrderId = id;
-    var result = findOrderInAllKeys(id);
-    if (!result) return;
     document.getElementById('modal-order-ref').textContent = 'Order #' + id;
-    document.getElementById('modal-status-select').value = result.order.status;
+    document.getElementById('modal-status-select').value = 'pending';
     document.getElementById('status-modal').classList.remove('hidden');
   }
   document.getElementById('modal-status-close').addEventListener('click', function() { document.getElementById('status-modal').classList.add('hidden'); });
-  document.getElementById('modal-status-save').addEventListener('click', function() {
+  document.getElementById('modal-status-save').addEventListener('click', async function() {
     if (!editingOrderId) return;
     var ns = document.getElementById('modal-status-select').value;
-    var result = findOrderInAllKeys(editingOrderId);
-    if (!result) return;
-    result.arr = result.arr.map(function(o) { return o.id === editingOrderId ? { ...o, status: ns } : o; });
-    localStorage.setItem(result.key, JSON.stringify(result.arr));
+    await updateOrderStatus(editingOrderId, ns);
+    await logAudit('update', 'order', editingOrderId, { status: ns });
     document.getElementById('status-modal').classList.add('hidden');
-    renderOrders();
+    await renderOrders();
   });
 
   // -------------------------------------------------------
   // INIT
   // -------------------------------------------------------
 
-    function getAllOrders() {
-    // Collect orders from all user accounts
-    var allOrders = [];
+    async function getAllOrders() {
     try {
-      // Check default key (anonymous)
-      try { var d = JSON.parse(localStorage.getItem('topzone_orders')); if (d) allOrders = allOrders.concat(d); } catch(e) {}
-      // Check user-specific keys
-      for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        if (key && key.startsWith('topzone_orders_')) {
-          try { var d = JSON.parse(localStorage.getItem(key)); if (d) allOrders = allOrders.concat(d); } catch(e) {}
-        }
-      }
-    } catch(e) {}
-    // Sort by date descending
-    allOrders.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
-    return allOrders;
+      const data = await apiFetch(API.orders + '?limit=200');
+      return data.orders || [];
+    } catch(e) { return []; }
   }
 
   // -------------------------------------------------------
   // LAPORAN
   // -------------------------------------------------------
 
-  function renderLaporan() {
-    var orders = getAllOrders();
+  async function renderLaporan() {
+    var orders = await getAllOrders();
+    var totalOrders = orders.length;
+    var totalRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
+    var pending = orders.filter(function(o) { return o.status === 'pending'; }).length;
+    var completed = orders.filter(function(o) { return o.status === 'completed'; }).length;
     var totalOrders = orders.length;
     var totalRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
     var pending = orders.filter(function(o) { return o.status === 'pending'; }).length;
@@ -709,12 +881,12 @@ import Footer from '../components/Footer.astro';
   }
 
   // EXPORT CSV
-  document.getElementById('export-csv')?.addEventListener('click', function() {
-    var orders = getAllOrders();
+  document.getElementById('export-csv')?.addEventListener('click', async function() {
+    const orders = await getAllOrders();
     if (orders.length === 0) { alert('Tidak ada data transaksi untuk di-export.'); return; }
     var csv = '\uFEFFID Order,Pelanggan,Email,Item,Total,Status,Pembayaran,Tanggal\n';
     orders.forEach(function(o) {
-      csv += (o.id||'') + ',' + (o.name||'').replace(/,/g,' ') + ',' + (o.userEmail||'') + ',' + (o.items?o.items.length:0) + ' item' + ',' + (o.total||0) + ',' + (o.status||'') + ',' + (o.payment||'') + ',' + (o.createdAt||'') + '\n';
+      csv += (o.id||'') + ',' + (o.customer_name||o.name||'').replace(/,/g,' ') + ',' + (o.customer_email||o.userEmail||'') + ',' + (o.order_items||o.items? (o.order_items||o.items).length:0) + ' item' + ',' + (o.total||0) + ',' + (o.status||'') + ',' + (o.payment_method||o.payment||'') + ',' + (o.created_at||o.createdAt||'') + '\n';
     });
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     var link = document.createElement('a');
@@ -724,11 +896,99 @@ import Footer from '../components/Footer.astro';
     alert('Laporan berhasil di-download!');
   });
 
-  function renderAll() {
-    renderGames();
-    renderGear();
-    renderOrders();
-    renderLaporan();
+  // -------------------------------------------------------
+  // VOUCHERS CRUD
+  // -------------------------------------------------------
+
+  async function getVouchers() {
+    try {
+      const data = await apiFetch(API.vouchers);
+      return data.vouchers || [];
+    } catch(e) { return []; }
+  }
+
+  async function saveVoucher(vData, isEdit) {
+    return apiFetch(API.vouchers, {
+      method: isEdit ? 'PUT' : 'POST',
+      body: JSON.stringify(vData),
+    });
+  }
+
+  async function deleteVoucher(id) {
+    return apiFetch(API.vouchers + '?id=' + encodeURIComponent(id), { method: 'DELETE' });
+  }
+
+  async function renderVouchers() {
+    const vouchers = await getVouchers();
+    const tbody = document.getElementById('vouchers-table-body');
+    const empty = document.getElementById('vouchers-empty');
+    if (vouchers.length === 0) {
+      tbody.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    tbody.innerHTML = vouchers.map(function(v) {
+      const discountText = v.discount_type === 'percentage' ? v.discount + '%' : formatRp(v.discount);
+      const statusClass = v.is_active ? 'bg-neon-green' : 'bg-red-400';
+      const statusText = v.is_active ? 'Aktif' : 'Nonaktif';
+      return '<tr class="border-b-2 border-black/10 hover:bg-gray-50">' +
+        '<td class="px-4 py-3 font-black text-sm">' + (v.code||'') + '</td>' +
+        '<td class="px-4 py-3 font-bold">' + discountText + '</td>' +
+        '<td class="px-4 py-3 text-sm">' + formatRp(v.min_purchase || 0) + '</td>' +
+        '<td class="px-4 py-3 text-sm">' + (v.used_count||0) + 'x</td>' +
+        '<td class="px-4 py-3 text-sm">' + (v.max_uses ? v.max_uses + 'x' : 'Unlimited') + '</td>' +
+        '<td class="px-4 py-3"><span class="inline-block px-2 py-1 text-xs font-black border-2 border-black ' + statusClass + ' text-white">' + statusText + '</span></td>' +
+        '<td class="px-4 py-3"><button class="voucher-del px-3 py-1 text-xs font-black border-2 border-black bg-red-400 text-white hover:shadow-none" data-id="' + (v.id||'') + '">Hapus</button></td></tr>';
+    }).join('');
+    tbody.querySelectorAll('.voucher-del').forEach(function(b) { b.addEventListener('click', async function() {
+      if (confirm('Hapus voucher ini?')) {
+        await deleteVoucher(this.dataset.id);
+        await renderVouchers();
+      }
+    }); });
+  }
+
+  document.getElementById('voucher-add-btn')?.addEventListener('click', function() {
+    document.getElementById('voucher-modal-title').textContent = 'Tambah Voucher';
+    document.getElementById('voucher-edit-id').value = '';
+    document.getElementById('voucher-code').value = '';
+    document.getElementById('voucher-discount').value = '';
+    document.getElementById('voucher-type').value = 'percentage';
+    document.getElementById('voucher-min').value = '0';
+    document.getElementById('voucher-max').value = '0';
+    document.getElementById('voucher-expires').value = '';
+    document.getElementById('voucher-modal').classList.remove('hidden');
+  });
+
+  document.getElementById('voucher-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const editId = document.getElementById('voucher-edit-id').value;
+    const data = {
+      code: document.getElementById('voucher-code').value,
+      discount: parseInt(document.getElementById('voucher-discount').value) || 0,
+      discount_type: document.getElementById('voucher-type').value,
+      min_purchase: parseInt(document.getElementById('voucher-min').value) || 0,
+      max_uses: parseInt(document.getElementById('voucher-max').value) || null,
+      expires_at: document.getElementById('voucher-expires').value || null,
+    };
+    if (editId) data.id = editId;
+    await saveVoucher(data, !!editId);
+    await logAudit(editId ? 'update' : 'create', 'voucher', data.code);
+    document.getElementById('voucher-modal').classList.add('hidden');
+    await renderVouchers();
+  });
+
+  document.getElementById('voucher-modal-close')?.addEventListener('click', function() {
+    document.getElementById('voucher-modal').classList.add('hidden');
+  });
+
+  async function renderAll() {
+    await renderGames();
+    await renderGear();
+    await renderOrders();
+    await renderLaporan();
+    await renderVouchers();
   }
 
   // Close modals on overlay click
