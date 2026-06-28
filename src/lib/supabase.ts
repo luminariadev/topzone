@@ -16,10 +16,21 @@ if (isConfigured) {
 
 export const supabase = supabaseInstance;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function supabaseQuery(table: string, options?: any): Promise<any> {
+interface SupabaseQueryOptions {
+  select?: string;
+}
+
+interface SupabaseQueryResult<T = Record<string, unknown>> {
+  data: T[] | null;
+  error: Error | null;
+}
+
+export async function supabaseQuery<T = Record<string, unknown>>(
+  table: string,
+  options?: SupabaseQueryOptions
+): Promise<SupabaseQueryResult<T>> {
   if (!supabase) return { data: null, error: new Error('Supabase not configured') };
-  return supabase.from(table).select(options?.select || '*');
+  return supabase.from(table).select(options?.select || '*') as Promise<SupabaseQueryResult<T>>;
 }
 
 // ---- Auth Helpers ----
