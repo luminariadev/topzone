@@ -30,9 +30,11 @@ export function onRequest(context: APIContext, next: () => Promise<Response>) {
       response.headers.set('Content-Security-Policy', CSP_POLICY);
     }
 
-    // HSTS in production
+    // HSTS — enforced in production with preload readiness
     if (import.meta.env.PROD) {
       response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    } else {
+      response.headers.set('Strict-Transport-Security', 'max-age=3600; includeSubDomains');
     }
 
     return response;
