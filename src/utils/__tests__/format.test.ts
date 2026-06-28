@@ -14,6 +14,10 @@ describe('formatCurrency', () => {
     expect(formatCurrency(100, 'USD')).toContain('100');
     expect(formatCurrency(50, 'EUR')).toContain('50');
   });
+
+  it('should handle negative amounts', () => {
+    expect(formatCurrency(-5000)).toContain('5.000');
+  });
 });
 
 describe('formatDate', () => {
@@ -21,6 +25,17 @@ describe('formatDate', () => {
     const date = new Date('2024-01-20T10:30:00');
     const result = formatDate(date);
     expect(result).toContain('Januari');
+    expect(result).toContain('2024');
+  });
+
+  it('should accept ISO string input', () => {
+    const result = formatDate('2024-06-15');
+    expect(result).toContain('Juni');
+    expect(result).toContain('2024');
+  });
+
+  it('should accept timestamp number input', () => {
+    const result = formatDate(1704067800000);
     expect(result).toContain('2024');
   });
 });
@@ -31,6 +46,11 @@ describe('formatDateTime', () => {
     const result = formatDateTime(date);
     expect(result).toContain('10.30');
   });
+
+  it('should contain Indonesian month name', () => {
+    const result = formatDateTime('2024-03-15T14:00:00');
+    expect(result).toContain('Maret');
+  });
 });
 
 describe('formatRelativeTime', () => {
@@ -39,5 +59,16 @@ describe('formatRelativeTime', () => {
     expect(formatRelativeTime(new Date(now.getTime() - 30000))).toBe('baru saja');
     expect(formatRelativeTime(new Date(now.getTime() - 60 * 60 * 1000))).toContain('jam');
     expect(formatRelativeTime(new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000))).toContain('hari');
+  });
+
+  it('should handle weeks and months', () => {
+    const now = new Date();
+    expect(formatRelativeTime(new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000))).toContain('minggu');
+    expect(formatRelativeTime(new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000))).toContain('bulan');
+  });
+
+  it('should handle years', () => {
+    const now = new Date();
+    expect(formatRelativeTime(new Date(now.getTime() - 400 * 24 * 60 * 60 * 1000))).toContain('tahun');
   });
 });
