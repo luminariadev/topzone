@@ -1,7 +1,7 @@
 // src/pages/api/auth/admin-login.ts
 // Admin login via Supabase Auth with role check
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   if (!supabase) {

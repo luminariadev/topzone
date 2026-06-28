@@ -1,7 +1,7 @@
 // src/pages/api/admin/reports.ts
 // Admin reports & analytics API
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async ({ url }) => {
   if (!supabase) return new Response(JSON.stringify({ stats: null }), { status: 200, headers: { 'Content-Type': 'application/json' } });

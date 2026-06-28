@@ -1,7 +1,7 @@
 // src/pages/api/admin/audit-log.ts
 // Admin audit log API - get audit trail
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async ({ url }) => {
   const limit = parseInt(url.searchParams.get('limit') || '50');

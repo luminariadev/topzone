@@ -1,7 +1,7 @@
 // src/pages/api/auth/me.ts
 // Get current authenticated user from Supabase session
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async ({ cookies }) => {
   if (!supabase) {

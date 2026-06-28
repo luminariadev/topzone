@@ -1,7 +1,7 @@
 // src/pages/api/checkout/transactions.ts
 // Get transaction history for an order
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async ({ url }) => {
   const orderId = url.searchParams.get('orderId');

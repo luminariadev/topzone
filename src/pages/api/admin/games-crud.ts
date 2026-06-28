@@ -1,7 +1,7 @@
 // src/pages/api/admin/games-crud.ts
 // Admin CRUD operations for games (Supabase-backed)
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async () => {
   if (!supabase) return new Response(JSON.stringify({ games: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });

@@ -1,7 +1,7 @@
 // src/pages/api/admin/gears-crud.ts
 // Admin CRUD operations for gears (Supabase-backed)
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const GET: APIRoute = async () => {
   if (!supabase) return new Response(JSON.stringify({ gears: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
