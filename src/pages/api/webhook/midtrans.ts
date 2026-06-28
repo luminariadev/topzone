@@ -1,7 +1,7 @@
 // src/pages/api/webhook/midtrans.ts
 // Midtrans payment webhook handler
 import type { APIRoute } from 'astro';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -11,8 +11,6 @@ export const POST: APIRoute = async ({ request }) => {
     // Verify signature in production
     // const signature = request.headers.get('x-midtrans-signature');
     // const expected = crypto.createHmac('sha512', import.meta.env.MIDTRANS_SERVER_KEY).update(JSON.stringify(notification)).digest('hex');
-
-    console.log('Midtrans webhook:', { order_id, transaction_status, fraud_status });
 
     let newStatus = 'pending';
     switch (transaction_status) {
