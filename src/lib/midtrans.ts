@@ -29,11 +29,10 @@ export async function createSnapTransaction(orderId: string, total: number, cust
 }
 
 export function openSnapPayment(token: string, callbacks: { onSuccess?: () => void; onPending?: () => void; onError?: () => void }) {
-  if (!(window as any).snap) { console.error('Snap not loaded'); callbacks.onError?.(); return; }
+  if (!(window as any).snap) { callbacks.onError?.(); return; }
   (window as any).snap.pay(token, {
     onSuccess: () => callbacks.onSuccess?.(),
     onPending: () => callbacks.onPending?.(),
     onError: () => callbacks.onError?.(),
-    onClose: () => console.log('Snap popup closed'),
   });
 }
