@@ -13,12 +13,13 @@ export function slugify(text: string): string {
     .trim()
     .replace(/\s+/g, '-')           // Replace spaces with -
     .replace(/[éèêë]/g, 'e')       // Accented chars to basic
+    .replace(/[ïî]/g, 'i')
     .replace(/[æ]/g, 'ae')
     .replace(/[ü]/g, 'u')
     .replace(/[ÿ]/g, 'y')
     .replace(/[ç]/g, 'c')
     .replace(/[œ]/g, 'oe')
-    .replace(/[’']/g, '-')           // Apostrophes to -
+    .replace(/['']/g, '-')           // Apostrophes to -
     .replace(/[^a-z0-9-]/g, '')    // Remove invalid chars
     .replace(/-{2,}/g, '-')         // Replace multiple - with single -
     .replace(/^-|-$/g, '');         // Trim - from start/end
@@ -90,16 +91,16 @@ export function getStarArray(rating: number, maxRating = 5): ('full' | 'half' | 
 /**
  * Deep merge two objects (objects only, arrays will be replaced)
  * @param target - Target object
- * @param source - Source object(s)
+ * @param sources - Source object(s)
  * @returns Merged object
  */
-export function deepMerge<T extends Record<string, any>, S extends Partial<T>>(target: T, ...sources: S[]): T {
+export function deepMerge<T extends Record<string, unknown>, S extends Partial<T>>(target: T, ...sources: S[]): T {
   for (const source of sources) {
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        target[key] = deepMerge(target[key] || {}, source[key] as any);
+        target[key] = deepMerge(target[key] || {} as T[string], source[key] as T[string]);
       } else {
-        target[key] = source[key] as any;
+        target[key] = source[key] as T[string];
       }
     }
   }
@@ -107,14 +108,73 @@ export function deepMerge<T extends Record<string, any>, S extends Partial<T>>(t
 }
 
 /**
- * Sanitize HTML to prevent XSS (basic implementation)
+ * Dangerous HTML patterns to reject (defense-in-depth approach)
+ */
+const DANGEROUS_HTML_PATTERNS = [
+  /<script\b[^>]*>/i,
+  /javascript:/i,
+  /on\w+\s*=/i,
+  /<iframe\b[^>]*>/i,
+  /<object\b[^>]*>/i,
+  /<embed\b[^>]*>/i,
+  /<form\b[^>]*>/i,
+  /<input\b[^>]*>/i,
+  /<base\b[^>]*href\s*=/i,
+] as const;
+
+/**
+ * Check if HTML string contains dangerous patterns
+ * @param html - HTML string to check
+ * @returns true if safe, false if dangerous content detected
+ */
+export function isSafeHtml(html: string): boolean {
+  return !DANGEROUS_HTML_PATTERNS.some(pattern => pattern.test(html));
+}
+
+/**
+ * Sanitize HTML to prevent XSS (improved: rejects dangerous content, strips dangerous attributes)
+ *
+ * **Security note:** For user-facing HTML rendering, use a dedicated library like
+ * DOMPurify or sanitize-html. This function provides basic defense-in-depth for
+ * trusted server-side content only.
+ *
  * @param html - HTML string to sanitize
- * @returns Sanitized HTML (removes script tags and javascript: protocol)
+ * @returns Sanitized HTML with dangerous content removed
  */
 export function sanitizeHtml(html: string): string {
+  let result = html;
+
+  // Phase 1: Remove script tags and their content
+  result = result.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+
+  // Phase 2: Remove dangerous protocols
+  result = result.replace(/javascript:/gi, '');
+  result = result.replace(/vbscript:/gi, '');
+  result = result.replace(/data:(?!image\/)/gi, '');
+
+  // Phase 3: Remove inline event handlers
+  result = result.replace(/\bon\w+\s*=\s*"[^"]*"/gi, '');
+  result = result.replace(/\bon\w+\s*=\s*'[^']*'/gi, '');
+  result = result.replace(/\bon\w+\s*=\s*[^\s>]+/gi, '');
+
+  // Phase 4: Remove dangerous tags
+  result = result.replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>/gi, '');
+  result = result.replace(/<object\b[^>]*>[\s\S]*?<\/object>/gi, '');
+  result = result.replace(/<embed\b[^>]*>/gi, '');
+  result = result.replace(/<base\b[^>]*>/gi, '');
+  result = result.replace(/<meta\b[^>]*http-equiv\s*=\s*["']refresh["'][^>]*>/gi, '');
+
+  return result;
+}
+
+/**
+ * Strip all HTML tags from a string (use for plain text extraction)
+ * @param html - HTML string to strip
+ * @returns Plain text without HTML tags
+ */
+export function stripHtmlTags(html: string): string {
   return html
-    .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=\s*"[\s\S]*?"/gi, '')
-    .replace(/on\w+\s*=\s*'[\s\S]*?'/gi, '');
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }

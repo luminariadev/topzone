@@ -99,12 +99,12 @@ export async function fetchGears() {
   }
 }
 
-export async function fetchGameBySlug(slug) {
+export async function fetchGameBySlug(slug: string) {
   const all = await fetchGames();
   return all.find(g => g.slug === slug);
 }
 
-export async function fetchGearBySlug(slug) {
+export async function fetchGearBySlug(slug: string) {
   const all = await fetchGears();
   return all.find(g => g.slug === slug);
 }

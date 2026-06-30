@@ -1,16 +1,32 @@
 // src/pages/api/checkout/snap.ts
-// Create Midtrans Snap transaction
+// Create Midtrans Snap transaction — Zod-validated
 export const prerender = false;
 import type { APIRoute } from 'astro';
+import { z } from 'zod';
+
+const CustomerSchema = z.object({
+  name: z.string().min(1, 'Customer name required'),
+  email: z.string().email('Invalid email').optional(),
+  phone: z.string().min(8, 'Valid phone required'),
+});
+
+const SnapSchema = z.object({
+  orderId: z.string().min(1, 'Order ID required'),
+  total: z.number().positive('Total must be positive'),
+  customer: CustomerSchema,
+});
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { orderId, total, customer } = body;
+    const parsed = SnapSchema.safeParse(body);
 
-    if (!orderId || !total || !customer) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    if (!parsed.success) {
+      const message = parsed.error.issues.map(i => i.message).join('; ');
+      return new Response(JSON.stringify({ error: message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
+
+    const { orderId, total, customer } = parsed.data;
 
     const serverKey = import.meta.env.MIDTRANS_SERVER_KEY;
     const isProduction = import.meta.env.MIDTRANS_PRODUCTION === 'true';

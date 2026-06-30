@@ -43,8 +43,8 @@ describe('Webhook Security', () => {
   it('should generate unique order IDs', () => {
     const id1 = 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
     const id2 = 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-    expect(id1).toMatch(/^ORD-d+-[A-Z0-9]{5}$/);
-    expect(id2).toMatch(/^ORD-d+-[A-Z0-9]{5}$/);
+    expect(id1).toMatch(/^ORD-\d+-[A-Z0-9]{5}$/);
+    expect(id2).toMatch(/^ORD-\d+-[A-Z0-9]{5}$/);
   });
 
   it('should validate webhook returns 400 for missing signature', () => {

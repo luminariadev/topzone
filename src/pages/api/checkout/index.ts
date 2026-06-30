@@ -1,26 +1,42 @@
 // src/pages/api/checkout/index.ts
-// Server-side checkout endpoint with price validation
+// Server-side checkout endpoint with Zod-validated input
 export const prerender = false;
 import type { APIRoute } from 'astro';
+import { z } from 'zod';
 import { supabase } from '../../../lib/supabase';
+
+// --- Zod schemas for input validation ---
+const CheckoutItemSchema = z.object({
+  id: z.string().min(1, 'Item id required'),
+  name: z.string().min(1, 'Item name required').optional(),
+  price: z.number().positive('Price must be positive'),
+  qty: z.number().int().positive('Quantity must be positive'),
+  img: z.string().optional(),
+  type: z.enum(['game', 'gear']).optional(),
+});
+
+const CheckoutSchema = z.object({
+  items: z.array(CheckoutItemSchema).min(1, 'Cart cannot be empty').max(100, 'Too many items'),
+  name: z.string().min(2, 'Name is required').max(100),
+  phone: z.string().min(8, 'Valid phone required').max(20).regex(/^[0-9+\-\s()]+$/, 'Invalid phone format'),
+  payment: z.enum(['bank', 'ewallet', 'gopay']).default('bank'),
+  voucherCode: z.string().max(50).optional(),
+});
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { items, name, phone, payment, voucherCode } = body;
+    const parsed = CheckoutSchema.safeParse(body);
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return new Response(JSON.stringify({ error: 'Cart is empty' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    if (!parsed.success) {
+      const message = parsed.error.issues.map(i => i.message).join('; ');
+      return new Response(JSON.stringify({ error: message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-    if (!name || !phone) {
-      return new Response(JSON.stringify({ error: 'Name and phone required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-    }
+
+    const { items, name, phone, payment, voucherCode } = parsed.data;
 
     let validatedTotal = 0;
     for (const item of items) {
-      if (!item.id || !item.price || !item.qty) {
-        return new Response(JSON.stringify({ error: 'Invalid item data' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-      }
       validatedTotal += item.price * item.qty;
     }
 
