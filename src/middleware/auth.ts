@@ -2,8 +2,8 @@
 // Astro middleware for role-based authentication and route protection
 import type { APIContext } from 'astro';
 
-const ADMIN_ROUTES = ['/admin'];
-const PROTECTED_ROUTES = ['/checkout', '/profile', '/orders', '/order-detail'];
+const ADMIN_ROUTES: ReadonlyArray<string> = ['/admin'];
+const PROTECTED_ROUTES: ReadonlyArray<string> = ['/checkout', '/profile', '/orders', '/order-detail'];
 
 export function onRequest(context: APIContext, next: () => Promise<Response>) {
   const url = new URL(context.request.url);
