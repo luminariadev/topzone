@@ -1,5 +1,6 @@
 // src/pages/api/admin/gears-crud.ts
 // Admin CRUD operations for gears (Supabase-backed)
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

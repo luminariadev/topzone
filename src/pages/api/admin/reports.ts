@@ -1,5 +1,6 @@
 // src/pages/api/admin/reports.ts
 // Admin reports & analytics API
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

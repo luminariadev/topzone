@@ -1,5 +1,6 @@
 // src/pages/api/auth/me.ts
 // Get current authenticated user from Supabase session
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

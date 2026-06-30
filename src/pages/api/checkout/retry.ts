@@ -1,5 +1,6 @@
 // src/pages/api/checkout/retry.ts
 // Retry failed payment
+export const prerender = false;
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {

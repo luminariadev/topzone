@@ -1,5 +1,6 @@
 // src/pages/api/admin/orders.ts
 // Admin orders management API
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 import { verifyAdminAuth, createSuccessResponse, createErrorResponse } from '../../../lib/admin-auth';

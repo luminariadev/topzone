@@ -1,5 +1,6 @@
 // src/pages/api/admin/vouchers.ts
 // Admin voucher management API
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

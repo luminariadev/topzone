@@ -1,5 +1,6 @@
 // src/pages/api/auth/refresh.ts
 // JWT token refresh endpoint
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

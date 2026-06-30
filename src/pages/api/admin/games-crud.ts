@@ -1,5 +1,6 @@
 // src/pages/api/admin/games-crud.ts
 // Admin CRUD operations for games (Supabase-backed)
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 
