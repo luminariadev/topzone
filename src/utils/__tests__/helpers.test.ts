@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { slugify, truncate, generateOrderId, hashEmail, getStarArray, deepMerge, sanitizeHtml } from '../helpers';
+import { slugify, truncate, generateOrderId, hashEmail, getStarArray, deepMerge, sanitizeHtml, isSafeHtml, stripHtmlTags } from '../helpers';
 
 describe('slugify', () => {
   it('should convert text to URL-friendly slug', () => {
@@ -97,6 +97,41 @@ describe('deepMerge', () => {
   });
 });
 
+describe('isSafeHtml', () => {
+  it('should return true for safe HTML', () => {
+    expect(isSafeHtml('<p>Hello</p>')).toBe(true);
+    expect(isSafeHtml('Plain text')).toBe(true);
+    expect(isSafeHtml('<div class="test">Safe</div>')).toBe(true);
+  });
+
+  it('should return false for dangerous HTML', () => {
+    expect(isSafeHtml('<script>alert(1)</script>')).toBe(false);
+    expect(isSafeHtml('<iframe src="evil.com"></iframe>')).toBe(false);
+    expect(isSafeHtml('<object data="evil.swf"></object>')).toBe(false);
+    expect(isSafeHtml('<embed src="evil.swf">')).toBe(false);
+    expect(isSafeHtml('<a href="javascript:alert(1)">XSS</a>')).toBe(false);
+    expect(isSafeHtml('<img onerror="alert(1)" src="x">')).toBe(false);
+    expect(isSafeHtml('<form action="submit"></form>')).toBe(false);
+    expect(isSafeHtml('<base href="http://evil.com">')).toBe(false);
+  });
+});
+
+describe('stripHtmlTags', () => {
+  it('should strip all HTML tags', () => {
+    expect(stripHtmlTags('<p>Hello <b>World</b></p>')).toBe('Hello World');
+    expect(stripHtmlTags('<div><span>Text</span></div>')).toBe('Text');
+  });
+
+  it('should handle empty input', () => {
+    expect(stripHtmlTags('')).toBe('');
+    expect(stripHtmlTags('<p></p>')).toBe('');
+  });
+
+  it('should return plain text unchanged', () => {
+    expect(stripHtmlTags('Hello World')).toBe('Hello World');
+  });
+});
+
 describe('sanitizeHtml', () => {
   it('should remove script tags', () => {
     const input = '<script>alert("xss")</script><p>Safe</p>';
@@ -110,5 +145,30 @@ describe('sanitizeHtml', () => {
 
   it('should remove event handlers', () => {
     expect(sanitizeHtml('<img onerror="alert(1)" src="x">')).not.toContain('onerror');
+  });
+
+  it('should remove vbscript protocol', () => {
+    expect(sanitizeHtml('<a href="vbscript:msgbox(1)">VBS</a>')).not.toContain('vbscript:');
+  });
+
+  it('should remove iframe tags', () => {
+    const input = '<iframe src="http://evil.com"></iframe><p>Good</p>';
+    expect(sanitizeHtml(input)).not.toContain('<iframe');
+    expect(sanitizeHtml(input)).toContain('<p>Good</p>');
+  });
+
+  it('should remove object and embed tags', () => {
+    const obj = '<object data="evil.swf" type="application/x-shockwave-flash"></object>';
+    expect(sanitizeHtml(obj)).not.toContain('<object');
+    const embed = '<embed src="evil.swf" type="application/x-shockwave-flash">';
+    expect(sanitizeHtml(embed)).not.toContain('<embed');
+  });
+
+  it('should pass through safe content unchanged', () => {
+    expect(sanitizeHtml('<p>Safe content</p>')).toBe('<p>Safe content</p>');
+  });
+
+  it('should handle empty input gracefully', () => {
+    expect(sanitizeHtml('')).toBe('');
   });
 });
