@@ -4,14 +4,39 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 
+/**
+ * Verify Midtrans HMAC SHA-512 signature.
+ * Returns true when the expected signature matches the header.
+ */
+function verifySignature(request: Request, payload: any): boolean {
+  // In development we skip verification for easier testing.
+  if (!import.meta.env.PROD) return true;
+
+  const signatureHeader = request.headers.get('x-midtrans-signature');
+  if (!signatureHeader) return false;
+
+  const secret = import.meta.env.MIDTRANS_SERVER_KEY ?? '';
+  if (!secret) return false;
+
+  const expected = crypto.createHmac('sha512', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+
+  return signatureHeader === expected;
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const notification = await request.json();
     const { order_id, transaction_status, fraud_status, payment_type, gross_amount } = notification;
 
-    // Verify signature in production
-    // const signature = request.headers.get('x-midtrans-signature');
-    // const expected = crypto.createHmac('sha512', import.meta.env.MIDTRANS_SERVER_KEY).update(JSON.stringify(notification)).digest('hex');
+    // Verify signature - reject if invalid.
+    if (!verifySignature(request, notification)) {
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     let newStatus = 'pending';
     switch (transaction_status) {
@@ -47,14 +72,20 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify({ success: true, status: newStatus }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
     console.error('Webhook error:', err);
-    return new Response(JSON.stringify({ error: 'Webhook processing failed' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Webhook processing failed' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };
 
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify({ message: 'Midtrans webhook endpoint ready' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({ message: 'Midtrans webhook endpoint ready' }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 };
