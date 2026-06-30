@@ -159,7 +159,9 @@ import Footer from '../components/Footer.astro';
         document.getElementById('voucher-saved').classList.remove('hidden');
         document.getElementById('voucher-input').value = v.code;
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn('Failed to parse saved voucher:', e);
+    }
   }
   checkSavedVoucher();
 
