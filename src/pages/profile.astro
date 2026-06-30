@@ -205,7 +205,9 @@ import Footer from '../components/Footer.astro';
           '</div></div>';
         return;
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn('LocalStorage operation failed:', e);
+    }
     vouchersEmpty?.classList.remove('hidden');
     vouchersList?.classList.add('hidden');
   }
@@ -241,7 +243,9 @@ import Footer from '../components/Footer.astro';
         msg.textContent = 'Nama berhasil diperbarui!';
         msg.className = 'bg-neon-green text-black font-black px-4 py-3 border-2 border-black text-sm';
         msg.classList.remove('hidden');
-      } catch(e) {}
+      } catch(e) {
+      console.warn('LocalStorage operation failed:', e);
+    }
     }
   });
 
