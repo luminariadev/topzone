@@ -362,10 +362,11 @@ import Footer from '../components/Footer.astro';
         sessionExpiry = Date.now() + SESSION_TIME;
         return true;
       }
-    } catch(e) {}
-    adminUser = null;
-    return false;
-  }
+    } catch(e) {
+      console.warn('Admin session check failed:', e);
+      adminUser = null;
+      return false;
+    }
 
   /** Login via Supabase Auth API */
   async function loginAdmin(email, password) {
@@ -398,7 +399,9 @@ import Footer from '../components/Footer.astro';
           details,
         }),
       });
-    } catch(e) {} // silent fail for audit
+    } catch(e) {
+      // Silent failure for audit logging (non-critical feature)
+    }
   }
 
   /** Generic fetch helper with admin session check */
