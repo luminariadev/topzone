@@ -1,5 +1,6 @@
 // src/pages/api/checkout/index.ts
 // Server-side checkout endpoint with price validation
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

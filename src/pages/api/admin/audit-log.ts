@@ -1,5 +1,6 @@
 // src/pages/api/admin/audit-log.ts
 // Admin audit log API - get audit trail
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

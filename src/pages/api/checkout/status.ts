@@ -1,5 +1,6 @@
 // src/pages/api/checkout/status.ts
 // Payment status polling endpoint
+export const prerender = false;
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ url }) => {

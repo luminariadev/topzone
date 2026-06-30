@@ -1,5 +1,6 @@
 // src/pages/api/checkout/transactions.ts
 // Get transaction history for an order
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 

@@ -463,8 +463,10 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    const email = document.getElementById('admin-email').value;
-    const pass = document.getElementById('admin-password').value;
+    const emailInput = document.getElementById('admin-email');
+    const passInput = document.getElementById('admin-password');
+    const email = emailInput ? emailInput.value : '';
+    const pass = passInput ? passInput.value : '';
     btn.disabled = true;
     btn.textContent = 'Memproses...';
 
@@ -493,12 +495,11 @@ import Footer from '../components/Footer.astro';
       btn.textContent = 'Tunggu 30 detik...';
       setTimeout(() => {
         loginCooldown = false;
-          loginAttempts = 0;
-          btn.disabled = false;
-          btn.textContent = 'Masuk ke Admin';
-          err.textContent = 'Coba lagi.';
-        }, 30000);
-      }
+        loginAttempts = 0;
+        btn.disabled = false;
+        btn.textContent = 'Masuk ke Admin';
+        err.textContent = 'Coba lagi.';
+      }, 30000);
     }
   });
 

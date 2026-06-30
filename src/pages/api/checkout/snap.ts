@@ -1,5 +1,6 @@
 // src/pages/api/checkout/snap.ts
 // Create Midtrans Snap transaction
+export const prerender = false;
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {

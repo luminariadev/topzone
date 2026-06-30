@@ -1,5 +1,6 @@
 // src/pages/api/webhook/midtrans.ts
 // Midtrans payment webhook handler
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
 
