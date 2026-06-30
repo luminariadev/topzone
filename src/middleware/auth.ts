@@ -9,10 +9,31 @@ export function onRequest(context: APIContext, next: () => Promise<Response>) {
   const url = new URL(context.request.url);
   const path = url.pathname;
 
-  if (path.startsWith('/_astro') || path.startsWith('/api') ||
-      path.startsWith('/assets') || path.startsWith('/auth') ||
-      path.match(/\.(css|js|png|jpg|svg|ico|webp)$/)) {
+  // Skip auth for static assets and API routes (API handles its own auth)
+  if (
+    path.startsWith('/_astro') ||
+    path.startsWith('/api') ||
+    path.startsWith('/assets') ||
+    path.startsWith('/auth') ||
+    path.match(/\.(css|js|png|jpg|svg|ico|webp)$/)
+  ) {
     return next();
+  }
+
+  // Admin routes: require admin cookie
+  if (isAdminRoute(path)) {
+    const adminToken = context.cookies.get('sb-admin-token')?.value;
+    if (!adminToken) {
+      return context.redirect('/login?reason=admin-required');
+    }
+  }
+
+  // Protected routes: require auth cookie
+  if (isProtectedRoute(path)) {
+    const authToken = context.cookies.get('sb-auth-token')?.value;
+    if (!authToken) {
+      return context.redirect('/login?reason=auth-required');
+    }
   }
 
   return next();
