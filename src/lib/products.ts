@@ -5,7 +5,7 @@ import { gears, type Gear } from '../data/gears';
 
 function getSb() { if (!supabase) return null; return supabase; }
 
-export async function fetchGames() {
+export async function fetchGames(): Promise<Game[]> {
   const sb = getSb();
   // Check localStorage for admin-updated games
   try {
@@ -55,7 +55,7 @@ export async function fetchGames() {
   }
 }
 
-export async function fetchGears() {
+export async function fetchGears(): Promise<Gear[]> {
   const sb = getSb();
   // Check localStorage for admin-updated gear
   try {
