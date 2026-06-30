@@ -11,7 +11,9 @@ export async function fetchGames() {
   try {
     const localGames = JSON.parse(localStorage.getItem("topzone_games") || "[]");
     if (localGames && localGames.length > 0) return localGames;
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Failed to parse localStorage topzone_games:', e);
+  }
   if (!sb) return games;
 
   try {
@@ -59,7 +61,9 @@ export async function fetchGears() {
   try {
     const localGears = JSON.parse(localStorage.getItem("topzone_gears") || "[]");
     if (localGears && localGears.length > 0) return localGears;
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Failed to parse localStorage topzone_gears:', e);
+  }
   if (!sb) return gears;
 
   try {
