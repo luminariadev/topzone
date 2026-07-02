@@ -18,7 +18,9 @@ function loadTheme(): Theme {
 function saveTheme(t: Theme) {
   try {
     if (typeof window !== 'undefined') localStorage.setItem(STORAGE_KEY, t);
-  } catch { /* noop */ }
+  } catch {
+    // Silently skip if storage unavailable
+  }
 }
 
 export const currentTheme = atom<Theme>(loadTheme());

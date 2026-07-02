@@ -27,7 +27,7 @@ function saveCart(items: CartItem[]) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
   } catch {
-    // Silently fail if localStorage not available
+    // Storage full or unavailable, cart state stays in memory
   }
 }
 
