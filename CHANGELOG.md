@@ -2,7 +2,7 @@
 
 All notable changes to the TopZone project will be documented in this file.
 
-The format is based on [Keep a Changelogeloglog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased] - 2026-07-01
 
