@@ -1,5 +1,9 @@
 # TopZone ? Gaming Top Up & Gear Store ??
 
+[![CI](https://github.com/luminariadev/topzone/actions/workflows/ci.yml/badge.svg)](https://github.com/luminariadev/topzone/actions/workflows/ci.yml)
+[![Node.js](https://img.shields.io/badge/Node.js-22-green.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **TopZone** adalah platform e-commerce gaming bertema **Neubrutalism** yang dibangun dengan **Astro** + **Tailwind CSS v4**. Mendukung top-up game dan pembelian gaming gear dengan sistem autentikasi lokal dan opsi Supabase.
 
 ## ? Fitur
