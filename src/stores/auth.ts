@@ -45,10 +45,6 @@ export function setUser(u: AppUser | null) {
   }
 }
 
-export function setLoading(val: boolean) {
-  // no-op kept for compatibility
-}
-
 export function logoutUser() {
   if (!isBrowser()) return;
   localStorage.removeItem(AUTH_KEY);
