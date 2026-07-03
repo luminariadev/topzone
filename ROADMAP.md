@@ -82,20 +82,20 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Enable Supabase Auth (email/password) | feat | â–¡ |
-| 2 | Update login.astro to use supabase.auth.signInWithPassword | feat | â–¡ |
-| 3 | Update register.astro to use supabase.auth.signUp | feat | â–¡ |
-| 4 | Add email verification flow & UI | feat | â–¡ |
-| 5 | Add forgot password / reset password flow | feat | â–¡ |
-| 6 | Add Google OAuth login button | feat | â–¡ |
-| 7 | Add Discord OAuth login button | feat | â–¡ |
-| 8 | Update auth store to listen to Supabase auth state | refactor | â–¡ |
-| 9 | Add auth middleware for protected routes | feat | â–¡ |
-| 10 | Implement JWT token refresh & session management | feat | â–¡ |
-| 11 | Add role-based access (user vs admin) | feat | â–¡ |
-| 12 | Replace hardcoded admin auth with Supabase Auth | feat | â–¡ |
-| 13 | Add auth state persistence on page reload | fix | â–¡ |
-| 14 | Test all auth flows end-to-end | test | â–¡ |
+| 1 | Enable Supabase Auth (email/password) | feat | ✅ |
+| 2 | Update login.astro to use supabase.auth.signInWithPassword | feat | ✅ |
+| 3 | Update register.astro to use supabase.auth.signUp | feat | ✅ |
+| 4 | Add email verification flow & UI | feat | ✅ |
+| 5 | Add forgot password / reset password flow | feat | ✅ |
+| 6 | Add Google OAuth login button | feat | ✅ |
+| 7 | Add Discord OAuth login button | feat | ✅ |
+| 8 | Update auth store to listen to Supabase auth state | refactor | ✅ |
+| 9 | Add auth middleware for protected routes | feat | ✅ |
+| 10 | Implement JWT token refresh & session management | feat | ✅ |
+| 11 | Add role-based access (user vs admin) | feat | ✅ |
+| 12 | Replace hardcoded admin auth with Supabase Auth | feat | ✅ |
+| 13 | Add auth state persistence on page reload | fix | ✅ |
+| 14 | Test all auth flows end-to-end | test | ✅ |
 
 ### â–¡ 1.3 Payment Gateway â€” Midtrans (16 commit)
 
