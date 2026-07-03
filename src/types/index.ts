@@ -181,3 +181,36 @@ export interface BreadcrumbItem {
   href?: string;
   isCurrent?: boolean;
 }
+
+// ─── Utility types ────────────────────────────────────────────────
+
+/** Make specific properties of T required (opposite of Partial) */
+export type RequiredProps<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+/** Make specific properties of T optional */
+export type OptionalProps<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/** At least one of the keys K must be present */
+export type AtLeastOne<T, K extends keyof T = keyof T> = Partial<T> & { [P in K]-?: T[P] };
+
+/** Pick properties that match a value type */
+export type PickByType<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };
+
+/** Non-empty array */
+export type NonEmptyArray<T> = [T, ...T[]];
+
+/** Strict literal union for payment methods */
+export type PaymentMethod = 'bank' | 'ewallet' | 'gopay';
+
+/** Order status with strict transitions */
+export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
+
+/** Sort options available for product listings */
+export type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+
+/** Typed asynchronous operation state (discriminated union) */
+export type AsyncState<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: T }
+  | { status: 'error'; error: string };
