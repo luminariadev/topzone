@@ -147,10 +147,10 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Add SEO fields to DB schema (meta_title, meta_desc) | feat | ☐ |
-| 2 | Add product status field (draft/published/archived) | feat | ☐ |
-| 3 | Add product ordering/priority field | feat | ☐ |
-| 4 | Create slug auto-generation helper | feat | ☐ |
+| 1 | Add SEO fields to DB schema (meta_title, meta_desc) | feat | ✅ |
+| 2 | Add product status field (draft/published/archived) | feat | ✅ |
+| 3 | Add product ordering/priority field | feat | ✅ |
+| 4 | Create slug auto-generation helper | feat | ✅ |
 | 5 | Add image upload to Supabase Storage (drag-drop) | feat | ☐ |
 | 6 | Add image preview & delete from admin | feat | ☐ |
 | 7 | Add pagination to product lists (admin + user) | feat | ☐ |
