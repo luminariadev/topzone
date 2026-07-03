@@ -42,20 +42,31 @@ const { game } = Astro.props;
       <p class="text-gray-500 font-medium mb-8">Klik paket untuk menambahkan ke keranjang belanja.</p>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" id="package-grid">
-        {game.packages.map((pkg) => (
-          <button
-            class="package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
-            data-id={pkg.id}
-            data-name={`${game.name} — ${pkg.label}`}
-            data-price={pkg.price}
-            data-img={game.img}
-          >
-            <div class="text-lg font-black mb-1">{pkg.label}</div>
-            <div class="text-2xl font-black" style={`color:${game.color}; -webkit-text-stroke:1px #000;`}>
-              {formatCurrency(pkg.price)}
-            </div>
-          </button>
-        ))}
+        {game.packages.map((pkg) => {
+          const outOfStock = pkg.stock === 0;
+          const lowStock = pkg.stock != null && pkg.stock > 0 && pkg.stock <= 5;
+          return (
+            <button
+              class={`package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer ${outOfStock ? 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[4px_4px_0px_0px_#000]' : ''}`}
+              data-id={pkg.id}
+              data-name={`${game.name} — ${pkg.label}`}
+              data-price={pkg.price}
+              data-img={game.img}
+              disabled={outOfStock}
+            >
+              <div class="text-lg font-black mb-1">{pkg.label}</div>
+              <div class="text-2xl font-black" style={`color:${game.color}; -webkit-text-stroke:1px #000;`}>
+                {formatCurrency(pkg.price)}
+              </div>
+              {outOfStock && (
+                <div class="text-xs font-black text-red-500 mt-1 uppercase">Stok Habis</div>
+              )}
+              {lowStock && (
+                <div class="text-xs font-black text-orange-500 mt-1 uppercase">Stok Tinggal {pkg.stock}</div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <!-- Toast notification -->
