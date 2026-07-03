@@ -106,7 +106,14 @@ const TARGET_DATE = new Date('2026-08-01T00:00:00').getTime();
     if (secsEl) secsEl.textContent = padZero(seconds);
   }
 
-  // Initialize immediately and start interval
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
+  // Initialize countdown with requestAnimationFrame and proper cleanup
+  function startCountdown(): void {
+    updateCountdown();
+    let rafId = requestAnimationFrame(function tick() {
+      updateCountdown();
+      rafId = requestAnimationFrame(tick);
+    });
+    document.addEventListener('astro:before-swap', () => cancelAnimationFrame(rafId), { once: true });
+  }
+  startCountdown();
 </script>
