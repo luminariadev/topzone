@@ -4,6 +4,7 @@ import { atom } from 'nanostores';
 export interface AppUser {
   email: string;
   full_name?: string;
+  avatar_url?: string;
   isLoggedIn: boolean;
 }
 
@@ -28,9 +29,22 @@ if (isBrowser()) {
   user.set(loadUser());
 }
 
-export function setLocalUser(email: string, name?: string) {
+export function updateLocalUser(updates: Partial<AppUser>) {
   if (!isBrowser()) return;
-  const u: AppUser = { email, full_name: name || email.split('@')[0], isLoggedIn: true };
+  const current = loadUser();
+  if (!current) return;
+
+  const u: AppUser = { ...current, ...updates, isLoggedIn: true };
+  localStorage.setItem(AUTH_KEY, JSON.stringify(u));
+  user.set(u);
+}
+
+export function mergeLocalUser(data: Partial<AppUser>) {
+  if (!isBrowser()) return;
+  const current = loadUser();
+  if (!current) return;
+
+  const u: AppUser = { ...current, ...data, isLoggedIn: current.isLoggedIn || true };
   localStorage.setItem(AUTH_KEY, JSON.stringify(u));
   user.set(u);
 }
