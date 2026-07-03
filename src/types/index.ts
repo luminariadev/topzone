@@ -194,7 +194,11 @@ export type Product = Game | Gear;
 export interface ProductFilters {
   category?: string;
   searchQuery?: string;
-  sortBy?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+  sortBy?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest';
+  brand?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  status?: 'draft' | 'published' | 'archived';
 }
 
 /**
@@ -241,7 +245,7 @@ export type PaymentMethod = 'bank' | 'ewallet' | 'gopay';
 export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 /** Sort options available for product listings */
-export type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+export type SortOption = 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest';
 
 /** Typed asynchronous operation state (discriminated union) */
 export type AsyncState<T> =
