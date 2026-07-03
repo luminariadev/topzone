@@ -45,6 +45,10 @@ import Button from '../components/Button.astro';
           </div>
 
           <div id="error-msg" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm"></div>
+          <div id="unverified-msg" class="hidden bg-yellow-500 text-white font-black px-4 py-3 border-2 border-black text-sm text-center">
+            Email belum diverifikasi! Cek inbox/spam.
+            <button id="resend-verify-btn" class="ml-2 underline hover:text-neon-pink transition-colors">Kirim ulang</button>
+          </div>
 
           <button
             type="submit"
@@ -100,7 +104,7 @@ import Button from '../components/Button.astro';
 
 <script>
   import { setLocalUser, setUser } from '../stores/auth';
-  import { supabase, signInWithPassword, onAuthStateChange } from '../lib/supabase';
+  import { supabase, signInWithPassword, onAuthStateChange, supabaseQuery } from '../lib/supabase';
 
   // --- OAuth Login Buttons ---
   async function loginOAuth(provider: 'google' | 'discord') {
@@ -116,6 +120,8 @@ import Button from '../components/Button.astro';
 
   const form = document.getElementById('login-form') as HTMLFormElement;
   const errorMsg = document.getElementById('error-msg');
+  const unverifiedMsg = document.getElementById('unverified-msg');
+  const resendBtn = document.getElementById('resend-verify-btn') as HTMLButtonElement;
   const loginBtn = document.getElementById('login-btn') as HTMLButtonElement;
 
   // Subscribe to Supabase auth state changes
@@ -137,6 +143,7 @@ import Button from '../components/Button.astro';
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMsg?.classList.add('hidden');
+    unverifiedMsg?.classList.add('hidden');
 
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const password = (document.getElementById('password') as HTMLInputElement).value;
@@ -156,8 +163,15 @@ import Button from '../components/Button.astro';
         return;
       }
 
-      errorMsg.textContent = error.message;
-      errorMsg?.classList.remove('hidden');
+      // Check if error is "email not confirmed"
+      const isUnverified = error.message?.toLowerCase().includes('not confirmed') ||
+        error.message?.toLowerCase().includes('email not verified');
+      if (isUnverified) {
+        unverifiedMsg?.classList.remove('hidden');
+      } else {
+        errorMsg.textContent = error.message;
+        errorMsg?.classList.remove('hidden');
+      }
       loginBtn.textContent = 'Masuk';
       loginBtn.disabled = false;
       return;
@@ -174,6 +188,30 @@ import Button from '../components/Button.astro';
 
   // Cleanup on unload
   window.addEventListener('beforeunload', () => authUnsubscribe?.());
+
+  // Resend verification email
+  resendBtn?.addEventListener('click', async () => {
+    const email = (document.getElementById('email') as HTMLInputElement).value;
+    if (!email) {
+      alert('Masukkan email dulu!');
+      return;
+    }
+    resendBtn.textContent = 'Mengirim...';
+    resendBtn.disabled = true;
+    if (supabase) {
+      const { error } = await supabase.auth.resend({ type: 'signup', email });
+      if (error) {
+        errorMsg.textContent = 'Gagal kirim ulang: ' + error.message;
+        errorMsg?.classList.remove('hidden');
+      } else {
+        alert('Link verifikasi sudah dikirim ulang ke email kamu!');
+      }
+    } else {
+      alert('Supabase tidak dikonfigurasi. Gunakan mode development.');
+    }
+    resendBtn.textContent = 'Kirim ulang';
+    resendBtn.disabled = false;
+  });
 
   // OAuth button listeners
   document.getElementById('google-login-btn')?.addEventListener('click', () => loginOAuth('google'));
