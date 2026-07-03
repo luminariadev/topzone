@@ -58,13 +58,8 @@ import Footer from '../../components/Footer.astro';
 </Layout>
 
 <script>
-  // Extract email and type from URL hash (Supabase returns tokens in hash)
-  const hash = window.location.hash.substring(1);
-  const params = new URLSearchParams(hash);
-  const type = params.get('type');
-  const error = params.get('error');
-  const errorDescription = params.get('error_description');
-  const email = params.get('email') || localStorage.getItem('topzone_verify_email') || '';
+  // Handle Supabase email verification callback and hash-based auth flows
+  import { supabase } from '../../lib/supabase';
 
   const successState = document.getElementById('success-state');
   const errorState = document.getElementById('error-state');
@@ -72,31 +67,93 @@ import Footer from '../../components/Footer.astro';
   const emailDisplay = document.getElementById('email-display');
   const voucherCode = document.getElementById('voucher-code');
 
-  if (error) {
-    // Error from Supabase
-    successState?.classList.add('hidden');
+  async function handleVerification() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const type = params.get('type');
+    const hasToken = params.has('access_token');
+
+    // 1) Let Supabase client process auth callback from URL hash
+    if (hash && hasToken && supabase) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session) {
+        // Session already set by Supabase client auto-handling
+        const email = sessionData.session.user?.email || '';
+        if (emailDisplay) emailDisplay.textContent = email;
+        successState?.classList.remove('hidden');
+        showVoucher();
+        localStorage.removeItem('topzone_verify_email');
+        return;
+      }
+
+      // Try manual session set from URL tokens
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      if (accessToken) {
+        const { error: setError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        });
+        if (!setError) {
+          const email = sessionData?.session?.user?.email || params.get('email') || '';
+          if (emailDisplay) emailDisplay.textContent = email;
+          successState?.classList.remove('hidden');
+          showVoucher();
+          localStorage.removeItem('topzone_verify_email');
+          return;
+        }
+        errorState?.classList.remove('hidden');
+        errorMsg.textContent = 'Gagal verifikasi: ' + (setError.message || 'unknown');
+        return;
+      }
+    }
+
+    // 2) Check if user is already authenticated
+    if (supabase) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email_confirmed_at || user?.confirmed_at) {
+        const email = user.email || '';
+        if (emailDisplay) emailDisplay.textContent = email;
+        successState?.classList.remove('hidden');
+        showVoucher();
+        return;
+      }
+    }
+
+    // 3) Fallback: read from URL hash params directly
+    const email = params.get('email') || localStorage.getItem('topzone_verify_email') || '';
+    const hasError = params.get('error');
+    const errorDescription = params.get('error_description');
+
+    if (hasError) {
+      successState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+      errorMsg.textContent = errorDescription || 'Verifikasi gagal. Coba minta email verifikasi ulang.';
+      return;
+    }
+
+    if (type === 'signup' || type === 'email_change' || type === 'recovery') {
+      if (email) emailDisplay.textContent = email;
+      successState?.classList.remove('hidden');
+      showVoucher();
+      return;
+    }
+
+    // 4) Nothing resolved – generic state
     errorState?.classList.remove('hidden');
-    errorMsg.textContent = errorDescription || 'Verifikasi gagal. Coba minta email verifikasi ulang.';
-  } else if (type === 'signup' || type === 'email_change') {
-    // Successful verification
-    if (email) {
-      emailDisplay.textContent = email;
-    }
-    // Show voucher code
-    const voucher = localStorage.getItem('topzone_voucher');
-    if (voucher) {
-      try {
-        const v = JSON.parse(voucher);
-        if (voucherCode) voucherCode.textContent = v.code;
-      } catch {}
-    }
-  } else {
-    // Generic success or unknown state
-    if (email) {
-      emailDisplay.textContent = email;
-    }
+    errorMsg.textContent = 'Belum ada sesi verifikasi. Coba masuk dengan akun kamu.';
   }
 
-  // Also listen for hash changes (Supabase might redirect with hash)
-  window.addEventListener('hashchange', () => location.reload());
+  function showVoucher() {
+    const voucher = localStorage.getItem('topzone_voucher');
+    if (voucher && voucherCode) {
+      try {
+        const v = JSON.parse(voucher);
+        voucherCode.textContent = v.code;
+      } catch {}
+    }
+    localStorage.removeItem('topzone_voucher');
+  }
+
+  handleVerification();
 </script>
