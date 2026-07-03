@@ -58,7 +58,8 @@ export async function verifyAdminAuth(context: APIContext): Promise<AdminAuthRes
       },
       status: 200,
     };
-  } catch {
+  } catch (err) {
+    console.error('[admin-auth] Authentication failed:', err);
     return { success: false, error: 'Authentication failed', status: 401 };
   }
 }
