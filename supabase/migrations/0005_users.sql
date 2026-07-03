@@ -16,6 +16,41 @@ create table if not exists user_profiles (
   updated_at    timestamptz not null default now()
 );
 
+-- Create storage bucket for avatars
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+-- Set up storage policies for avatars
+create policy "Avatars are publicly accessible"
+  on storage.objects
+  for select
+  using (bucket_id = 'avatars');
+
+create policy "Users can upload their own avatars"
+  on storage.objects
+  for insert
+  with check (
+    bucket_id = 'avatars' and
+    auth.uid()::text = split_part(name, '/', 1)
+  );
+
+create policy "Users can update their own avatars"
+  on storage.objects
+  for update
+  using (
+    bucket_id = 'avatars' and
+    auth.uid()::text = split_part(name, '/', 1)
+  );
+
+create policy "Users can delete their own avatars"
+  on storage.objects
+  for delete
+  using (
+    bucket_id = 'avatars' and
+    auth.uid()::text = split_part(name, '/', 1)
+  );
+
 -- Admin users
 create table if not exists admin_users (
   id            uuid primary key default gen_random_uuid(),
