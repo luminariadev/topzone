@@ -2,7 +2,19 @@
 ---
 import { fetchGears } from '../lib/products';
 import Loading from './Loading.astro';
-const gears = await fetchGears();
+import { formatCurrency } from '../utils/format';
+const allGears = await fetchGears();
+
+const categories = [
+  { key: 'all', label: '🎯 Semua' },
+  { key: 'keyboard', label: '⌨️ Keyboard' },
+  { key: 'mouse', label: '🖱️ Mouse' },
+  { key: 'headset', label: '🎧 Headset' },
+  { key: 'controller', label: '🎮 Controller' },
+  { key: 'chair', label: '🪑 Chair' },
+  { key: 'webcam', label: '📷 Webcam' },
+  { key: 'microphone', label: '🎙️ Mic' },
+];
 ---
 
 <section id="gear" class="py-20 bg-neon-yellow text-black border-t-4 border-black">
@@ -14,32 +26,96 @@ const gears = await fetchGears();
       <p class="text-black/70 font-bold text-lg">Premium peripherals for your setup.</p>
     </div>
 
-    {gears.length === 0 ? (
+    {allGears.length === 0 ? (
       <Loading text="Memuat gear..." />
     ) : (
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {gears.map((gear) => (
-          <article class="group border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150">
-            <a href={`/gear/${gear.slug}`} class="block">
-              <div class="relative">
-                <img src={gear.img} alt={gear.name} loading="lazy" decoding="async" class="w-full h-52 object-cover border-b-4 border-black" />
-                <span class="absolute top-3 right-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black bg-black text-neon-yellow shadow-[2px_2px_0px_0px_#FFE600]">
-                  {gear.tag}
-                </span>
-              </div>
-              <div class="p-5">
-                <h3 class="text-2xl font-black mb-1">{gear.name}</h3>
-                <p class="font-bold text-xl mb-4" style="color:#FF007F;">
-                  Rp {gear.price.toLocaleString('id-ID')}
-                </p>
-                <div class="w-full py-3 font-black uppercase tracking-wider text-center bg-neon-pink text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
-                  Lihat Detail →
+      <>
+        <!-- Category filter tabs -->
+        <div class="flex flex-wrap justify-center gap-3 mb-10">
+          {categories.map(cat => (
+            <button
+              data-gear-filter={cat.key}
+              class={`gear-tab px-5 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all ${
+                cat.key === 'all'
+                  ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
+                  : 'bg-white hover:bg-neon-pink hover:text-white'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        <!-- Product grid -->
+        <div id="gear-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {allGears.map((gear) => (
+            <article
+              data-gear-category={gear.category}
+              class="group border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150"
+            >
+              <a href={`/gear/${gear.slug}`} class="block">
+                <div class="relative">
+                  <img
+                    src={gear.img}
+                    alt={gear.name}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-52 object-cover border-b-4 border-black"
+                  />
+                  <span class="absolute top-3 right-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black bg-black text-neon-yellow shadow-[2px_2px_0px_0px_#FFE600]">
+                    {gear.tag}
+                  </span>
+                  {gear.brand && (
+                    <span class="absolute top-3 left-3 px-2 py-1 text-[10px] font-black uppercase tracking-wider border border-black bg-white/90">
+                      {gear.brand}
+                    </span>
+                  )}
                 </div>
-              </div>
-            </a>
-          </article>
-        ))}
-      </div>
+                <div class="p-5">
+                  <h3 class="text-2xl font-black mb-1">{gear.name}</h3>
+                  <p class="font-bold text-xl mb-4" style="color:#FF007F;">
+                    {formatCurrency(gear.price)}
+                  </p>
+                  <div class="w-full py-3 font-black uppercase tracking-wider text-center bg-neon-pink text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
+                    Lihat Detail →
+                  </div>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </>
     )}
   </div>
 </section>
+
+<script>
+  function initGearTabs() {
+    const tabs = document.querySelectorAll<HTMLElement>('[data-gear-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('[data-gear-category]');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const filter = tab.dataset.gearFilter || 'all';
+
+        // Update active tab style
+        tabs.forEach(t => {
+          t.classList.remove('bg-black', 'text-neon-green');
+          t.classList.add('bg-white');
+        });
+        tab.classList.add('bg-black', 'text-neon-green');
+        tab.classList.remove('bg-white');
+
+        // Filter cards
+        cards.forEach(card => {
+          const cat = card.dataset.gearCategory;
+          const show = filter === 'all' || cat === filter;
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initGearTabs);
+  initGearTabs();
+</script>
