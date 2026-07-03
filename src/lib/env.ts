@@ -13,7 +13,7 @@ const envSchema = z.object({
 });
 
 function validateEnv() {
-  if (typeof import.meta === "undefined") return;
+  if (typeof import.meta === "undefined") return null;
   const env = {
     PUBLIC_SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL,
     PUBLIC_SUPABASE_ANON_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
@@ -25,14 +25,31 @@ function validateEnv() {
   };
   const result = envSchema.safeParse(env);
   if (!result.success) {
-    const missing = result.error.issues.map(i => i.path.join(".")+": "+i.message).join(", ");
+    const issues = result.error.issues.map(i =>
+      `  - ${i.path.join(".")}: ${i.message}`
+    ).join("\n");
     if (import.meta.env.PROD) {
-      console.error("[env] CRITICAL - Production missing required config: "+missing);
+      console.error("[env] CRITICAL — Production environment misconfigured:\n" + issues);
     } else {
-      console.warn("[env] Configuration warnings: "+missing);
+      console.warn("[env] Configuration warnings:\n" + issues);
     }
   }
   return result.data;
+}
+
+/**
+ * Check whether the required Supabase & Midtrans credentials are present.
+ * Useful for feature gating (e.g. disabling checkout when payment not configured).
+ */
+export function isPaymentConfigured(): boolean {
+  return !!(env?.PUBLIC_MIDTRANS_CLIENT_KEY && env?.MIDTRANS_SERVER_KEY);
+}
+
+/**
+ * Check if the application has a Supabase connection configured.
+ */
+export function isSupabaseConfigured(): boolean {
+  return !!(env?.PUBLIC_SUPABASE_URL && env?.PUBLIC_SUPABASE_ANON_KEY);
 }
 
 export const env = validateEnv();
