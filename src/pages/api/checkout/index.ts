@@ -23,14 +23,25 @@ const CheckoutSchema = z.object({
   voucherCode: z.string().max(50).optional(),
 });
 
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const parsed = CheckoutSchema.safeParse(body);
 
     if (!parsed.success) {
-      const message = parsed.error.issues.map(i => i.message).join('; ');
-      return new Response(JSON.stringify({ error: message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      const fields = parsed.error.issues.map(i => ({
+        field: i.path.join('.'),
+        message: i.message,
+        code: i.code,
+      }));
+      return jsonResponse({ error: 'Validation failed', fields }, 400);
     }
 
     const { items, name, phone, payment, voucherCode } = parsed.data;
@@ -54,18 +65,18 @@ export const POST: APIRoute = async ({ request }) => {
         payment_method: payment, total: validatedTotal, discount,
         status: 'pending', items: JSON.stringify(items),
         created_at: new Date().toISOString(),
-      }).catch((e) => console.error('DB save failed:', e));
+      }).catch((e) => {
+        console.error('DB save failed:', e);
+      });
     }
 
-    return new Response(JSON.stringify({ success: true, orderId, total: validatedTotal, discount }), {
-      status: 200, headers: { 'Content-Type': 'application/json' }
-    });
+    return jsonResponse({ success: true, orderId, total: validatedTotal, discount });
   } catch (err) {
     console.error('Checkout error:', err);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return jsonResponse({ error: 'Internal server error' }, 500);
   }
 };
 
 export const GET: APIRoute = async () => {
-  return new Response(JSON.stringify({ message: 'Checkout API ready' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  return jsonResponse({ message: 'Checkout API ready', version: '1.0.0' });
 };
