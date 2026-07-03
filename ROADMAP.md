@@ -143,7 +143,7 @@ Setiap hari **minimal 10 commit** dengan format:
 
 **Target**: 70-100 commit | **Timeline**: 7-10 hari | **Priority**: HIGH
 
-### ☐ 2.1 Database-Driven Catalog (12 commit)
+### ✅ 2.1 Database-Driven Catalog (12 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
@@ -151,81 +151,81 @@ Setiap hari **minimal 10 commit** dengan format:
 | 2 | Add product status field (draft/published/archived) | feat | ✅ |
 | 3 | Add product ordering/priority field | feat | ✅ |
 | 4 | Create slug auto-generation helper | feat | ✅ |
-| 5 | Add image upload to Supabase Storage (drag-drop) | feat | ☐ |
-| 6 | Add image preview & delete from admin | feat | ☐ |
-| 7 | Add pagination to product lists (admin + user) | feat | ☐ |
-| 8 | Add admin search/filter for products | feat | ☐ |
-| 9 | Create bulk product import from CSV | feat | ☐ |
-| 10 | Create bulk product export to CSV | feat | ☐ |
-| 11 | Add product duplication (clone existing) | feat | ☐ |
-| 12 | Test admin CRUD fully on Supabase | test | ☐ |
+| 5 | Add image upload to Supabase Storage (drag-drop) | feat | ✅ |
+| 6 | Add image preview & delete from admin | feat | ✅ |
+| 7 | Add pagination to product lists (admin + user) | feat | ✅ |
+| 8 | Add admin search/filter for products | feat | ✅ |
+| 9 | Create bulk product import from CSV | feat | ✅ |
+| 10 | Create bulk product export to CSV | feat | ✅ |
+| 11 | Add product duplication (clone existing) | feat | ✅ |
+| 12 | Test admin CRUD fully on Supabase | test | ✅ |
 
-### ☐ 2.2 New Games — Top Up (15 commit)
+### ✅ 2.2 New Games — Top Up (15 commit) ✅ DONE
 
 | No | Game | Status |
 |:--:|------|:------:|
-| 1 | PUBG Mobile (UC) | ☐ |
-| 2 | Genshin Impact (Genesis Crystal) | ☐ |
-| 3 | Mobile Legends Starlight Pass | ☐ |
-| 4 | FIFA Mobile (FC Points) | ☐ |
-| 5 | COD Mobile (CP) | ☐ |
-| 6 | Roblox (Robux) | ☐ |
-| 7 | Fortnite (V-Bucks) | ☐ |
-| 8 | Apex Legends (Apex Coins) | ☐ |
-| 9 | Pokemon Unite (Aeos Gems) | ☐ |
-| 10 | Honor of Kings (Top-Up) | ☐ |
-| 11 | Steam Wallet (IDR) | ☐ |
-| 12 | PlayStation Store (Top-Up) | ☐ |
-| 13 | Nintendo eShop (Top-Up) | ☐ |
-| 14 | Google Play Gift Card | ☐ |
-| 15 | Apple App Store & iTunes Gift Card | ☐ |
+| 1 | PUBG Mobile (UC) | ✅ |
+| 2 | Genshin Impact (Genesis Crystal) | ✅ |
+| 3 | Mobile Legends Starlight Pass | ✅ |
+| 4 | FIFA Mobile (FC Points) | ✅ |
+| 5 | COD Mobile (CP) | ✅ |
+| 6 | Roblox (Robux) | ✅ |
+| 7 | Fortnite (V-Bucks) | ✅ |
+| 8 | Apex Legends (Apex Coins) | ✅ |
+| 9 | Pokemon Unite (Aeos Gems) | ✅ |
+| 10 | Honor of Kings (Top-Up) | ✅ |
+| 11 | Steam Wallet (IDR) | ✅ |
+| 12 | PlayStation Store (Top-Up) | ✅ |
+| 13 | Nintendo eShop (Top-Up) | ✅ |
+| 14 | Google Play Gift Card | ✅ |
+| 15 | Apple App Store & iTunes Gift Card | ✅ |
 
-### ☐ 2.3 New Gear — Gaming Equipment (12 commit)
+### ✅ 2.3 New Gear — Gaming Equipment (12 commit) ✅ DONE
 
 | No | Gear Category | Items | Status |
 |:--:|:-------------:|:-----:|:------:|
-| 1 | Gaming Chair | Add 5 products | ☐ |
-| 2 | Gaming Monitor | Add 5 products | ☐ |
-| 3 | Controller | Add 5 products (Xbox, PS, Pro) | ☐ |
-| 4 | Webcam | Add 3 products | ☐ |
-| 5 | Microphone | Add 3 products | ☐ |
-| 6 | Mousepad | Add 5 products (XL, RGB, hard) | ☐ |
-| 7 | Speaker | Add 3 products | ☐ |
-| 8 | Streaming Accessories | Add 5 products (capture card, ring light) | ☐ |
-| 9 | Update Gear types to include new categories | refactor | ☐ |
-| 10 | Update FeaturedGears component with new tabs | feat | ☐ |
-| 11 | Add filter by brand & category on gear page | feat | ☐ |
-| 12 | Add sorting on gear page (price, name, newest) | feat | ☐ |
+| 1 | Gaming Chair | Add 5 products | ✅ |
+| 2 | Gaming Monitor | Add 5 products | ✅ |
+| 3 | Controller | Add 5 products (Xbox, PS, Pro) | ✅ |
+| 4 | Webcam | Add 3 products | ✅ |
+| 5 | Microphone | Add 3 products | ✅ |
+| 6 | Mousepad | Add 5 products (XL, RGB, hard) | ✅ |
+| 7 | Speaker | Add 3 products | ✅ |
+| 8 | Streaming Accessories | Add 5 products (capture card, ring light) | ✅ |
+| 9 | Update Gear types to include new categories | refactor | ✅ |
+| 10 | Update FeaturedGears component with new tabs | feat | ✅ |
+| 11 | Add filter by brand & category on gear page | feat | ✅ |
+| 12 | Add sorting on gear page (price, name, newest) | feat | ✅ |
 
-### ☐ 2.4 Inventory & Stock System (10 commit)
-
-| No | Task | Scope | Status |
-|:--:|------|-------|:------:|
-| 1 | Add stock field to product_packages table | feat | ☐ |
-| 2 | Display stock count on product detail page | feat | ☐ |
-| 3 | Add "out of stock" state on cards & detail | feat | ☐ |
-| 4 | Disable add-to-cart when out of stock | feat | ☐ |
-| 5 | Add low stock badge (< 5 items) | feat | ☐ |
-| 6 | Add stock reservation system (15-min lock) | feat | ☐ |
-| 7 | Auto-restore stock on payment timeout | feat | ☐ |
-| 8 | Add stock history log (in/out/adjust) | feat | ☐ |
-| 9 | Add bulk stock update in admin | feat | ☐ |
-| 10 | Add stock alerts dashboard (admin) | feat | ☐ |
-
-### ☐ 2.5 Search & Filter Enhancement (10 commit)
+### ✅ 2.4 Inventory & Stock System (10 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Implement debounced live search | feat | ☐ |
-| 2 | Add search suggestions (popular searches) | feat | ☐ |
-| 3 | Add category filter on search results | feat | ☐ |
-| 4 | Add price range filter | feat | ☐ |
-| 5 | Add rating filter | feat | ☐ |
-| 6 | Add brand filter (for gear) | feat | ☐ |
-| 7 | Add combined filters with URL params | feat | ☐ |
-| 8 | Add active filter chips with remove | feat | ☐ |
-| 9 | Add sort options: price, name, popular | feat | ☐ |
-| 10 | Add "no results" state with suggestions | feat | ☐ |
+| 1 | Add stock field to product_packages table | feat | ✅ |
+| 2 | Display stock count on product detail page | feat | ✅ |
+| 3 | Add "out of stock" state on cards & detail | feat | ✅ |
+| 4 | Disable add-to-cart when out of stock | feat | ✅ |
+| 5 | Add low stock badge (< 5 items) | feat | ✅ |
+| 6 | Add stock reservation system (15-min lock) | feat | ✅ |
+| 7 | Auto-restore stock on payment timeout | feat | ✅ |
+| 8 | Add stock history log (in/out/adjust) | feat | ✅ |
+| 9 | Add bulk stock update in admin | feat | ✅ |
+| 10 | Add stock alerts dashboard (admin) | feat | ✅ |
+
+### ✅ 2.5 Search & Filter Enhancement (10 commit) ✅ DONE
+
+| No | Task | Scope | Status |
+|:--:|------|-------|:------:|
+| 1 | Implement debounced live search | feat | ✅ |
+| 2 | Add search suggestions (popular searches) | feat | ✅ |
+| 3 | Add category filter on search results | feat | ✅ |
+| 4 | Add price range filter | feat | ✅ |
+| 5 | Add rating filter | feat | ✅ |
+| 6 | Add brand filter (for gear) | feat | ✅ |
+| 7 | Add combined filters with URL params | feat | ✅ |
+| 8 | Add active filter chips with remove | feat | ✅ |
+| 9 | Add sort options: price, name, popular | feat | ✅ |
+| 10 | Add "no results" state with suggestions | feat | ✅ |
 
 ---
 
