@@ -108,6 +108,67 @@ export function deepMerge<T extends Record<string, unknown>, S extends Partial<T
 }
 
 /**
+ * Create a localized product slug from a product name (generates URL-friendly slug)
+ * with deduplication support via suffix counter.
+ */
+export function makeProductSlug(name: string, existingSlugs?: Set<string>): string {
+  let slug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  if (!existingSlugs) return slug;
+
+  let final = slug;
+  let counter = 1;
+  while (existingSlugs.has(final)) {
+    final = `${slug}-${counter}`;
+    counter++;
+  }
+  return final;
+}
+
+/**
+ * Compute products per page based on viewport size (responsive pagination)
+ * Returns items for the given page.
+ */
+export function paginate<T>(items: T[], page: number, perPage: number): { items: T[]; total: number; totalPages: number } {
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const clampedPage = Math.min(Math.max(1, page), totalPages);
+  const start = (clampedPage - 1) * perPage;
+  return {
+    items: items.slice(start, start + perPage),
+    total,
+    totalPages,
+  };
+}
+
+/**
+ * Resolve meta title for a product: returns metaTitle if set, otherwise name.
+ */
+export function resolveMetaTitle(name: string, metaTitle?: string): string {
+  return metaTitle?.trim() || name;
+}
+
+/**
+ * Resolve meta description for a product: returns metaDescription if set, otherwise description.
+ */
+export function resolveMetaDescription(description: string, metaDescription?: string): string {
+  return metaDescription?.trim() || description.slice(0, 160);
+}
+
+/**
+ * Filter products by status — defaults to 'published'
+ */
+export function publishedOnly<T extends { status?: string | null }>(items: T[]): T[] {
+  return items.filter(item => !item.status || item.status === 'published');
+}
+
+/**
  * Dangerous HTML patterns to reject (defense-in-depth approach)
  */
 const DANGEROUS_HTML_PATTERNS = [
