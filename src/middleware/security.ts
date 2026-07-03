@@ -1,11 +1,11 @@
 // src/middleware/security.ts
-// CSP & Security Headers via Astro Middleware
+// Enhanced Security Headers & CSP via Astro Middleware
 import type { APIContext } from 'astro';
 
 interface SecurityOptions {
-  /** Enable HSTS preload (default: true in production) */
+  /** Enable HSTS preload readiness (default: true in production) */
   hstsPreload?: boolean;
-  /** Enable rate limiting headers (default: true) */
+  /** Enable rate-limit informational headers (default: true) */
   rateLimitHeaders?: boolean;
 }
 
@@ -14,15 +14,10 @@ const DEFAULT_OPTIONS: Required<SecurityOptions> = {
   rateLimitHeaders: true,
 };
 
-function buildCspPolicy(nonce?: string): string {
-  const scriptSrc = ["'self'", "'unsafe-inline'", "'unsafe-eval'",
-    'https://app.midtrans.com', 'https://app.sandbox.midtrans.com',
-    'https://va.midtrans.com'];
-  if (nonce) scriptSrc.push(`'nonce-${nonce}'`);
-
+function buildCspPolicy(): string {
   return [
     "default-src 'self'",
-    `script-src ${scriptSrc.join(' ')}`,
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.midtrans.com https://app.sandbox.midtrans.com https://va.midtrans.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
@@ -39,15 +34,15 @@ export function onRequest(context: APIContext, next: () => Promise<Response>) {
   return next().then((response) => {
     const opts = { ...DEFAULT_OPTIONS };
 
-    // Strict security headers (every response)
+    // ── Universal security headers (every response) ──
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-XSS-Protection', '0'); // Deprecated; CSP covers this
+    response.headers.set('X-XSS-Protection', '0'); // Deprecated; CSP supersedes
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     response.headers.delete('X-Powered-By');
 
-    // HSTS
+    // ── HSTS ──
     if (import.meta.env.PROD) {
       response.headers.set('Strict-Transport-Security',
         opts.hstsPreload
@@ -57,13 +52,13 @@ export function onRequest(context: APIContext, next: () => Promise<Response>) {
       response.headers.set('Strict-Transport-Security', 'max-age=3600; includeSubDomains');
     }
 
-    // CSP for HTML responses only
+    // ── CSP for HTML responses only ──
     const ct = response.headers.get('Content-Type') || '';
     if (ct.includes('text/html')) {
       response.headers.set('Content-Security-Policy', buildCspPolicy());
     }
 
-    // Rate limiting headers (defense-in-depth)
+    // ── Informational rate-limit headers (defense-in-depth) ──
     if (opts.rateLimitHeaders) {
       response.headers.set('X-RateLimit-Limit', '100');
       response.headers.set('X-RateLimit-Remaining', '99');
