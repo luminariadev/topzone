@@ -22,13 +22,9 @@
   const moon = document.getElementById('theme-moon')!;
 
   function updateIcons(t: string) {
-    if (t === 'dark') {
-      sun.classList.remove('hidden');
-      moon.classList.add('hidden');
-    } else {
-      sun.classList.add('hidden');
-      moon.classList.remove('hidden');
-    }
+    const show = t === 'dark';
+    sun.classList.toggle('hidden', !show);
+    moon.classList.toggle('hidden', show);
   }
 
   applyThemeToDocument(currentTheme.get());
