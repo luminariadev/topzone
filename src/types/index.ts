@@ -17,7 +17,13 @@ export interface GamePackage {
   id: string;
   label: string;
   price: number;
+  /** Available stock (null = unlimited) */
+  stock?: number | null;
 }
+
+export type GameCategory = 'mobile' | 'pc' | 'console';
+
+export type ProductStatus = 'draft' | 'published' | 'archived';
 
 export interface Game {
   slug: string;
@@ -25,10 +31,18 @@ export interface Game {
   img: string;
   color: string;
   badge: string;
-  category: 'mobile' | 'pc' | 'console';
+  category: GameCategory;
   currency: string;
   description: string;
   packages: GamePackage[];
+  /** SEO meta title (falls back to name if omitted) */
+  metaTitle?: string;
+  /** SEO meta description (falls back to description if omitted) */
+  metaDescription?: string;
+  /** Display/priority order (lower = first) */
+  priority?: number;
+  /** Content status */
+  status?: ProductStatus;
 }
 
 /**
@@ -39,15 +53,27 @@ export interface GearSpec {
   value: string;
 }
 
+export type GearCategory = 'keyboard' | 'mouse' | 'headset' | 'monitor' | 'chair' | 'controller' | 'webcam' | 'microphone' | 'mousepad' | 'speaker' | 'streaming';
+
 export interface Gear {
   slug: string;
   name: string;
   img: string;
   price: number;
   tag: string;
-  category: 'keyboard' | 'mouse' | 'headset' | 'monitor';
+  category: GearCategory;
   description: string;
   specs: GearSpec[];
+  /** SEO meta title (falls back to name if omitted) */
+  metaTitle?: string;
+  /** SEO meta description (falls back to description if omitted) */
+  metaDescription?: string;
+  /** Display/priority order (lower = first) */
+  priority?: number;
+  /** Content status */
+  status?: ProductStatus;
+  /** Brand for filtering */
+  brand?: string;
 }
 
 /**
@@ -130,10 +156,14 @@ export interface AdminGame {
   img: string;
   color: string;
   badge: string;
-  category: 'mobile' | 'pc' | 'console';
+  category: GameCategory;
   currency: string;
   description: string;
   packages: GamePackage[];
+  metaTitle?: string;
+  metaDescription?: string;
+  priority?: number;
+  status?: ProductStatus;
 }
 
 export interface AdminGear {
@@ -143,9 +173,14 @@ export interface AdminGear {
   img: string;
   price: number;
   tag: string;
-  category: 'keyboard' | 'mouse' | 'headset' | 'monitor';
+  category: GearCategory;
   description: string;
   specs: GearSpec[];
+  metaTitle?: string;
+  metaDescription?: string;
+  priority?: number;
+  status?: ProductStatus;
+  brand?: string;
 }
 
 /**
