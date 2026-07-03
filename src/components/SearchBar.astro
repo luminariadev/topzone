@@ -80,8 +80,10 @@
 
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      const firstLink = results.querySelector('a') as HTMLAnchorElement;
-      if (firstLink) window.location.href = firstLink.href;
+      const query = input.value.trim();
+      if (query) {
+        window.location.href = `/search?q=${encodeURIComponent(query)}`;
+      }
     }
   });
 </script>
