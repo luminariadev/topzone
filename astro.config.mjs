@@ -7,6 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   site: 'https://topzone.vercel.app',
+  output: 'static',
   integrations: [sitemap()],
   vite: {
     plugins: [

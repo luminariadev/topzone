@@ -76,24 +76,54 @@ import Footer from '../components/Footer.astro';
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="gear">&#x1F3B5; Gear</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="orders">&#x1F4E6; Orders</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">&#x1F3B0; Vouchers</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="reports">&#x1F4CA; Reports</button>
       </div>
 
       <!-- GAMES -->
       <div id="panel-games" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="text-3xl font-black">&#x1F3AE; Games</h2>
-          <button id="game-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Game</button>
+          <div class="flex gap-2">
+            <button id="game-export-csv" class="px-4 py-3 font-black text-sm border-2 border-black bg-blue-400 shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
+            <button id="game-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Game</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 items-center">
+          <input id="game-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="&#x1F50D; Cari game..." />
+          <select id="game-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="all">Semua Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+          <span class="text-sm font-bold text-gray-500" id="game-count-label"></span>
         </div>
         <div id="games-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+        <div id="games-pagination" class="flex justify-center gap-2 mt-4"></div>
       </div>
 
       <!-- GEAR -->
       <div id="panel-gear" class="hidden space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="text-3xl font-black">&#x1F3B5; Gear</h2>
-          <button id="gear-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Gear</button>
+          <div class="flex gap-2">
+            <button id="gear-export-csv" class="px-4 py-3 font-black text-sm border-2 border-black bg-blue-400 shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
+            <button id="gear-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Gear</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 items-center">
+          <input id="gear-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="&#x1F50D; Cari gear..." />
+          <select id="gear-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="all">Semua Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+          <span class="text-sm font-bold text-gray-500" id="gear-count-label"></span>
+        </div>
         </div>
         <div id="gear-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+        <div id="gear-pagination" class="flex justify-center gap-2 mt-4"></div>
       </div>
 
       <!-- ORDERS -->
@@ -140,6 +170,33 @@ import Footer from '../components/Footer.astro';
             <tbody id="vouchers-table-body"></tbody>
           </table>
           <div id="vouchers-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada voucher.</p></div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="panel-reports" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">&#x1F4CA; Reports</h2>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
+          <h3 class="text-xl font-black mb-4">Laporan Transaksi</h3>
+          <div class="flex gap-3 mb-4">
+            <button id="export-csv" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="border-b-4 border-black bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 font-black text-sm">Order ID</th>
+                  <th class="px-4 py-3 font-black text-sm">Pelanggan</th>
+                  <th class="px-4 py-3 font-black text-sm">Item</th>
+                  <th class="px-4 py-3 font-black text-sm">Total</th>
+                  <th class="px-4 py-3 font-black text-sm">Status</th>
+                  <th class="px-4 py-3 font-black text-sm">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody id="laporan-table-body"></tbody>
+            </table>
+            <div id="laporan-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada transaksi.</p></div>
+          </div>
         </div>
       </div>
     </div>
@@ -519,7 +576,7 @@ import Footer from '../components/Footer.astro';
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach((b) => { b.style.background = '#fff'; });
       btn.style.background = '#39FF14';
-      ['games','gear','orders','vouchers'].forEach((p) => {
+      ['games','gear','orders','vouchers','reports'].forEach((p) => {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
@@ -545,6 +602,10 @@ import Footer from '../components/Footer.astro';
   // -------------------------------------------------------
 
   let cachedGames = [];
+  let gamesCurrentPage = 1;
+  const gamesPerPage = 10;
+  let gamesSearchQuery = '';
+  let gamesStatusFilter = 'all';
 
   async function getGames() {
     try {
@@ -556,32 +617,60 @@ import Footer from '../components/Footer.astro';
     }
   }
 
-  async function saveGame(gameData, isEdit) {
-    if (isEdit) {
-      return apiFetch(API.games, {
-        method: 'PUT',
-        body: JSON.stringify(gameData),
-      });
-    } else {
-      return apiFetch(API.games, {
-        method: 'POST',
-        body: JSON.stringify(gameData),
-      });
+  function filterGames(games) {
+    let result = games;
+    if (gamesSearchQuery) {
+      const q = gamesSearchQuery.toLowerCase();
+      result = result.filter(g => (g.name||'').toLowerCase().includes(q) || (g.slug||'').toLowerCase().includes(q));
     }
+    if (gamesStatusFilter !== 'all') {
+      result = result.filter(g => (g.status || 'published') === gamesStatusFilter);
+    }
+    return result;
   }
 
-  async function deleteGame(slug) {
-    return apiFetch(API.games + '?slug=' + encodeURIComponent(slug), { method: 'DELETE' });
+  function paginateGames(games) {
+    const start = (gamesCurrentPage - 1) * gamesPerPage;
+    return games.slice(start, start + gamesPerPage);
+  }
+
+  function renderGamesPagination(total) {
+    const totalPages = Math.ceil(total / gamesPerPage);
+    const el = document.getElementById('games-pagination');
+    if (!el || totalPages <= 1) { if (el) el.innerHTML = ''; return; }
+    let html = '';
+    if (gamesCurrentPage > 1) {
+      html += '<button class="game-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:bg-black hover:text-white transition-all" data-page="' + (gamesCurrentPage - 1) + '">Sebelumnya</button>';
+    }
+    const maxPages = 5;
+    let startPage = Math.max(1, gamesCurrentPage - Math.floor(maxPages / 2));
+    let endPage = Math.min(totalPages, startPage + maxPages - 1);
+    if (endPage - startPage + 1 < maxPages) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    for (let p = startPage; p <= endPage; p++) {
+      html += '<button class="game-page-btn w-10 h-10 font-black border-2 border-black ' + (p === gamesCurrentPage ? 'bg-black text-neon-green shadow-[2px_2px_0px_0px_#000]' : 'bg-white hover:bg-black hover:text-white transition-all') + '" data-page="' + p + '">' + p + '</button>';
+    }
+    if (gamesCurrentPage < totalPages) {
+      html += '<button class="game-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:bg-black hover:text-white transition-all" data-page="' + (gamesCurrentPage + 1) + '">Berikutnya</button>';
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('.game-page-btn').forEach(b => b.addEventListener('click', function() { gamesCurrentPage = parseInt(this.dataset.page); renderGames(); }));
   }
 
   async function renderGames() {
     const list = document.getElementById('games-list');
     const games = await getGames();
-    if (games.length === 0) {
-      list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Belum ada game. Klik + Tambah Game untuk mulai.</p></div>';
+    const filtered = filterGames(games);
+    const paginated = paginateGames(filtered);
+    const countLabel = document.getElementById('game-count-label');
+    if (countLabel) countLabel.textContent = filtered.length + ' dari ' + games.length + ' game';
+    if (paginated.length === 0) {
+      list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Tidak ada game yang cocok.</p></div>';
+      renderGamesPagination(0);
       return;
     }
-    list.innerHTML = games.map((g, i) => '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-5">' +
+    list.innerHTML = paginated.map((g, i) => '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-5">' +
       '<div class="flex justify-between items-start mb-3">' +
         '<div><h3 class="text-xl font-black">' + (g.name||'') + '</h3>' +
         '<p class="text-xs text-gray-500 font-bold">/' + (g.slug||'') + ' &middot; ' + (g.currency||'') + '</p></div>' +
@@ -597,13 +686,15 @@ import Footer from '../components/Footer.astro';
     list.querySelectorAll('.game-edit').forEach((b) => b.addEventListener('click', function() { openGameModal(parseInt(this.dataset.idx)); }));
     list.querySelectorAll('.game-del').forEach((b) => b.addEventListener('click', async function() {
       const games = await getGames();
-      const g = games[parseInt(this.dataset.idx)];
+      const filtered = filterGames(games);
+      const g = filtered[parseInt(this.dataset.idx)];
       if (g && confirm('Hapus game ' + (g.name||'') + '?')) {
         await deleteGame(g.slug);
         await logAudit('delete', 'game', g.slug, { name: g.name });
         await renderGames();
       }
     }));
+    renderGamesPagination(filtered.length);
   }
 
   var gameEditingIdx = -1;
@@ -665,6 +756,10 @@ import Footer from '../components/Footer.astro';
   // -------------------------------------------------------
 
   let cachedGears = [];
+  let gearCurrentPage = 1;
+  const gearPerPage = 10;
+  let gearSearchQuery = '';
+  let gearStatusFilter = 'all';
 
   async function getGearItems() {
     try {
@@ -674,6 +769,47 @@ import Footer from '../components/Footer.astro';
     } catch(e) {
       return cachedGears;
     }
+  }
+
+  function filterGear(items) {
+    let result = items;
+    if (gearSearchQuery) {
+      const q = gearSearchQuery.toLowerCase();
+      result = result.filter(g => (g.name||'').toLowerCase().includes(q) || (g.slug||'').toLowerCase().includes(q));
+    }
+    if (gearStatusFilter !== 'all') {
+      result = result.filter(g => (g.status || 'published') === gearStatusFilter);
+    }
+    return result;
+  }
+
+  function paginateGear(items) {
+    const start = (gearCurrentPage - 1) * gearPerPage;
+    return items.slice(start, start + gearPerPage);
+  }
+
+  function renderGearPagination(total) {
+    const totalPages = Math.ceil(total / gearPerPage);
+    const el = document.getElementById('gear-pagination');
+    if (!el || totalPages <= 1) { if (el) el.innerHTML = ''; return; }
+    let html = '';
+    if (gearCurrentPage > 1) {
+      html += '<button class="gear-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:bg-black hover:text-white transition-all" data-page="' + (gearCurrentPage - 1) + '">Sebelumnya</button>';
+    }
+    const maxPages = 5;
+    let startPage = Math.max(1, gearCurrentPage - Math.floor(maxPages / 2));
+    let endPage = Math.min(totalPages, startPage + maxPages - 1);
+    if (endPage - startPage + 1 < maxPages) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    for (let p = startPage; p <= endPage; p++) {
+      html += '<button class="gear-page-btn w-10 h-10 font-black border-2 border-black ' + (p === gearCurrentPage ? 'bg-black text-neon-green shadow-[2px_2px_0px_0px_#000]' : 'bg-white hover:bg-black hover:text-white transition-all') + '" data-page="' + p + '">' + p + '</button>';
+    }
+    if (gearCurrentPage < totalPages) {
+      html += '<button class="gear-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:bg-black hover:text-white transition-all" data-page="' + (gearCurrentPage + 1) + '">Berikutnya</button>';
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('.gear-page-btn').forEach(b => b.addEventListener('click', function() { gearCurrentPage = parseInt(this.dataset.page); renderGear(); }));
   }
 
   async function saveGearItem(gearData, isEdit) {
@@ -690,11 +826,16 @@ import Footer from '../components/Footer.astro';
   async function renderGear() {
     var list = document.getElementById('gear-list');
     var items = await getGearItems();
-    if (items.length === 0) {
-      list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Belum ada gear. Klik + Tambah Gear untuk mulai.</p></div>';
+    var filtered = filterGear(items);
+    var paginated = paginateGear(filtered);
+    var countLabel = document.getElementById('gear-count-label');
+    if (countLabel) countLabel.textContent = filtered.length + ' dari ' + items.length + ' gear';
+    if (paginated.length === 0) {
+      list.innerHTML = '<div class="col-span-full text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Tidak ada gear yang cocok.</p></div>';
+      renderGearPagination(0);
       return;
     }
-    list.innerHTML = items.map(function(g, i) { return '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-5">' +
+    list.innerHTML = paginated.map(function(g, i) { return '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-5">' +
       '<div class="flex justify-between items-start mb-3">' +
         '<div><h3 class="text-xl font-black">' + (g.name||'') + '</h3>' +
         '<p class="text-xs text-gray-500 font-bold">/' + (g.slug||'') + ' &middot; ' + (g.category||'') + '</p></div>' +
@@ -711,13 +852,15 @@ import Footer from '../components/Footer.astro';
     list.querySelectorAll('.gear-edit').forEach(function(b) { b.addEventListener('click', function() { openGearModal(parseInt(this.dataset.idx)); }); });
     list.querySelectorAll('.gear-del').forEach(function(b) { b.addEventListener('click', async function() {
       const items = await getGearItems();
-      const g = items[parseInt(this.dataset.idx)];
+      const filtered = filterGear(items);
+      const g = filtered[parseInt(this.dataset.idx)];
       if (g && confirm('Hapus gear ' + (g.name||'') + '?')) {
         await deleteGear(g.slug);
         await logAudit('delete', 'gear', g.slug, { name: g.name });
         await renderGear();
       }
     }); });
+    renderGearPagination(filtered.length);
   }
 
   var gearEditingIdx = -1;
@@ -993,6 +1136,69 @@ import Footer from '../components/Footer.astro';
     await renderOrders();
     await renderLaporan();
     await renderVouchers();
+
+    // Add search/filter event listeners for games
+    const gameSearch = document.getElementById('game-search-input');
+    if (gameSearch) {
+      let searchTimeout;
+      gameSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => { renderGames(); }, 300);
+      });
+    }
+    const gameStatus = document.getElementById('game-status-filter');
+    if (gameStatus) {
+      gameStatus.addEventListener('change', () => { renderGames(); });
+    }
+
+    // Add search/filter event listeners for gear
+    const gearSearch = document.getElementById('gear-search-input');
+    if (gearSearch) {
+      let searchTimeout;
+      gearSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => { renderGear(); }, 300);
+      });
+    }
+    const gearStatus = document.getElementById('gear-status-filter');
+    if (gearStatus) {
+      gearStatus.addEventListener('change', () => { renderGear(); });
+    }
+
+    // Export CSV handlers
+    const gameExport = document.getElementById('game-export-csv');
+    if (gameExport) {
+      gameExport.addEventListener('click', async () => {
+        const games = await getGames();
+        if (games.length === 0) { alert('Tidak ada data untuk diexport.'); return; }
+        var csv = '﻿Nama,Slug,Category,Currency,Badge,Status,Packages\n';
+        games.forEach(function(g) {
+          csv += (g.name||'') + ',' + (g.slug||'') + ',' + (g.category||'') + ',' + (g.currency||'') + ',' + (g.badge||'') + ',' + (g.status||'published') + ',' + (g.packages||[]).map(function(p) { return p.label + ':' + p.price; }).join('; ') + '\n';
+        });
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'topzone-games-' + new Date().toISOString().slice(0,10) + '.csv';
+        link.click();
+      });
+    }
+
+    const gearExport = document.getElementById('gear-export-csv');
+    if (gearExport) {
+      gearExport.addEventListener('click', async () => {
+        const items = await getGearItems();
+        if (items.length === 0) { alert('Tidak ada data untuk diexport.'); return; }
+        var csv = '﻿Nama,Slug,Category,Brand,Price,Tag,Status,Specs\n';
+        items.forEach(function(g) {
+          csv += (g.name||'') + ',' + (g.slug||'') + ',' + (g.category||'') + ',' + (g.brand||'') + ',' + (g.price||0) + ',' + (g.tag||'') + ',' + (g.status||'published') + ',' + (g.specs||[]).map(function(s) { return s.label + ':' + s.value; }).join('; ') + '\n';
+        });
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'topzone-gears-' + new Date().toISOString().slice(0,10) + '.csv';
+        link.click();
+      });
+    }
   }
 
   // Close modals on overlay click

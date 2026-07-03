@@ -1,0 +1,526 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { games } from '../data/games';
+import { gears } from '../data/gears';
+import { formatCurrency } from '../utils/format';
+import { applyProductFilters } from '../utils/filters';
+import { paginate } from '../utils/helpers';
+import type { Product, ProductFilters } from '../types';
+
+// Combine games and gears into a single Product array
+const allProducts: Product[] = [
+  ...games.map(g => ({ ...g, type: 'game' as const })),
+  ...gears.map(g => ({ ...g, type: 'gear' as const }))
+];
+
+// Get all unique categories from both games and gears
+const allCategories = Array.from(
+  new Set([
+    ...games.map(g => g.category),
+    ...gears.map(g => g.category)
+  ])
+).sort();
+
+// Get unique brands
+const uniqueBrands = [...new Set(gears.map(g => g.brand).filter(Boolean))].sort();
+
+// Get unique min and max prices from both games and gears
+const allPrices = [
+  ...games.flatMap(g => g.packages.map(p => p.price)),
+  ...gears.map(g => g.price)
+];
+const minPrice = Math.min(...allPrices);
+const maxPrice = Math.max(...allPrices);
+
+// Parse URL search parameters
+define getStaticPaths() {
+  return []; // Not using getStaticPaths - running client-side
+}
+
+// Server-side props for initial render
+export interface Props {
+  initialFilters: ProductFilters;
+  initialPage: number;
+}
+
+// Parse URL parameters on the server side
+define getInitialFilters(url: string): ProductFilters {
+  const urlObj = new URL(url);
+  const params = urlObj.searchParams;
+
+  return {
+    searchQuery: params.get('q') || '',
+    category: params.get('category') || '',
+    brand: params.get('brand') || '',
+    minPrice: params.get('minPrice') ? Number(params.get('minPrice')) : undefined,
+    maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : undefined,
+    sortBy: (params.get('sort') as ProductFilters['sortBy']) || undefined,
+  };
+}
+
+const initialFilters = defineProps<Props>().initialFilters;
+const initialPage = defineProps<Props>().initialPage;
+
+// Apply filters and pagination on the server side
+const filteredProducts = applyProductFilters(allProducts, initialFilters);
+const paginatedProducts = paginate(filteredProducts, initialPage, 12);
+---
+
+<Layout title={`Cari Produk - TopZone`} description={`Cari game dan gear gaming di TopZone. Temukan ${paginatedProducts.total} produk yang cocok dengan filter Anda.`}>
+  <Navbar />
+
+  <main class="min-h-screen bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Search Header -->
+      <div class="mb-8">
+        <h1 class="text-4xl font-black text-black dark:text-white mb-2">Cari Produk</h1>
+        <p class="text-gray-600 dark:text-gray-400 font-medium">
+          {initialFilters.searchQuery ? (
+            <>Cari "{initialFilters.searchQuery}" {paginatedProducts.total} produk ditemukan</>
+          ) : paginatedProducts.total > 0 ? (
+            <>{paginatedProducts.total} total produk tersedia</>
+          ) : (
+            <>Tidak ada produk cocok dengan filter</>
+          )}
+        </p>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Search Bar -->
+        <div class="lg:col-span-2">
+          <label for="search-input" class="block text-sm font-bold text-black dark:text-white mb-2">Kata Kunci</label>
+          <div class="relative">
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Cari game atau gear..."
+              value={initialFilters.searchQuery}
+              class="w-full pl-4 pr-4 py-3 border-4 border-black bg-white dark:bg-gray-800 text-black dark:text-white font-medium text-sm shadow-[4px_4px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all"
+              oninput="updateURL('q', this.value)"
+            />
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-bold text-black dark:text-white mb-2">Kategori</label>
+          <div class="flex flex-wrap gap-2">
+            {allCategories.map((category) => (
+              <button
+                key={category}
+                class={`px-4 py-2 font-black text-sm uppercase tracking-wider border-4 border-black shadow-[4px_4px_0px_0px_#000] transition-all cursor-pointer ${
+                  initialFilters.category === category
+                    ? 'bg-black text-neon-green'
+                    : 'bg-white hover:bg-neon-pink hover:text-white'
+                }`}
+                onclick="updateURL('category', this.textContent.toLowerCase())"
+              >
+                {category === 'mobile' ? 'Mobile Games' :
+                 category === 'pc' ? 'PC Games' :
+                 category === 'console' ? 'Console Games' :
+                 category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- Brand Dropdown -->
+        <div>
+          <label for="brand-select" class="block text-sm font-bold text-black dark:text-white mb-2">Brand</label>
+          <select
+            id="brand-select"
+            value={initialFilters.brand}
+            class="w-full px-4 py-3 border-4 border-black bg-white dark:bg-gray-800 text-black dark:text-white font-medium text-sm shadow-[4px_4px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all cursor-pointer"
+            onchange="updateURL('brand', this.value)"
+          >
+            <option value="">Semua Brand</option>
+            {uniqueBrands.map((brand) => (
+              <option key={brand} value={brand}>{brand}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Price Range -->
+        <div>
+          <label class="block text-sm font-bold text-black dark:text-white mb-2">Harga</label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input
+              type="number"
+              id="min-price"
+              placeholder="Min"
+              value={initialFilters.minPrice || ''}
+              min={minPrice}
+              max={maxPrice}
+              class="w-full px-4 py-3 border-4 border-black bg-white dark:bg-gray-800 text-black dark:text-white font-medium text-sm shadow-[4px_4px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all"
+              onchange="updatePriceRange('minPrice', this.value)"
+            />
+            <input
+              type="number"
+              id="max-price"
+              placeholder="Max"
+              value={initialFilters.maxPrice || ''}
+              min={minPrice}
+              max={maxPrice}
+              class="w-full px-4 py-3 border-4 border-black bg-white dark:bg-gray-800 text-black dark:text-white font-medium text-sm shadow-[4px_4px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all"
+              onchange="updatePriceRange('maxPrice', this.value)"
+            />
+          </div>
+        </div>
+
+        <!-- Sort Options -->
+        <div>
+          <label for="sort-select" class="block text-sm font-bold text-black dark:text-white mb-2">Urutkan</label>
+          <select
+            id="sort-select"
+            value={initialFilters.sortBy || ''}
+            class="w-full px-4 py-3 border-4 border-black bg-white dark:bg-gray-800 text-black dark:text-white font-medium text-sm shadow-[4px_4px_0px_0px_#000] focus:outline-none focus:shadow-[3px_3px_0px_0px_#000] focus:border-black transition-all cursor-pointer"
+            onchange="updateURL('sort', this.value)"
+          >
+            <option value="">Default</option>
+            <option value="price-asc">Termurah</option>
+            <option value="price-desc">Termahal</option>
+            <option value="name-asc">A-Z</option>
+            <option value="name-desc">Z-A</option>
+            <option value="newest">Terbaru</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Active Filter Chips -->
+      {(initialFilters.searchQuery || initialFilters.category || initialFilters.brand || initialFilters.minPrice || initialFilters.maxPrice || initialFilters.sortBy) && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {initialFilters.searchQuery && (
+            <span class="inline-flex items-center px-3 py-1 bg-neon-yellow text-black font-black text-sm border-4 border-black shadow-[3px_3px_0px_0px_#000]">
+              " {initialFilters.searchQuery} "
+              <button onclick="updateURL('q', '')" class="ml-2 text-black hover:text-neon-pink transition-colors">×</button>
+            </span>
+          )}
+          {initialFilters.category && (
+            <span class="inline-flex items-center px-3 py-1 bg-neon-green text-black font-black text-sm border-4 border-black shadow-[3px_3px_0px_0px_#000]">
+              Kategori: {initialFilters.category === 'mobile' ? 'Mobile Games' :
+                        initialFilters.category === 'pc' ? 'PC Games' :
+                        initialFilters.category === 'console' ? 'Console Games' :
+                        initialFilters.category}
+              <button onclick="updateURL('category', '')" class="ml-2 text-black hover:text-neon-pink transition-colors">×</button>
+            </span>
+          )}
+          {initialFilters.brand && (
+            <span class="inline-flex items-center px-3 py-1 bg-neon-pink text-white font-black text-sm border-4 border-black shadow-[3px_3px_0px_0px_#000]">
+              Brand: {initialFilters.brand}
+              <button onclick="updateURL('brand', '')" class="ml-2 text-white hover:text-black transition-colors">×</button>
+            </span>
+          )}
+          {(initialFilters.minPrice || initialFilters.maxPrice) && (
+            <span class="inline-flex items-center px-3 py-1 bg-neon-yellow text-black font-black text-sm border-4 border-black shadow-[3px_3px_0px_0px_#000]">
+              Harga: Rp {initialFilters.minPrice ? initialFilters.minPrice.toLocaleString('id-ID') : '0'} - Rp {initialFilters.maxPrice ? initialFilters.maxPrice.toLocaleString('id-ID') : maxPrice.toLocaleString('id-ID')}
+              <button onclick="updateURL('minPrice', ''); updateURL('maxPrice', '')" class="ml-2 text-black hover:text-neon-pink transition-colors">×</button>
+            </span>
+          )}
+          {initialFilters.sortBy && (
+            <span class="inline-flex items-center px-3 py-1 bg-white text-black font-black text-sm border-4 border-black shadow-[3px_3px_0px_0px_#000]">
+              Urutkan: {initialFilters.sortBy === 'price-asc' ? 'Termurah' :
+                        initialFilters.sortBy === 'price-desc' ? 'Termahal' :
+                        initialFilters.sortBy === 'name-asc' ? 'A-Z' :
+                        initialFilters.sortBy === 'name-desc' ? 'Z-A' :
+                        initialFilters.sortBy === 'newest' ? 'Terbaru' :
+                        initialFilters.sortBy}
+              <button onclick="updateURL('sort', '')" class="ml-2 text-black hover:text-neon-pink transition-colors">×</button>
+            </span>
+          )}
+        </div>
+      )}
+
+      <!-- Results Grid -->
+      {paginatedProducts.items.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {paginatedProducts.items.map((product) => (
+            <article class="group border-4 border-black bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all duration-150 overflow-hidden">
+              <a href={product.type === 'game' ? `/games/${product.slug}` : `/gear/${product.slug}`} class="block">
+                <div class="relative">
+                  <img
+                    src={product.img}
+                    alt={product.name}
+                    loading="lazy"
+                    class="w-full h-48 object-cover border-b-4 border-black"
+                  />
+                  {'badge' in product && (
+                    <span class="absolute top-3 right-3 px-2 py-1 text-xs font-black uppercase tracking-wider border-2 border-black shadow-[2px_2px_0px_0px_#000]"
+                          style={`background:${product.color || '#FFE600'}; color:#000;`}
+                    >
+                      {product.badge}
+                    </span>
+                  )}
+                  {'brand' in product && product.brand && (
+                    <span class="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-wider border border-black bg-white/90">
+                      {product.brand}
+                    </span>
+                  )}
+                  {'tag' in product && (
+                    <span class="absolute bottom-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-wider border border-black bg-white/90">
+                      {product.tag}
+                    </span>
+                  )}
+                </div>
+                <div class="p-4">
+                  <h3 class="text-lg font-black mb-2 line-clamp-2">
+                    {product.name}
+                  </h3>
+                  {'category' in product && (
+                    <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2 capitalize">
+                      {product.category === 'mobile' ? 'Mobile Games' :
+                       product.category === 'pc' ? 'PC Games' :
+                       product.category === 'console' ? 'Console Games' :
+                       product.category}
+                    </p>
+                  )}
+                  <p class="font-black text-neon-pink">
+                    {'packages' in product && product.packages ? (
+                      formatCurrency(Math.min(...product.packages.map(p => p.price)))
+                    ) : (
+                      formatCurrency(product.price)
+                    )}
+                  </p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-black text-black dark:text-white mb-2">Tidak ada produk yang cocok</h3>
+          <p class="text-gray-600 dark:text-gray-400 font-medium">
+            Tidak ada produk yang cocok dengan filter. Coba dengan kata kunci lain atau filter yang berbeda.
+          </p>
+        </div>
+      )}
+
+      <!-- Pagination -->
+      {paginatedProducts.totalPages > 1 && (
+        <div class="flex justify-center mt-8">
+          <nav class="flex items-center gap-2">
+            {Array.from({ length: paginatedProducts.totalPages }, (_, i) => i + 1).map((page) => (
+              <a
+                key={page}
+                href={`?q=${initialFilters.searchQuery}&category=${initialFilters.category}&brand=${initialFilters.brand}&minPrice=${initialFilters.minPrice || ''}&maxPrice=${initialFilters.maxPrice || ''}&sort=${initialFilters.sortBy || ''}&page=${page}`}
+                class={`px-4 py-2 font-black text-sm border-4 border-black shadow-[4px_4px_0px_0px_#000] transition-all ${
+                  page === initialPage
+                    ? 'bg-black text-neon-green'
+                    : 'bg-white hover:bg-neon-pink hover:text-white'
+                }`}
+              >
+                {page}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+
+  <!-- Client-side scripts -->
+  <script type="module">
+    import { games } from '/src/data/games';
+    import { gears } from '/src/data/gears';
+    import { applyProductFilters } from '/src/utils/filters';
+    import { paginate } from '/src/utils/helpers';
+
+    const allProducts = [
+      ...games.map(g => ({ ...g, type: 'game' })),
+      ...gears.map(g => ({ ...g, type: 'gear' }))
+    ];
+
+    let currentFilters = {
+      searchQuery: new URL(window.location).searchParams.get('q') || '',
+      category: new URL(window.location).searchParams.get('category') || '',
+      brand: new URL(window.location).searchParams.get('brand') || '',
+      minPrice: new URL(window.location).searchParams.get('minPrice') ? Number(new URL(window.location).searchParams.get('minPrice')) : undefined,
+      maxPrice: new URL(window.location).searchParams.get('maxPrice') ? Number(new URL(window.location).searchParams.get('maxPrice')) : undefined,
+      sortBy: new URL(window.location).searchParams.get('sort') || undefined,
+    };
+
+    let currentPage = Number(new URL(window.location).searchParams.get('page')) || 1;
+    const debounceDelay = 300;
+    let debounceTimeout;
+
+    function updateURL(param, value) {
+      const url = new URL(window.location);
+      if (value) {
+        url.searchParams.set(param, value);
+      } else {
+        url.searchParams.delete(param);
+      }
+      window.history.pushState({}, '', url);
+      applyFilters();
+    }
+
+    function updatePriceRange(param, value) {
+      const url = new URL(window.location);
+      const otherParam = param === 'minPrice' ? 'maxPrice' : 'minPrice';
+      const otherValue = url.searchParams.get(otherParam);
+
+      if (value) {
+        url.searchParams.set(param, value);
+      } else {
+        url.searchParams.delete(param);
+      }
+
+      if (otherValue) {
+        url.searchParams.set(otherParam, otherValue);
+      }
+
+      window.history.pushState({}, '', url);
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const url = new URL(window.location);
+      currentFilters = {
+        searchQuery: url.searchParams.get('q') || '',
+        category: url.searchParams.get('category') || '',
+        brand: url.searchParams.get('brand') || '',
+        minPrice: url.searchParams.get('minPrice') ? Number(url.searchParams.get('minPrice')) : undefined,
+        maxPrice: url.searchParams.get('maxPrice') ? Number(url.searchParams.get('maxPrice')) : undefined,
+        sortBy: url.searchParams.get('sort') || undefined,
+      };
+      currentPage = Number(url.searchParams.get('page')) || 1;
+
+      const filteredProducts = applyProductFilters(allProducts, currentFilters);
+      const paginatedProducts = paginate(filteredProducts, currentPage, 12);
+
+      updateUI(paginatedProducts, currentFilters);
+    }
+
+    function updateUI(paginatedProducts, filters) {
+      const resultsCount = document.querySelector('main .mb-2');
+      const resultsGrid = document.querySelector('.grid.grid-cols-1.sm\:grid-cols-2');
+      const pagination = document.querySelector('.flex.justify-center.mt-8');
+
+      if (resultsCount) {
+        if (filters.searchQuery) {
+          resultsCount.textContent = `${filters.searchQuery} ${paginatedProducts.total} produk ditemukan`;
+        } else if (paginatedProducts.total > 0) {
+          resultsCount.textContent = `${paginatedProducts.total} total produk tersedia`;
+        } else {
+          resultsCount.textContent = 'Tidak ada produk cocok dengan filter';
+        }
+      }
+
+      // Update active filter chips
+      const chipsContainer = document.querySelector('.flex.flex-wrap.gap-2.mb-6');
+      if (chipsContainer) {
+        // Here you would implement the chips update logic
+      }
+    }
+
+    function debounce(func, delay) {
+      return function(...args) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+
+    const debouncedSearch = debounce(function() {
+      updateURL('q', document.getElementById('search-input').value);
+    }, debounceDelay);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyFilters();
+
+      // Add event listeners for search input
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', debouncedSearch);
+      }
+
+      // Add event listeners for select elements
+      const brandSelect = document.getElementById('brand-select');
+      if (brandSelect) {
+        brandSelect.addEventListener('change', () => {
+          updateURL('brand', brandSelect.value);
+        });
+      }
+
+      const sortSelect = document.getElementById('sort-select');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          updateURL('sort', sortSelect.value);
+        });
+      }
+
+      // Add event listeners for price inputs
+      const minPriceInput = document.getElementById('min-price');
+      if (minPriceInput) {
+        minPriceInput.addEventListener('change', () => {
+          updatePriceRange('minPrice', minPriceInput.value);
+        });
+      }
+
+      const maxPriceInput = document.getElementById('max-price');
+      if (maxPriceInput) {
+        maxPriceInput.addEventListener('change', () => {
+          updatePriceRange('maxPrice', maxPriceInput.value);
+        });
+      }
+    });
+
+    // Listen for browser back/forward navigation
+    window.addEventListener('popstate', () => {
+      applyFilters();
+    });
+  </script>
+</Layout>
+---
+
+<style>
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #333;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
+---
