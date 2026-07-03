@@ -41,9 +41,40 @@ export const cartTotal = computed(cartItems, (items) =>
   items.reduce((sum, item) => sum + item.price * item.qty, 0)
 );
 
-export function addToCart(item: Omit<CartItem, 'qty'>) {
+/** Result of a stock check or add-to-cart operation */
+export interface CartActionResult {
+  success: boolean;
+  message?: string;
+}
+
+/**
+ * Basic stock check for cart items.
+ * Currently checks game packages with explicit stock fields.
+ */
+export function checkStock(item: Omit<CartItem, 'qty'>, currentQty = 1): CartActionResult {
+  if (item.type === 'game' && 'stock' in item) {
+    const stock = (item as any).stock;
+    if (stock === 0) {
+      return { success: false, message: 'Stok habis, tidak bisa menambah ke keranjang.' };
+    }
+    if (stock != null && currentQty > stock) {
+      return { success: false, message: `Stok tersisa ${stock}, tidak bisa menambah ${currentQty} item.` };
+    }
+  }
+  return { success: true };
+}
+
+export function addToCart(item: Omit<CartItem, 'qty'>): CartActionResult {
   const current = cartItems.get();
   const existing = current.find((i) => i.id === item.id);
+  const newQty = existing ? existing.qty + 1 : 1;
+
+  const stockCheck = checkStock(item, newQty);
+  if (!stockCheck.success) {
+    console.warn('[cart] Stock check failed:', stockCheck.message);
+    return stockCheck;
+  }
+
   let updated: CartItem[];
   if (existing) {
     updated = current.map((i) =>
@@ -54,6 +85,7 @@ export function addToCart(item: Omit<CartItem, 'qty'>) {
   }
   cartItems.set(updated);
   saveCart(updated);
+  return { success: true };
 }
 
 export function removeFromCart(id: string) {
