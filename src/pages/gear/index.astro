@@ -1,66 +1,53 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import Navbar from '../../../components/Navbar.astro';
-import Footer from '../../../components/Footer.astro';
-import { formatCurrency } from '../../../utils/format';
-import { paginate } from '../../../utils/helpers';
-import { applyProductFilters } from '../../../utils/filters';
-import { getUniqueBrands } from '../../../utils/filters';
+// src/pages/gear/index.astro
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { formatCurrency } from '../../utils/format';
+import { gears } from '../../data/gears';
+import { getUniqueBrands } from '../../utils/filters';
+import { paginate } from '../../utils/helpers';
+import type { Gear } from '../../types';
 
-// Import gear data directly
-import { gears } from '../../../data/gears';
-import type { Gear } from '../../../types';
+// ─── Params ───────────────────────────────────────────────
+const url = Astro.url;
+const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const category = url.searchParams.get('category') || 'all';
+const brand = url.searchParams.get('brand') || 'all';
+const sort = url.searchParams.get('sort') || 'Terbaru';
 
-// Get filtered and sorted products based on URL params
-const { searchParams } = new URL(Astro.request.url);
-const category = searchParams.get('category') || 'all';
-const brand = searchParams.get('brand') || 'all';
-const sort = searchParams.get('sort') || 'Terbaru';
-const page = Number(searchParams.get('page')) || 1;
+// ─── Filtered & sorted gear ───────────────────────────────
+let filteredGear = gears;
+if (category !== 'all') filteredGear = filteredGear.filter((g) => g.category === category);
+if (brand !== 'all') filteredGear = filteredGear.filter((g) => g.brand === brand);
 
-// Map human-readable sort values to ProductFilters sortBy values
-const sortMap = {
-  'Termurah': 'price-asc',
-  'Termahal': 'price-desc',
-  'A-Z': 'name-asc',
-  'Z-A': 'name-desc',
-  'Terbaru': 'newest',
-};
+if (sort === 'Termurah') filteredGear = [...filteredGear].sort((a, b) => a.price - b.price);
+else if (sort === 'Termahal') filteredGear = [...filteredGear].sort((a, b) => b.price - a.price);
+else if (sort === 'A-Z') filteredGear = [...filteredGear].sort((a, b) => a.name.localeCompare(b.name));
+else if (sort === 'Z-A') filteredGear = [...filteredGear].sort((a, b) => b.name.localeCompare(a.name));
+// default 'Terbaru' uses original order
 
-// Prepare filters object
-const filters = {
-  category,
-  brand,
-  sortBy: sortMap[sort as keyof typeof sortMap] || 'newest',
-  status: 'published',
-};
+const itemsPerPage = 9;
+const { items: paginatedProducts, total, totalPages } = paginate(filteredGear, page, itemsPerPage);
 
-// Apply filters to gear products
-const filteredProducts = applyProductFilters(gears as any, filters);
+function filterUrl(overrides: Record<string, string | undefined>) {
+  const p = new URLSearchParams();
+  const src = { category, brand, sort };
+  for (const [k, v] of Object.entries({ ...src, ...overrides })) {
+    if (v && v !== 'all' && v !== 'Terbaru') p.set(k, v);
+  }
+  return '/gear?' + p.toString();
+}
 
-// Get unique brands for the brand filter dropdown
 const uniqueBrands = getUniqueBrands(gears);
 
-// Paginate products (9 items per page)
-const itemsPerPage = 9;
-const { items: paginatedProducts, total, totalPages } = paginate(filteredProducts, page, itemsPerPage);
+const gearCategories: Record<string, string> = {
+  all: 'Semua', keyboard: 'Keyboard', mouse: 'Mouse', headset: 'Headset',
+  chair: 'Chair', controller: 'Controller', webcam: 'Webcam',
+  microphone: 'Microphone', monitor: 'Monitor', mousepad: 'Mousepad',
+  speaker: 'Speaker', streaming: 'Streaming',
+};
 
-// Previous and Next page URLs
-const prevPage = page > 1 ? `/gear?${new URLSearchParams({
-  ...(category && category !== 'all' ? { category } : {}),
-  ...(brand && brand !== 'all' ? { brand } : {}),
-  ...(sort && sort !== 'Terbaru' ? { sort } : {}),
-  page: (page - 1).toString()
-}).toString()}` : null;
-
-const nextPage = page < totalPages ? `/gear?${new URLSearchParams({
-  ...(category && category !== 'all' ? { category } : {}),
-  ...(brand && brand !== 'all' ? { brand } : {}),
-  ...(sort && sort !== 'Terbaru' ? { sort } : {}),
-  page: (page + 1).toString()
-}).toString() : null;
-
-// Get sort options
 const sortOptions = [
   { value: 'Termurah', label: 'Termurah' },
   { value: 'Termahal', label: 'Termahal' },
@@ -68,208 +55,99 @@ const sortOptions = [
   { value: 'Z-A', label: 'Z-A' },
   { value: 'Terbaru', label: 'Terbaru' },
 ];
-
-const gearCategories = {
-  all: 'Semua',
-  'keyboard': 'Keyboard',
-  'mouse': 'Mouse',
-  'headset': 'Headset',
-  'chair': 'Chair',
-  'controller': 'Controller',
-  'webcam': 'Webcam',
-  'microphone': 'Microphone',
-  'monitor': 'Monitor',
-  'mousepad': 'Mousepad',
-  'speaker': 'Speaker',
-  'streaming': 'Streaming',
-};
 ---
 
-<Layout>
+<Layout title={'Gear Catalog - TopZone'} description={'All your gaming peripherals in one place.'}>
   <Navbar />
-
-  <main class="py-16 bg-white">
+  <main class="py-16 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="mb-10">
-        <h1 class="text-5xl font-black uppercase tracking-tight mb-2">Gear Catalog</h1>
-        <p class="text-gray-600 font-medium text-lg">All your gaming peripherals in one place.</p>
+        <h1 class="text-5xl font-black uppercase tracking-tight mb-2 text-black dark:text-white">Gear Catalog</h1>
+        <p class="text-gray-600 dark:text-gray-400 font-medium text-lg">All your gaming peripherals in one place.</p>
       </div>
 
       <!-- Filters Section -->
-      <div class="bg-gray-50 border-4 border-black p-6 mb-8 shadow-[6px_6px_0px_0px_#000]">
+      <div class="bg-gray-50 dark:bg-gray-800 border-4 border-black p-6 mb-8 shadow-[6px_6px_0px_0px_#000]">
         <div class="flex flex-col lg:flex-row gap-6">
           <!-- Category Filter Tabs -->
           <div class="flex-1">
-            <label class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wider">Category</label>
+            <label class="block text-sm font-black text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Category</label>
             <div class="flex flex-wrap gap-2">
-              {Object.entries(gearCategories).map(([key, label]) => (
-                <a
-                  href={`/gear?${new URLSearchParams({
-                    ...(category !== key ? { category: key } : {}),
-                    ...(brand !== 'all' ? { brand } : {}),
-                    ...(sort !== 'Terbaru' ? { sort } : {}),
-                    page: '1'
-                  }).toString()}`
-                  class={`px-4 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all
-                    ${category === key
-                      ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
-                      : 'bg-white hover:bg-neon-pink hover:text-white'}
-                  `}
-                >
-                  {label}
-                </a>
-              ))}
+              {Object.keys(gearCategories).map((key) => {
+                const url = filterUrl({ category: key === 'all' ? undefined : key });
+                return (
+                  <a href={url} class={`px-4 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all cursor-pointer ${brand !== 'all' ? '' : ''} ${category === key ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]' : 'bg-white dark:bg-gray-700 dark:text-white hover:bg-neon-pink hover:text-white'}`}>{gearCategories[key]}</a>
+                );
+              })}
             </div>
           </div>
 
           <!-- Brand Filter -->
           <div class="w-full lg:w-48">
-            <label for="brand-select" class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wider">Brand</label>
+            <label class="block text-sm font-black text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Brand</label>
             <select
-              id="brand-select"
-              name="brand"
-              onchange="location.href = this.value || '/gear'"
-              class="w-full px-3 py-2 border-4 border-black font-bold bg-white shadow-[2px_2px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all"
+              onchange="location.href = this.value"
+              class="w-full px-3 py-2 border-4 border-black font-bold bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all"
             >
-              <option value="/gear" selected={brand === 'all'}>Semua Brand</option>
+              <option value={filterUrl({ brand: undefined })} selected={brand === 'all'}>Semua Brand</option>
               {uniqueBrands.map((b) => (
-                <option
-                  value={`/gear?${new URLSearchParams({
-                    ...(category !== 'all' ? { category } : {}),
-                    ...(brand !== b ? { brand: b } : {}),
-                    ...(sort !== 'Terbaru' ? { sort } : {}),
-                    page: '1'
-                  }).toString()}`
-                  selected={brand === b}
-                >
-                  {b}
-                </option>
+                <option value={filterUrl({ brand: b })} selected={brand === b}>{b}</option>
               ))}
             </select>
           </div>
 
-          <!-- Sort Options -->
-          <div class="w-full lg:w-48">
-            <label for="sort-select" class="block text-sm font-black text-gray-700 mb-3 uppercase tracking-wider">Urutkan</label>
+          <!-- Sort Filter -->
+          <div class="w-full lg:w-44">
+            <label class="block text-sm font-black text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Urutkan</label>
             <select
-              id="sort-select"
-              name="sort"
-              onchange="location.href = this.value || '/gear'"
-              class="w-full px-3 py-2 border-4 border-black font-bold bg-white shadow-[2px_2px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all"
+              onchange="location.href = this.value"
+              class="w-full px-3 py-2 border-4 border-black font-bold bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all"
             >
               {sortOptions.map((opt) => (
-                <option
-                  value={`/gear?${new URLSearchParams({
-                    ...(category !== 'all' ? { category } : {}),
-                    ...(brand !== 'all' ? { brand } : {}),
-                    sort: opt.value,
-                    page: '1'
-                  }).toString()}`
-                  selected={sort === opt.value}
-                >
-                  {opt.label}
-                </option>
+                <option value={filterUrl({ sort: opt.value })} selected={sort === opt.value}>{opt.label}</option>
               ))}
             </select>
           </div>
         </div>
-      </div>
-
-      <!-- Results Count -->
-      <div class="mb-6">
-        <p class="text-gray-700 font-bold">
-          Menampilkan {paginatedProducts.length} dari {total} produk
-        </p>
       </div>
 
       <!-- Product Grid -->
       {paginatedProducts.length > 0 ? (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {paginatedProducts.map((gear) => (
-            <article class="group border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150">
-              <a href={`/gear/${gear.slug}`} class="block">
-                <div class="relative">
-                  <img
-                    src={gear.img}
-                    alt={gear.name}
-                    loading="lazy"
-                    class="w-full h-48 object-cover border-b-4 border-black"
-                  />
-                  <span class="absolute top-3 right-3 px-2 py-1 text-xs font-black uppercase tracking-wider border-2 border-black bg-black text-neon-yellow shadow-[2px_2px_0px_0px_#FFE600]">
-                    {gear.tag}
-                  </span>
-                  {gear.brand && (
-                    <span class="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-wider border border-black bg-white/90">
-                      {gear.brand}
-                    </span>
-                  )}
-                </div>
-                <div class="p-5">
-                  <h3 class="text-xl font-black mb-2 line-clamp-2">{gear.name}</h3>
-                  <p class="font-bold text-lg mb-4" style="color:#FF007F;">{formatCurrency(gear.price)}</p>
-                  <div class="w-full py-2 font-black uppercase tracking-wider text-center bg-neon-pink text-white border-2 border-black shadow-[3px_3px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
-                    Lihat Detail →
-                  </div>
-                </div>
-              </a>
-            </article>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {paginatedProducts.map((gear: Gear) => (
+            <a href={`/gear/${gear.slug}`} class="group block border-4 border-black bg-white dark:bg-gray-800 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#FF007F] transition-all">
+              <div class="aspect-[4/3] overflow-hidden border-b-2 border-black">
+                <img src={gear.img} alt={gear.name} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              </div>
+              <div class="p-5">
+                <span class="inline-block px-2 py-1 text-xs font-black uppercase tracking-widest mb-2 bg-black text-neon-green">{gear.tag}</span>
+                <h3 class="text-xl font-black mb-1 text-black dark:text-white truncate">{gear.name}</h3>
+                <p class="text-lg font-bold text-neon-pink">{formatCurrency(gear.price)}</p>
+              </div>
+            </a>
           ))}
         </div>
       ) : (
-        <div class="border-4 border-dashed border-black bg-gray-50 p-12 text-center mb-12">
-          <p class="text-xl font-black text-gray-400 mb-2">Tidak ada gear yang cocok dengan filter yang dipilih.</p>
-          <p class="text-gray-600 font-medium">Coba ubah filter atau pilih kategori yang berbeda.</p>
+        <div class="text-center py-24 border-4 border-dashed border-black dark:border-gray-600 mb-12">
+          <p class="text-2xl font-black text-gray-400 dark:text-gray-500">Tidak ada gear ditemukan</p>
+          <p class="text-gray-500 dark:text-gray-400 mt-2 font-medium">Coba ubah filter atau kata kunci pencarian.</p>
         </div>
       )}
 
       <!-- Pagination -->
       {totalPages > 1 && (
-        <div class="flex justify-center items-center gap-3">
-          {prevPage && (
-            <a
-              href={prevPage}
-              class="px-4 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              Sebelumnya
-            </a>
+        <div class="flex justify-center items-center gap-4">
+          {page > 1 && (
+            <a href={filterUrl({ page: String(page - 1) })} class="px-5 py-3 font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">← Sebelumnya</a>
           )}
-          <div class="flex gap-2">
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              const pageNum = i + 1;
-              const isActive = pageNum === page;
-              const query = new URLSearchParams({
-                ...(category !== 'all' ? { category } : {}),
-                ...(brand !== 'all' ? { brand } : {}),
-                ...(sort !== 'Terbaru' ? { sort } : {}),
-                page: pageNum.toString()
-              });
-              return (
-                <a
-                  href={`/gear?${query.toString()}`}
-                  class={`w-10 h-10 flex items-center justify-center font-black border-2 border-black
-                    ${isActive
-                      ? 'bg-neon-green text-black shadow-[2px_2px_0px_0px_#000]'
-                      : 'bg-white hover:bg-black hover:text-white transition-all'}
-                  `}
-                >
-                  {pageNum}
-                </a>
-              );
-            })}
-          </div>
-          {nextPage && (
-            <a
-              href={nextPage}
-              class="px-4 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              Berikutnya
-            </a>
+          <span class="font-black text-lg text-black dark:text-white">Halaman {page} dari {totalPages}</span>
+          {page < totalPages && (
+            <a href={filterUrl({ page: String(page + 1) })} class="px-5 py-3 font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Selanjutnya →</a>
           )}
         </div>
       )}
     </div>
   </main>
-
   <Footer />
 </Layout>

@@ -59,6 +59,17 @@ export function setUser(u: AppUser | null) {
   }
 }
 
+export function setLocalUser(email: string, fullName?: string) {
+  if (!isBrowser()) return;
+  const u: AppUser = {
+    email,
+    full_name: fullName || email.split('@')[0],
+    isLoggedIn: true,
+  };
+  localStorage.setItem(AUTH_KEY, JSON.stringify(u));
+  user.set(u);
+}
+
 export function logoutUser() {
   if (!isBrowser()) return;
   localStorage.removeItem(AUTH_KEY);

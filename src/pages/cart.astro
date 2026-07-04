@@ -86,7 +86,7 @@ import Button from '../components/Button.astro';
       `).join('');
 
       // Bind events
-      listEl.querySelectorAll<HTMLButtonElement>('.qty-btn').forEach((btn) => {
+      listEl.querySelectorAll('.qty-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           const id = btn.dataset.id!;
           const action = btn.dataset.action;
@@ -96,7 +96,7 @@ import Button from '../components/Button.astro';
         });
       });
 
-      listEl.querySelectorAll<HTMLButtonElement>('.remove-btn').forEach((btn) => {
+      listEl.querySelectorAll('.remove-btn').forEach((btn) => {
         btn.addEventListener('click', () => removeFromCart(btn.dataset.id!));
       });
     }

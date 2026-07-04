@@ -296,8 +296,7 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </Layout>
 
-<script>
-  // ---- Supabase API-based Admin ----
+<script is:inline>
   const API = {
     login: '/api/auth/admin-login',
     logout: '/api/auth/admin-logout',
