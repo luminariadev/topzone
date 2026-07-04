@@ -51,6 +51,10 @@ import Footer from '../components/Footer.astro';
               <input type="tel" id="phone" required placeholder="081-23456789" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all" />
             </div>
             <div>
+              <label class="block text-sm font-black uppercase tracking-wider mb-2">Catatan Pesanan (Opsional)</label>
+              <textarea id="order-notes" rows="2" placeholder="Contoh: Mohon kirim dengan kemasan aman" class="w-full px-4 py-3 border-3 border-black font-bold text-sm shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all resize-none"></textarea>
+            </div>
+            <div>
               <label class="block text-sm font-black uppercase tracking-wider mb-2">Metode Pembayaran</label>
               <select id="payment" required class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all bg-white">
                 <option value="bank">Transfer Bank</option>
@@ -229,6 +233,7 @@ import Footer from '../components/Footer.astro';
       userEmail: getCurrentEmail() || '',
       name,
       phone,
+      notes: document.getElementById('order-notes')?.value?.trim() || '',
       payment,
       status: 'pending',
       total: (typeof finalTotal !== 'undefined' ? finalTotal : cartTotal.get()),
