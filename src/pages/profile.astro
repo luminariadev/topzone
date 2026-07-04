@@ -13,6 +13,7 @@ import AccountDeletion from '../components/AccountDeletion.astro';
 import UserPreferences from '../components/UserPreferences.astro';
 import RecentActivity from '../components/RecentActivity.astro';
 import OrderStats from '../components/OrderStats.astro';
+import VoucherManager from '../components/VoucherManager.astro';
 ---
 
 <Layout>
@@ -172,13 +173,8 @@ import OrderStats from '../components/OrderStats.astro';
       </div>
 
       <!-- Tab: Vouchers -->
-      <div id="panel-vouchers" class="hidden space-y-4">
-        <div id="vouchers-empty" class="text-center py-16 border-4 border-dashed border-black dark:border-gray-600">
-          <div class="text-5xl mb-3">🎰</div>
-          <p class="text-xl font-black mb-2 text-black dark:text-white">Belum ada voucher</p>
-          <p class="font-bold text-gray-500 dark:text-gray-400">Daftarkan akun baru untuk mendapatkan voucher selamat datang!</p>
-        </div>
-        <div id="vouchers-list" class="hidden flex flex-col gap-4"></div>
+      <div id="panel-vouchers" class="hidden space-y-6">
+        <div id="voucher-manager-wrap"></div>
       </div>
     </div>
   </div>
