@@ -1,0 +1,179 @@
+---
+// src/components/ShippingAddressManager.astro
+// Shipping address CRUD in user profile
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initShippingAddress() {
+    var wrap = document.getElementById('shipping-address-wrap');
+    if (!wrap || wrap.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var addressesKey = 'topzone_addresses_' + email;
+
+    function getAddresses() {
+      try { return JSON.parse(localStorage.getItem(addressesKey) || '[]'); } catch { return []; }
+    }
+
+    function saveAddresses(addresses) {
+      localStorage.setItem(addressesKey, JSON.stringify(addresses));
+    }
+
+    function renderAddresses() {
+      var container = document.getElementById('address-list');
+      var empty = document.getElementById('address-empty');
+      var addresses = getAddresses();
+
+      if (addresses.length === 0) {
+        container.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      container.innerHTML = addresses.map(function(addr, idx) {
+        return '<div class="border-4 border-black p-5 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000] relative">' +
+          '<div class="flex justify-between items-start mb-3">' +
+            '<h4 class="font-black text-lg text-black dark:text-white">' + addr.label + '</h4>' +
+            (addr.isDefault ? '<span class="px-2 py-1 text-xs font-black bg-neon-green text-black border-2 border-black">Utama</span>' : '') +
+          '</div>' +
+          '<div class="space-y-1 text-sm font-medium text-gray-700 dark:text-gray-300">' +
+            '<p>' + addr.recipient + '</p>' +
+            '<p>' + addr.phone + '</p>' +
+            '<p>' + addr.address + ', ' + addr.city + ' ' + addr.postalCode + '</p>' +
+          '</div>' +
+          '<div class="flex gap-2 mt-4 pt-3 border-t-2 border-black/10 dark:border-gray-600">' +
+            '<button type="button" class="edit-addr px-3 py-1.5 text-xs font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + idx + '">Edit</button>' +
+            (addr.isDefault ? '' : '<button type="button" class="set-default px-3 py-1.5 text-xs font-black uppercase border-2 border-black bg-neon-yellow shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + idx + '">Jadikan Utama</button>') +
+            '<button type="button" class="delete-addr px-3 py-1.5 text-xs font-black uppercase border-2 border-black bg-neon-pink text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-idx="' + idx + '">Hapus</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      bindAddressEvents();
+    }
+
+    function bindAddressEvents() {
+      var container = document.getElementById('address-list');
+      container.querySelectorAll('.edit-addr').forEach(function(btn) {
+        btn.addEventListener('click', function() { openModal(parseInt(this.dataset.idx)); });
+      });
+      container.querySelectorAll('.set-default').forEach(function(btn) {
+        btn.addEventListener('click', function() { setDefault(parseInt(this.dataset.idx)); });
+      });
+      container.querySelectorAll('.delete-addr').forEach(function(btn) {
+        btn.addEventListener('click', function() { deleteAddress(parseInt(this.dataset.idx)); });
+      });
+    }
+
+    function openModal(idx) {
+      var addresses = getAddresses();
+      var addr = idx >= 0 ? addresses[idx] : null;
+      var isNew = idx < 0;
+
+      var modal = document.createElement('div');
+      modal.id = 'addr-modal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
+      modal.innerHTML =
+        '<div class="w-full max-w-md mx-4 border-4 border-black bg-white dark:bg-gray-800 p-6 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#FF007F]">' +
+          '<h3 class="text-2xl font-black mb-4 text-black dark:text-white">' + (isNew ? 'Tambah Alamat' : 'Edit Alamat') + '</h3>' +
+          '<form id="addr-form" class="space-y-3">' +
+            '<input type="hidden" name="idx" value="' + idx + '">' +
+            '<div><label class="block text-xs font-black mb-1">Label *</label>' +
+            '<input type="text" name="label" required value="' + (addr?.label || '') + '" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" placeholder="Rumah / Kantor"></div>' +
+            '<div><label class="block text-xs font-black mb-1">Penerima *</label>' +
+            '<input type="text" name="recipient" required value="' + (addr?.recipient || '') + '" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"></div>' +
+            '<div><label class="block text-xs font-black mb-1">Telepon *</label>' +
+            '<input type="tel" name="phone" required value="' + (addr?.phone || '') + '" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"></div>' +
+            '<div><label class="block text-xs font-black mb-1">Alamat Lengkap *</label>' +
+            '<textarea name="address" required rows="2" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white resize-none">' + (addr?.address || '') + '</textarea></div>' +
+            '<div class="grid grid-cols-2 gap-3">' +
+              '<div><label class="block text-xs font-black mb-1">Kota *</label>' +
+              '<input type="text" name="city" required value="' + (addr?.city || '') + '" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"></div>' +
+              '<div><label class="block text-xs font-black mb-1">Kode Pos *</label>' +
+              '<input type="text" name="postalCode" required value="' + (addr?.postalCode || '') + '" class="w-full px-3 py-2 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"></div>' +
+            '</div>' +
+            '<div class="flex items-center gap-2">' +
+              '<input type="checkbox" name="isDefault" id="isDefault" ' + (addr?.isDefault ? 'checked' : '') + (isNew && addresses.length === 0 ? ' checked' : '') + ' class="w-4 h-4 border-2 border-black">' +
+              '<label for="isDefault" class="text-sm font-black cursor-pointer">Jadikan alamat utama</label>' +
+            '</div>' +
+            '<div class="flex gap-2 mt-4">' +
+              '<button type="submit" class="flex-1 px-4 py-2 font-black uppercase border-2 border-black bg-black text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Simpan</button>' +
+              '<button type="button" id="addr-cancel" class="flex-1 px-4 py-2 font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Batal</button>' +
+            '</div>' +
+          '</form>' +
+        '</div>';
+
+      document.body.appendChild(modal);
+
+      modal.querySelector('#addr-cancel').addEventListener('click', function() { modal.remove(); });
+      modal.querySelector('#addr-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        var newAddr = {
+          label: formData.get('label'),
+          recipient: formData.get('recipient'),
+          phone: formData.get('phone'),
+          address: formData.get('address'),
+          city: formData.get('city'),
+          postalCode: formData.get('postalCode'),
+          isDefault: formData.get('isDefault') === 'on'
+        };
+
+        var all = getAddresses();
+        if (newAddr.isDefault) {
+          all.forEach(function(a) { a.isDefault = false; });
+        } else if (all.length === 0) {
+          newAddr.isDefault = true;
+        }
+
+        if (isNew) all.push(newAddr);
+        else all[parseInt(formData.get('idx'))] = newAddr;
+
+        saveAddresses(all);
+        modal.remove();
+        renderAddresses();
+      });
+    }
+
+    function setDefault(idx) {
+      var all = getAddresses();
+      all.forEach(function(a) { a.isDefault = false; });
+      all[idx].isDefault = true;
+      saveAddresses(all);
+      renderAddresses();
+    }
+
+    function deleteAddress(idx) {
+      if (!confirm('Hapus alamat ini?')) return;
+      var all = getAddresses();
+      all.splice(idx, 1);
+      if (all.length > 0 && !all.some(function(a) { return a.isDefault; })) {
+        all[0].isDefault = true;
+      }
+      saveAddresses(all);
+      renderAddresses();
+    }
+
+    // Initial render
+    var container = document.getElementById('address-list');
+    var empty = document.getElementById('address-empty');
+    renderAddresses();
+
+    // Add address button
+    document.getElementById('add-address-btn')?.addEventListener('click', function() { openModal(-1); });
+  }
+
+  // Run on load and on auth state change
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShippingAddress);
+  } else {
+    initShippingAddress();
+  }
+  user.subscribe(function () { setTimeout(initShippingAddress, 50); });
+</script>

@@ -287,7 +287,7 @@ const { game } = Astro.props;
 <script>
   import { addToCart } from '../../stores/cart';
 
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.package-btn');
+  const buttons = document.querySelectorAll('.package-btn');
   const toast = document.getElementById('add-toast');
 
   buttons.forEach((btn) => {
