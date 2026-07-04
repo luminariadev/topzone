@@ -149,7 +149,6 @@ export const games: Game[] = [
       { id: 'fn-13500', label: '13.500 V-Bucks', price: 193000 },
     ],
   },
-],
   // ── 2.2 New Games ──────────────────────────────────────
   {
     slug: 'ml-starlight',

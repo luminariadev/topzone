@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import { fetchGears } from '../../lib/products';
 import { formatCurrency } from '../../utils/format';
 import type { Gear } from '../../data/gears';
+export const prerender = true;
 export async function getStaticPaths() {
   const gears = await fetchGears();
   return gears.map((gear) => ({

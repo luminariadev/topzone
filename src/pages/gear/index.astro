@@ -51,7 +51,7 @@ const prevPage = page > 1 ? `/gear?${new URLSearchParams({
   ...(brand && brand !== 'all' ? { brand } : {}),
   ...(sort && sort !== 'Terbaru' ? { sort } : {}),
   page: (page - 1).toString()
-}).toString() : null;
+}).toString()}` : null;
 
 const nextPage = page < totalPages ? `/gear?${new URLSearchParams({
   ...(category && category !== 'all' ? { category } : {}),

@@ -41,7 +41,7 @@ build-debug.txt
 build-final.txt
 build-full.txt
 build-log.txt
-build-output.txt
+build-output.txt build-err2.log build-err3.log build-out3.log
 build-raw.txt
 
 # Notes
