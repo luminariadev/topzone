@@ -1,0 +1,64 @@
+---
+// src/components/NotificationCenter.astro
+// In-app notification center - Fase 3.2 item 8
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initNotifications() {
+    var el = document.getElementById('notification-center-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var notifKey = 'topzone_notifications_' + email;
+
+    function getNotifs() {
+      try { return JSON.parse(localStorage.getItem(notifKey) || '[]'); } catch { return []; }
+    }
+
+    function saveNotifs(notifs) {
+      localStorage.setItem(notifKey, JSON.stringify(notifs));
+    }
+
+    var notifs = getNotifs();
+    if (notifs.length === 0) {
+      notifs = [{ id: 'welcome', title: 'Selamat datang di TopZone!', message: 'Gunakan kode WELCOME10 untuk diskon 10%.', type: 'info', read: false, createdAt: new Date().toISOString() }];
+      saveNotifs(notifs);
+    }
+
+    var unreadCount = notifs.filter(function(n) { return !n.read; }).length;
+
+    el.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<div class="flex justify-between items-center mb-4">' +
+          '<h3 class="text-xl font-black text-black dark:text-white">Notifikasi</h3>' +
+          (unreadCount > 0 ? '<span class="px-3 py-1 text-xs font-black bg-neon-pink text-white border-2 border-black">' + unreadCount + ' baru</span>' : '') +
+        '</div>' +
+        (notifs.length === 0 ? (
+          '<div class="text-center py-8 border-4 border-dashed border-black dark:border-gray-600"><p class="font-black text-gray-400">Belum ada notifikasi</p></div>'
+        ) : (
+          '<div class="space-y-3">' +
+            notifs.slice(0, 10).map(function(n) {
+              var icons = { info: 'ℹ️', success: '✅', warning: '⚠️', order: '📦' };
+              return '<div class="flex items-start gap-3 p-4 border-2 border-black ' + (n.read ? 'bg-gray-50 dark:bg-gray-700 opacity-70' : 'bg-neon-yellow/30 dark:bg-gray-600') + '">' +
+                '<span class="text-xl">' + (icons[n.type] || '🔔') + '</span>' +
+                '<div class="flex-1">' +
+                  '<p class="font-black text-sm text-black dark:text-white">' + n.title + '</p>' +
+                  '<p class="text-xs font-bold text-gray-500 dark:text-gray-400">' + n.message + '</p>' +
+                  '<p class="text-xs text-gray-400 mt-1">' + new Date(n.createdAt).toLocaleDateString('id-ID', { day:'numeric', month:'short' }) + '</p>' +
+                '</div></div>';
+            }).join('') +
+          '</div>'
+        )) + '</div>';
+
+    if (unreadCount > 0) { notifs.forEach(function(n) { n.read = true; }); saveNotifs(notifs); }
+  }
+
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initNotifications); }
+  else { initNotifications(); }
+  user.subscribe(function () { setTimeout(initNotifications, 50); });
+</script>
