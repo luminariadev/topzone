@@ -1,0 +1,36 @@
+---
+// src/components/SocialShare.astro
+// Social share buttons for WhatsApp, Twitter, Telegram, copy link - Fase 3.5 item 9
+---
+
+<script>
+  function initSocialShare() {
+    var els = document.querySelectorAll('[data-social-share]');
+    if (els.length === 0) return;
+
+    els.forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        var platform = this.dataset.socialShare;
+        var url = encodeURIComponent(this.dataset.url || window.location.href);
+        var text = encodeURIComponent(this.dataset.text || document.title);
+        var href = '';
+
+        if (platform === 'whatsapp') href = 'https://wa.me/?text=' + text + '%20' + url;
+        else if (platform === 'twitter') href = 'https://twitter.com/intent/tweet?text=' + text + '&url=' + url;
+        else if (platform === 'telegram') href = 'https://t.me/share/url?url=' + url + '&text=' + text;
+        else if (platform === 'copy') {
+          navigator.clipboard.writeText(decodeURIComponent(url));
+          this.textContent = 'Copied!';
+          var self = this;
+          setTimeout(function() { self.textContent = 'Copy Link'; }, 1500);
+          return;
+        }
+
+        if (href) window.open(href, '_blank', 'width=600,height=400');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSocialShare);
+  else initSocialShare();
+</script>
