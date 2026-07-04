@@ -1,0 +1,83 @@
+---
+// src/components/UserPreferences.astro
+// User notification & language preferences - Fase 3.1 item 6
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initPrefs() {
+    var el = document.getElementById('user-prefs-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var prefsKey = 'topzone_prefs_' + email;
+
+    function getPrefs() {
+      try { return JSON.parse(localStorage.getItem(prefsKey) || '{}'); } catch { return {}; }
+    }
+
+    function savePrefs(data) {
+      localStorage.setItem(prefsKey, JSON.stringify(data));
+    }
+
+    var prefs = getPrefs();
+
+    el.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-black dark:text-white">Pengaturan Preferensi</h3>' +
+        '<div class="space-y-6">' +
+          '<div>' +
+            '<h4 class="font-black mb-3 text-black dark:text-white">Notifikasi Email</h4>' +
+            '<div class="space-y-2">' +
+              '<label class="flex items-center gap-3 p-3 border-2 border-black cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">' +
+                '<input type="checkbox" class="pref-check w-4 h-4" data-key="emailOrderConfirm" ' + (prefs.emailOrderConfirm !== false ? 'checked' : '') + '>' +
+                '<span class="text-sm font-bold text-black dark:text-white">Konfirmasi pesanan</span>' +
+              '</label>' +
+              '<label class="flex items-center gap-3 p-3 border-2 border-black cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">' +
+                '<input type="checkbox" class="pref-check w-4 h-4" data-key="emailPaymentUpdate" ' + (prefs.emailPaymentUpdate !== false ? 'checked' : '') + '>' +
+                '<span class="text-sm font-bold text-black dark:text-white">Update status pembayaran</span>' +
+              '</label>' +
+              '<label class="flex items-center gap-3 p-3 border-2 border-black cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">' +
+                '<input type="checkbox" class="pref-check w-4 h-4" data-key="emailPromo" ' + (prefs.emailPromo === true ? 'checked' : '') + '>' +
+                '<span class="text-sm font-bold text-black dark:text-white">Promo dan penawaran khusus</span>' +
+              '</label>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<h4 class="font-black mb-3 text-black dark:text-white">Bahasa</h4>' +
+            '<select id="pref-language" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white">' +
+              '<option value="id" ' + (prefs.language === 'id' || !prefs.language ? 'selected' : '') + '>Bahasa Indonesia</option>' +
+              '<option value="en" ' + (prefs.language === 'en' ? 'selected' : '') + '>English</option>' +
+            '</select>' +
+          '</div>' +
+          '<button type="button" id="prefs-save" class="w-full px-6 py-3 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Simpan Preferensi</button>' +
+          '<p id="prefs-msg" class="hidden text-sm font-black px-3 py-2 border-2 border-black text-center"></p>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('prefs-save')?.addEventListener('click', function() {
+      var checks = document.querySelectorAll('.pref-check');
+      var newPrefs = {};
+      checks.forEach(function(cb) { newPrefs[cb.dataset.key] = cb.checked; });
+      var langSelect = document.getElementById('pref-language');
+      if (langSelect) newPrefs.language = langSelect.value;
+      savePrefs(newPrefs);
+      var msg = document.getElementById('prefs-msg');
+      if (msg) {
+        msg.textContent = 'Preferensi berhasil disimpan!';
+        msg.className = 'text-sm font-black px-3 py-2 border-2 border-black text-center bg-neon-green text-black';
+        msg.classList.remove('hidden');
+        setTimeout(function() { msg.classList.add('hidden'); }, 2000);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPrefs);
+  } else { initPrefs(); }
+  user.subscribe(function () { setTimeout(initPrefs, 50); });
+</script>
