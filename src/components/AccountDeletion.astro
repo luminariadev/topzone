@@ -1,0 +1,73 @@
+---
+// src/components/AccountDeletion.astro
+// Account deletion with confirmation
+---
+
+<script>
+  import { user, logoutUser } from '../stores/auth';
+
+  function initAccountDeletion() {
+    var el = document.getElementById('account-deletion-wrap');
+    if (!el || el.children.length > 0) return;
+
+    el.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-red-500">HApus Akun</h3>' +
+        '<p class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4">Menghapus akun akan menghilangkan semua data. Tindakan ini <strong>tidak bisa dibatalkan</strong>.</p>' +
+        '<ul class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4 list-disc list-inside space-y-1">' +
+          '<li>Semua pesanan akan hilang</li>' +
+          '<li>Alamat pengiriman akan dihapus</li>' +
+          '<li>Voucher dan poin akan hangus</li>' +
+          '<li>Email tidak bisa dipakai lagi untuk 30 hari</li>' +
+        '</ul>' +
+        '<div id="deletion-confirm-section" class="hidden space-y-4">' +
+          '<p class="text-sm font-bold text-neon-pink">Ketik <strong>HAPUS</strong> untuk konfirmasi:</p>' +
+          '<div class="flex gap-3">' +
+            '<input type="text" id="deletion-confirm-input" placeholder="HAPUS" class="flex-1 px-4 py-3 border-3 border-red-500 font-bold text-lg text-center uppercase tracking-widest shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" />' +
+            '<button type="button" id="deletion-execute" class="px-5 py-3 font-black uppercase border-2 border-black bg-red-500 text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all whitespace-nowrap">Hapus</button>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" id="deletion-show-confirm" class="px-6 py-3 font-black uppercase border-2 border-black bg-neon-pink text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Mulai Hapus Akun</button>' +
+        '<p id="deletion-msg" class="hidden mt-2 text-sm font-black px-3 py-2 border-2 border-black"></p>' +
+      '</div>';
+
+    var showConfirmBtn = document.getElementById('deletion-show-confirm');
+    var confirmSection = document.getElementById('deletion-confirm-section');
+    var executeBtn = document.getElementById('deletion-execute');
+    var confirmInput = document.getElementById('deletion-confirm-input');
+    var msgEl = document.getElementById('deletion-msg');
+
+    if (showConfirmBtn) {
+      showConfirmBtn.addEventListener('click', function() {
+        if (confirmSection) confirmSection.classList.remove('hidden');
+        showConfirmBtn.classList.add('hidden');
+      });
+    }
+
+    if (executeBtn) {
+      executeBtn.addEventListener('click', function() {
+        var txt = confirmInput ? confirmInput.value.trim() : '';
+        if (txt !== 'HAPUS') {
+          if (msgEl) { msgEl.textContent = 'Ketik HAPUS untuk konfirmasi'; msgEl.className = 'mt-2 text-sm font-black px-3 py-2 border-2 border-black bg-neon-pink text-white'; msgEl.classList.remove('hidden'); }
+          return;
+        }
+        var currentUser = user.get();
+        if (currentUser) {
+          var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+          try { localStorage.removeItem('topzone_orders_' + email); } catch(e) {}
+          try { localStorage.removeItem('topzone_addresses_' + email); } catch(e) {}
+          try { localStorage.removeItem('topzone_phone_' + email); } catch(e) {}
+          try { localStorage.removeItem('topzone_voucher'); } catch(e) {}
+          try { localStorage.removeItem('topzone_wishlist'); } catch(e) {}
+        }
+        if (msgEl) { msgEl.textContent = 'Akun berhasil dihapus. Redirect...'; msgEl.className = 'mt-2 text-sm font-black px-3 py-2 border-2 border-black bg-neon-green text-black'; msgEl.classList.remove('hidden'); }
+        setTimeout(function() { logoutUser(); window.location.href = '/'; }, 2000);
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAccountDeletion);
+  } else { initAccountDeletion(); }
+  user.subscribe(function () { setTimeout(initAccountDeletion, 50); });
+</script>

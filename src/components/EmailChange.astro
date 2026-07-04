@@ -1,0 +1,162 @@
+---
+// src/components/EmailChange.astro
+// Email change with OTP
+---
+
+<script>
+  import { user, updateLocalUser } from '../stores/auth';
+
+  function initEmailChange() {
+    var el = document.getElementById('email-change-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var emailKey = 'topzone_email_change_' + currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+
+    function getEmailData() {
+      try { return JSON.parse(localStorage.getItem(emailKey) || '{}'); } catch { return {}; }
+    }
+
+    function saveEmailData(data) {
+      localStorage.setItem(emailKey, JSON.stringify(data));
+    }
+
+    var emailData = getEmailData();
+    var step = emailData.newEmail ? 'verify' : 'input';
+    var currentEmail = currentUser.email;
+
+    function render() {
+      var html = '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-black dark:text-white">📧 Ganti Email</h3>' +
+        '<p class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4">Email saat ini: <strong>' + currentEmail + '</strong></p>';
+
+      if (step === 'input') {
+        html +=
+          '<div class="space-y-4">' +
+            '<div><label class="block text-xs font-black mb-1">Email Baru</label>' +
+            '<input type="email" id="new-email-input" class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" placeholder="email@baru.com" /></div>' +
+            '<div id="email-change-msg" class="hidden text-sm font-black px-3 py-2 border-2 border-black"></div>' +
+            '<button type="button" id="email-send-verification" class="w-full px-6 py-3 font-black uppercase border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Kirim Kode Verifikasi</button>' +
+          '</div>';
+      } else {
+        html +=
+          '<div class="space-y-4">' +
+            '<p class="text-sm font-bold text-gray-600 dark:text-gray-300">Kode verifikasi dikirim ke <strong>' + emailData.newEmail + '</strong>. Cek inbox (atau console demo).</p>' +
+            '<div class="flex gap-3">' +
+              '<input type="text" id="email-otp-input" maxlength="6" placeholder="123456" class="flex-1 px-4 py-3 border-3 border-black font-bold text-2xl text-center tracking-widest shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" />' +
+              '<button type="button" id="email-verify-otp" class="px-5 py-3 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all whitespace-nowrap">Verifikasi</button>' +
+            '</div>' +
+            '<div class="flex gap-2">' +
+              '<button type="button" id="email-resend-otp" class="text-sm font-black text-neon-pink hover:underline">Kirim ulang</button>' +
+              '<span id="email-otp-timer" class="self-center text-sm font-bold text-gray-500"></span>' +
+            '</div>' +
+            '<p id="email-otp-msg" class="hidden text-sm font-black px-3 py-2 border-2 border-black"></p>' +
+            '<button type="button" id="email-cancel-change" class="w-full px-4 py-2 font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Batal</button>' +
+          '</div>';
+      }
+
+      html += '</div>';
+      el.innerHTML = html;
+      bindEvents();
+    }
+
+    function bindEvents() {
+      var sendBtn = document.getElementById('email-send-verification');
+      var verifyBtn = document.getElementById('email-verify-otp');
+      var resendBtn = document.getElementById('email-resend-otp');
+      var cancelBtn = document.getElementById('email-cancel-change');
+      var newEmailInput = document.getElementById('new-email-input');
+      var otpInput = document.getElementById('email-otp-input');
+      var msgEl = document.getElementById('email-change-msg') || document.getElementById('email-otp-msg');
+      var timerEl = document.getElementById('email-otp-timer');
+      var timerInterval = null;
+      var timeLeft = 0;
+      var otpCode = '';
+
+      function showMsg(msg, type) {
+        if (!msgEl) return;
+        msgEl.textContent = msg;
+        msgEl.className = 'text-sm font-black px-3 py-2 border-2 border-black ' +
+          (type === 'ok' ? 'bg-neon-green text-black' : 'bg-neon-pink text-white');
+        msgEl.classList.remove('hidden');
+      }
+
+      function startTimer(sec) {
+        timeLeft = sec;
+        if (timerEl) timerEl.textContent = timeLeft + ' detik';
+        if (timerInterval) clearInterval(timerInterval);
+        if (resendBtn) resendBtn.disabled = true;
+        timerInterval = setInterval(function() {
+          timeLeft--;
+          if (timerEl) timerEl.textContent = timeLeft + ' detik';
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            if (resendBtn) resendBtn.disabled = false;
+            if (timerEl) timerEl.textContent = '';
+          }
+        }, 1000);
+      }
+
+      function simulateOTP(email) {
+        otpCode = String(Math.floor(Math.random() * 999999)).padStart(6, '0');
+        showMsg('[DEMO] Kode: ' + otpCode + ' (cek console)', 'ok');
+        startTimer(120);
+      }
+
+      if (sendBtn) {
+        sendBtn.addEventListener('click', function() {
+          var newEmail = newEmailInput?.value?.trim().toLowerCase();
+          if (!newEmail) { showMsg('Email wajib diisi', 'err'); return; }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { showMsg('Format email tidak valid', 'err'); return; }
+          if (newEmail === currentEmail) { showMsg('Email baru harus berbeda', 'err'); return; }
+
+          saveEmailData({ newEmail: newEmail, otp: otpCode, createdAt: new Date().toISOString() });
+          simulateOTP(newEmail);
+        });
+      }
+
+      if (verifyBtn) {
+        verifyBtn.addEventListener('click', function() {
+          var code = otpInput?.value?.trim();
+          if (!code) { showMsg('Masukkan kode', 'err'); return; }
+          var data = getEmailData();
+          if (code === otpCode) {
+            // Update email
+            var updatedUser = { ...currentUser, email: data.newEmail };
+            localStorage.setItem('topzone_current_user', JSON.stringify(updatedUser));
+            user.set(updatedUser);
+            saveEmailData({}); // clear pending
+            showMsg('✅ Email berhasil diganti!', 'ok');
+            setTimeout(render, 1500);
+          } else {
+            showMsg('❌ Kode salah', 'err');
+          }
+        });
+      }
+
+      if (resendBtn) {
+        resendBtn.addEventListener('click', function() {
+          if (resendBtn.disabled) return;
+          var data = getEmailData();
+          if (data.newEmail) simulateOTP(data.newEmail);
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+          saveEmailData({});
+          render();
+        });
+      }
+    }
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEmailChange);
+  } else { initEmailChange(); }
+  user.subscribe(function () { setTimeout(initEmailChange, 50); });
+</script>
