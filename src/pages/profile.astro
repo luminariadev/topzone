@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import AvatarUpload from '../components/AvatarUpload.astro';
 import ShippingAddressManager from '../components/ShippingAddressManager.astro';
+import PhoneVerification from '../components/PhoneVerification.astro';
 ---
 
 <Layout>
@@ -56,6 +57,7 @@ import ShippingAddressManager from '../components/ShippingAddressManager.astro';
       <!-- Tabs -->
       <div class="flex flex-wrap gap-2 mb-6 border-b-4 border-black dark:border-gray-600 pb-2">
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-green shadow-[2px_2px_0px_0px_#000]" data-tab="orders">📋 Riwayat Pesanan</button>
+        <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="phone">📱 Verifikasi HP</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="settings">⚙️ Pengaturan Akun</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="addresses">📍 Alamat</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">🎰 Voucher Saya</button>
@@ -88,6 +90,7 @@ import ShippingAddressManager from '../components/ShippingAddressManager.astro';
             <button type="submit" class="px-8 py-3 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Simpan Perubahan</button>
           </form>
         </div>
+        <div id="phone-verify-wrap"></div>
       </div>
 
       <!-- Tab: Addresses -->
@@ -108,6 +111,13 @@ import ShippingAddressManager from '../components/ShippingAddressManager.astro';
         </div>
       </div>
 
+      <!-- Tab: Phone Verification -->
+      <div id="panel-phone" class="hidden space-y-6">
+        <div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">
+          <PhoneVerification />
+        </div>
+      </div>
+
       <!-- Tab: Vouchers -->
       <div id="panel-vouchers" class="hidden space-y-4">
         <div id="vouchers-empty" class="text-center py-16 border-4 border-dashed border-black dark:border-gray-600">
@@ -117,6 +127,8 @@ import ShippingAddressManager from '../components/ShippingAddressManager.astro';
         </div>
         <div id="vouchers-list" class="hidden flex flex-col gap-4"></div>
       </div>
+    </div>
+  </div>
 
     </div>
   </div>
@@ -241,7 +253,7 @@ import ShippingAddressManager from '../components/ShippingAddressManager.astro';
         b.style.boxShadow = '2px_2px_0px_0px_#000';
       });
       this.style.background = '#39FF14';
-      ['orders','settings','addresses','vouchers'].forEach(function(p) {
+      ['orders','settings','phone','addresses','vouchers'].forEach(function(p) {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + this.dataset.tab).classList.remove('hidden');
