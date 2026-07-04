@@ -1,0 +1,112 @@
+---
+// src/components/OrderStats.astro
+// Order statistics dashboard component for profile page
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initOrderStats() {
+    var el = document.getElementById('order-stats-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var ordersKey = 'topzone_orders_' + email;
+
+    function getOrders() {
+      try { return JSON.parse(localStorage.getItem(ordersKey) || '[]'); } catch { return []; }
+    }
+
+    function formatRp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+    function render() {
+      var orders = getOrders();
+      var totalOrders = orders.length;
+      var totalSpent = orders.reduce(function(sum, o) { return sum + (o.total || 0); }, 0);
+      var completedOrders = orders.filter(function(o) { return o.status === 'completed'; }).length;
+      var pendingOrders = orders.filter(function(o) { return o.status === 'pending' || o.status === 'processing'; }).length;
+
+      // Monthly stats
+      var now = new Date();
+      var months = [];
+      for (var i = 5; i >= 0; i--) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var label = d.toLocaleString('id-ID', { month: 'short', year: 'numeric' });
+        months.push({ label: label, orders: 0, spent: 0 });
+      }
+
+      orders.forEach(function(o) {
+        var orderDate = new Date(o.createdAt);
+        var monthIndex = orderDate.getMonth();
+        var year = orderDate.getFullYear();
+        // Find matching month in current year
+        var currentMonthLabel = now.toLocaleString('id-ID', { month: 'short', year: 'numeric' });
+        var targetIndex = months.findIndex(function(m) { return m.label === currentMonthLabel; });
+        if (targetIndex >= 0) {
+          months[targetIndex].orders++;
+          months[targetIndex].spent += o.total || 0;
+        }
+      });
+
+      el.innerHTML =
+        '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+          '<h3 class="text-xl font-black mb-4 text-black dark:text-white">📊 Statistik Pesanan</h3>' +
+
+          '<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">' +
+            '<div class="border-4 border-black p-4 bg-white dark:bg-gray-800 shadow-[3px_3px_0px_0px_#000] text-center">' +
+              '<div class="text-3xl mb-1">📦</div>' +
+              '<p class="text-3xl font-black text-neon-pink">' + totalOrders + '</p>' +
+              '<p class="text-xs font-black uppercase tracking-wider text-black dark:text-white">Total Pesanan</p>' +
+            '</div>' +
+            '<div class="border-4 border-black p-4 bg-white dark:bg-gray-800 shadow-[3px_3px_0px_0px_#000] text-center">' +
+              '<div class="text-3xl mb-1">💵</div>' +
+              '<p class="text-3xl font-black text-neon-green">' + formatRp(totalSpent) + '</p>' +
+              '<p class="text-xs font-black uppercase tracking-wider text-black dark:text-white">Total Belanja</p>' +
+            '</div>' +
+            '<div class="border-4 border-black p-4 bg-white dark:bg-gray-800 shadow-[3px_3px_0px_0px_#000] text-center">' +
+              '<div class="text-3xl mb-1">✅</div>' +
+              '<p class="text-3xl font-black text-blue-500">' + completedOrders + '</p>' +
+              '<p class="text-xs font-black uppercase tracking-wider text-black dark:text-white">Selesai</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="border-4 border-black p-4 bg-gray-50 dark:bg-gray-700 mb-6">' +
+            '<h4 class="font-black mb-3 text-black dark:text-white">Status Pesanan</h4>' +
+            '<div class="flex flex-wrap gap-4 text-sm font-bold">' +
+              '<span class="px-3 py-1 border-2 border-black bg-yellow-400">⏳ Pending: ' + pendingOrders + '</span>' +
+              '<span class="px-3 py-1 border-2 border-black bg-neon-green text-black">✅ Selesai: ' + completedOrders + '</span>' +
+              '<span class="px-3 py-1 border-2 border-black bg-gray-400">📊 Rata-rata: ' + formatRp(Math.round(totalSpent / (totalOrders > 0 ? totalOrders : 1))) + '</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="border-4 border-black p-4 bg-white dark:bg-gray-800">' +
+            '<h4 class="font-black mb-3 text-black dark:text-white">6 Bulan Terakhir</h4>' +
+            '<div class="space-y-2">' +
+              months.map(function(m, i) {
+                var maxOrders = Math.max.apply(null, months.map(function(mm) { return mm.orders; }));
+                var maxSpent = Math.max.apply(null, months.map(function(mm) { return mm.spent; }));
+                return '<div class="flex items-center gap-3">' +
+                  '<span class="w-24 text-xs font-bold text-gray-500 dark:text-gray-400">' + m.label + '</span>' +
+                  '<div class="flex-1 h-6 bg-gray-200 dark:bg-gray-600 border border-black relative">' +
+                    '<div class="h-full bg-neon-yellow" style="width:' + (maxOrders > 0 ? (m.orders / maxOrders * 100) : 0) + '%"></div>' +
+                    '<span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-black z-10">' + m.orders + ' pesanan</span>' +
+                  '</div>' +
+                  '<span class="w-28 text-right text-xs font-bold text-neon-pink">' + formatRp(m.spent) + '</span>' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOrderStats);
+  } else { initOrderStats(); }
+  user.subscribe(function () { setTimeout(initOrderStats, 50); });
+</script>
