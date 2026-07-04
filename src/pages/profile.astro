@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import AvatarUpload from '../components/AvatarUpload.astro';
+import ShippingAddressManager from '../components/ShippingAddressManager.astro';
 ---
 
 <Layout>
@@ -56,6 +57,7 @@ import AvatarUpload from '../components/AvatarUpload.astro';
       <div class="flex flex-wrap gap-2 mb-6 border-b-4 border-black dark:border-gray-600 pb-2">
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-green shadow-[2px_2px_0px_0px_#000]" data-tab="orders">📋 Riwayat Pesanan</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="settings">⚙️ Pengaturan Akun</button>
+        <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="addresses">📍 Alamat</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">🎰 Voucher Saya</button>
       </div>
 
@@ -85,6 +87,24 @@ import AvatarUpload from '../components/AvatarUpload.astro';
             <div id="settings-msg" class="hidden bg-neon-green text-black font-black px-4 py-3 border-2 border-black text-sm"></div>
             <button type="submit" class="px-8 py-3 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Simpan Perubahan</button>
           </form>
+        </div>
+      </div>
+
+      <!-- Tab: Addresses -->
+      <div id="panel-addresses" class="hidden space-y-4">
+        <div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-black text-black dark:text-white">📍 Alamat Pengiriman</h2>
+            <button type="button" id="add-address-btn" class="px-4 py-2 font-black uppercase border-2 border-black bg-neon-green shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all text-sm">+ Tambah</button>
+          </div>
+          <div id="shipping-address-wrap">
+            <div id="address-empty" class="text-center py-8 border-4 border-dashed border-black dark:border-gray-600">
+              <div class="text-4xl mb-2">📍</div>
+              <p class="font-black mb-2 text-black dark:text-white">Belum ada alamat</p>
+              <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Tambah alamat pengiriman untuk checkout lebih cepat</p>
+            </div>
+            <div id="address-list" class="flex flex-col gap-4"></div>
+          </div>
         </div>
       </div>
 
@@ -221,7 +241,7 @@ import AvatarUpload from '../components/AvatarUpload.astro';
         b.style.boxShadow = '2px_2px_0px_0px_#000';
       });
       this.style.background = '#39FF14';
-      ['orders','settings','vouchers'].forEach(function(p) {
+      ['orders','settings','addresses','vouchers'].forEach(function(p) {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + this.dataset.tab).classList.remove('hidden');
