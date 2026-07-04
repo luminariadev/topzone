@@ -10,7 +10,7 @@ import { paginate } from '../utils/helpers';
 import type { Product, ProductFilters } from '../types';
 
 // Combine games and gears into a single Product array
-const allProducts: Product[] = [
+const allProducts = [
   ...games.map(g => ({ ...g, type: 'game' as const })),
   ...gears.map(g => ({ ...g, type: 'gear' as const }))
 ];
@@ -35,18 +35,15 @@ const minPrice = Math.min(...allPrices);
 const maxPrice = Math.max(...allPrices);
 
 // Parse URL search parameters
-define getStaticPaths() {
+export async function getStaticPaths() {
   return []; // Not using getStaticPaths - running client-side
 }
 
 // Server-side props for initial render
-export interface Props {
-  initialFilters: ProductFilters;
-  initialPage: number;
-}
+export const prerender = true;
 
 // Parse URL parameters on the server side
-define getInitialFilters(url: string): ProductFilters {
+function getInitialFilters(url: string) {
   const urlObj = new URL(url);
   const params = urlObj.searchParams;
 
@@ -56,12 +53,12 @@ define getInitialFilters(url: string): ProductFilters {
     brand: params.get('brand') || '',
     minPrice: params.get('minPrice') ? Number(params.get('minPrice')) : undefined,
     maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : undefined,
-    sortBy: (params.get('sort') as ProductFilters['sortBy']) || undefined,
+    sortBy: params.get('sort') || undefined,
   };
 }
 
-const initialFilters = defineProps<Props>().initialFilters;
-const initialPage = defineProps<Props>().initialPage;
+const initialFilters = getInitialFilters(Astro.url.toString());
+const initialPage = 1;
 
 // Apply filters and pagination on the server side
 const filteredProducts = applyProductFilters(allProducts, initialFilters);

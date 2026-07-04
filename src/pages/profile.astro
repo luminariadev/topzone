@@ -3,6 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import AvatarUpload from '../components/AvatarUpload.astro';
 ---
 
 <Layout>
@@ -21,10 +22,10 @@ import Footer from '../components/Footer.astro';
   <!-- Profile Content -->
   <div id="profile-content" class="hidden py-16 min-h-screen bg-white dark:bg-gray-900">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      
+
       <!-- Header -->
       <div class="flex items-center gap-6 mb-10 border-4 border-black p-6 bg-neon-yellow dark:bg-gray-700 shadow-[6px_6px_0px_0px_#000]">
-        <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center text-3xl font-black text-neon-green border-4 border-black shrink-0" id="avatar-letter">U</div>
+        <div id="avatar-upload-wrap"></div>
         <div class="flex-1">
           <h1 class="text-4xl font-black text-black dark:text-white" id="profile-name">User</h1>
           <p class="font-bold text-lg text-gray-700 dark:text-gray-300" id="profile-email">user@email.com</p>

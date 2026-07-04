@@ -1,0 +1,183 @@
+---
+// src/components/AvatarUpload.astro
+// Client-side avatar upload - injects UI into #avatar-upload-wrap
+// Reads user state from nanostores on mount
+---
+
+<script>
+  import { user } from '../stores/auth';
+  import { uploadAvatar, deleteAvatar } from '../stores/user';
+
+  function initAvatarUpload() {
+    var wrap = document.getElementById('avatar-upload-wrap');
+    if (!wrap || wrap.children.length > 0) return; // already initialized
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var hasAvatar = currentUser.avatar_url && currentUser.avatar_url.length > 0;
+    var initial = (currentUser.full_name || currentUser.email || 'U').charAt(0).toUpperCase();
+
+    wrap.innerHTML =
+      '<div class="relative">' +
+        '<div class="relative w-24 h-24 mx-auto mb-3">' +
+          '<div id="avatar-preview-box" class="w-24 h-24 rounded-full border-4 border-black overflow-hidden bg-neon-green flex items-center justify-center text-4xl font-black text-black shadow-[3px_3px_0px_0px_#000] dark:bg-gray-700">' +
+            (hasAvatar
+              ? '<img id="avatar-preview-img" src="' + currentUser.avatar_url + '" alt="Avatar" class="w-full h-full object-cover" />'
+              : '<span id="avatar-initial">' + initial + '</span>') +
+          '</div>' +
+          '<div id="avatar-spinner" class="hidden absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">' +
+            '<div class="w-8 h-8 border-[3px] border-neon-green border-t-transparent rounded-full animate-spin"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div id="avatar-dropzone" class="hidden border-[3px] border-dashed border-black dark:border-gray-600 p-4 text-center bg-neon-yellow/30 dark:bg-gray-700/30 rounded-lg cursor-pointer hover:bg-neon-yellow/50 dark:hover:bg-gray-600/50 transition-colors">' +
+          '<div class="text-2xl mb-2">📸</div>' +
+          '<p class="text-sm font-black text-black dark:text-white">Seret gambar ke sini</p>' +
+          '<p class="text-xs font-bold text-gray-500 dark:text-gray-400">atau klik untuk pilih file</p>' +
+          '<p class="text-xs font-bold text-gray-400 mt-1">JPEG, PNG, GIF, WebP • Max 2MB</p>' +
+          '<input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden" />' +
+        '</div>' +
+        '<div class="flex justify-center gap-2 mt-2">' +
+          '<button type="button" id="avatar-btn-change" class="px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">📷 Ganti</button>' +
+          (hasAvatar
+            ? '<button type="button" id="avatar-btn-delete" class="px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 border-black bg-neon-pink text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">🗑️ Hapus</button>'
+            : '') +
+        '</div>' +
+        '<div id="avatar-msg" class="hidden mt-2 text-center text-xs font-black px-3 py-2 border-2 border-black"></div>' +
+      '</div>';
+
+    // Cache DOM refs
+    var dropzone = document.getElementById('avatar-dropzone');
+    var fileInput = document.getElementById('avatar-file-input');
+    var changeBtn = document.getElementById('avatar-btn-change');
+    var deleteBtn = document.getElementById('avatar-btn-delete');
+    var spinner = document.getElementById('avatar-spinner');
+    var msgEl = document.getElementById('avatar-msg');
+    var previewImg = document.getElementById('avatar-preview-img');
+    var initialEl = document.getElementById('avatar-initial');
+
+    function showMsg(text, type) {
+      if (!msgEl) return;
+      msgEl.textContent = text;
+      msgEl.className = 'mt-2 text-center text-xs font-black px-3 py-2 border-2 border-black ' +
+        (type === 'ok' ? 'bg-neon-green text-black' : 'bg-neon-pink text-white');
+      msgEl.classList.remove('hidden');
+      setTimeout(function () { msgEl.classList.add('hidden'); }, 3500);
+    }
+
+    function spin(on) {
+      if (!spinner) return;
+      spinner.classList.toggle('hidden', !on);
+      spinner.classList.toggle('flex', on);
+    }
+
+    function showPreviewDataUrl(dataUrl) {
+      if (previewImg) { previewImg.src = dataUrl; previewImg.classList.remove('hidden'); }
+      if (initialEl) initialEl.classList.add('hidden');
+    }
+
+    function applyAvatarUrl(url) {
+      var box = document.getElementById('avatar-preview-box');
+      if (box) box.innerHTML = '<img id="avatar-preview-img" src="' + url + '" alt="Avatar" class="w-full h-full object-cover" />';
+      // Update auth store locally
+      var cur = user.get();
+      if (cur) {
+        var updated = Object.assign({}, cur, { avatar_url: url });
+        localStorage.setItem('topzone_current_user', JSON.stringify(updated));
+        user.set(updated);
+      }
+    }
+
+    function clearAvatar() {
+      var box = document.getElementById('avatar-preview-box');
+      if (box) box.innerHTML = '<span id="avatar-initial">' + initial + '</span>';
+      var cur = user.get();
+      if (cur) {
+        var updated = Object.assign({}, cur, { avatar_url: '' });
+        localStorage.setItem('topzone_current_user', JSON.stringify(updated));
+        user.set(updated);
+      }
+    }
+
+    // Toggle dropzone
+    if (changeBtn && dropzone) {
+      changeBtn.addEventListener('click', function () { dropzone.classList.toggle('hidden'); });
+      dropzone.addEventListener('click', function () { fileInput?.click(); });
+
+      dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('border-neon-green', 'bg-neon-green/10'); });
+      dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('border-neon-green', 'bg-neon-green/10'); });
+      dropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('border-neon-green', 'bg-neon-green/10');
+        var f = e.dataTransfer?.files[0];
+        if (f) doUpload(f);
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', function () {
+        var f = fileInput.files?.[0];
+        if (f) doUpload(f);
+      });
+    }
+
+    async function doUpload(file) {
+      var cu = user.get();
+      if (!cu || !cu.isLoggedIn) { showMsg('Login diperlukan', 'err'); return; }
+      if (file.size > 2 * 1024 * 1024) { showMsg('Ukuran maksimal 2MB', 'err'); return; }
+      var ok = ['image/jpeg','image/png','image/gif','image/webp'];
+      if (!ok.includes(file.type)) { showMsg('Format tidak valid', 'err'); return; }
+
+      // Instant preview
+      var reader = new FileReader();
+      reader.onload = function (e) { showPreviewDataUrl(e.target.result); };
+      reader.readAsDataURL(file);
+
+      spin(true);
+      showMsg('Mengupload avatar…', 'ok');
+      var res = await uploadAvatar(file, cu.email);
+      spin(false);
+
+      if (res.success && res.url) {
+        applyAvatarUrl(res.url);
+        showMsg('Avatar berhasil diupload! ✅', 'ok');
+        dropzone?.classList.add('hidden');
+        // Add delete button if not present
+        if (!deleteBtn) {
+          var btnWrap = changeBtn.parentElement;
+          var del = document.createElement('button');
+          del.type = 'button'; del.id = 'avatar-btn-delete';
+          del.className = 'px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 border-black bg-neon-pink text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all';
+          del.textContent = '🗑️ Hapus';
+          btnWrap.appendChild(del);
+          bindDelete(del);
+        }
+      } else {
+        showMsg(res.error || 'Gagal upload', 'err');
+      }
+    }
+
+    function bindDelete(btn) {
+      btn.addEventListener('click', async function () {
+        if (!confirm('Hapus avatar?')) return;
+        var cu = user.get();
+        if (!cu) return;
+        spin(true); showMsg('Menghapus…', 'ok');
+        var res = await deleteAvatar(cu.email, cu.avatar_url);
+        spin(false);
+        if (res.success) { clearAvatar(); showMsg('Avatar dihapus', 'ok'); btn.remove(); }
+        else showMsg(res.error || 'Gagal', 'err');
+      });
+    }
+
+    if (deleteBtn) bindDelete(deleteBtn);
+  }
+
+  // Run on load and on auth state change
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAvatarUpload);
+  } else {
+    initAvatarUpload();
+  }
+  user.subscribe(function () { setTimeout(initAvatarUpload, 50); });
+</script>
