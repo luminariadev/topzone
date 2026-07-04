@@ -1,0 +1,157 @@
+---
+// src/components/PhoneVerification.astro
+// Phone number OTP verification component (client-side demo)
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initPhoneVerification() {
+    var wrap = document.getElementById('phone-verify-wrap');
+    if (!wrap || wrap.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var phoneKey = 'topzone_phone_' + email;
+
+    function getPhoneData() {
+      try { return JSON.parse(localStorage.getItem(phoneKey) || '{}'); } catch { return {}; }
+    }
+
+    function savePhoneData(data) {
+      localStorage.setItem(phoneKey, JSON.stringify(data));
+    }
+
+    var phoneData = getPhoneData();
+    var isVerified = phoneData.verified === true;
+    var currentPhone = phoneData.number || '';
+
+    wrap.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-black dark:text-white">📱 Verifikasi Nomor Telepon</h3>' +
+
+        (isVerified ? (
+          '<div class="flex items-center justify-between p-4 bg-neon-green border-2 border-black">' +
+            '<div>' +
+              '<p class="font-black text-lg text-black">Terverifikasi ✅</p>' +
+              '<p class="text-sm font-bold text-gray-600 dark:text-gray-300">' + currentPhone + '</p>' +
+            '</div>' +
+            '<button type="button" id="phone-change-btn" class="px-3 py-1.5 text-xs font-black uppercase border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Ganti</button>' +
+          '</div>'
+        ) : (
+          '<div class="space-y-4">' +
+            '<p class="text-sm font-bold text-gray-600 dark:text-gray-300">Masukkan nomor HP untuk verifikasi keamanan akun.</p>' +
+            '<div class="flex gap-3">' +
+              '<input type="tel" id="phone-input" value="' + currentPhone + '" placeholder="08xxxxxxxxxx" class="flex-1 px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" />' +
+              '<button type="button" id="phone-send-otp" class="px-5 py-3 font-black uppercase border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all whitespace-nowrap">Kirim OTP</button>' +
+            '</div>' +
+            '<div id="otp-section" class="hidden space-y-3">' +
+              '<p class="text-sm font-bold text-gray-600 dark:text-gray-300">Masukkan kode 6 digit yang dikirim via WhatsApp:</p>' +
+              '<div class="flex gap-3">' +
+                '<input type="text" id="otp-input" maxlength="6" placeholder="123456" class="flex-1 px-4 py-3 border-3 border-black font-bold text-2xl text-center tracking-widest shadow-[3px_3px_0px_0px_#000] focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" />' +
+                '<button type="button" id="phone-verify-otp" class="px-5 py-3 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all whitespace-nowrap">Verifikasi</button>' +
+              '</div>' +
+              '<div class="flex gap-2 items-center">' +
+                '<button type="button" id="phone-resend-otp" class="text-sm font-black text-neon-pink hover:underline">Kirim ulang</button>' +
+                '<span id="otp-timer" class="text-sm font-bold text-gray-500"></span>' +
+              '</div>' +
+              '<p id="otp-msg" class="hidden text-sm font-black px-3 py-2 border-2 border-black"></p>' +
+            '</div>' +
+          '</div>'
+        )) +
+      '</div>';
+
+    var sendBtn = document.getElementById('phone-send-otp');
+    var verifyBtn = document.getElementById('phone-verify-otp');
+    var resendBtn = document.getElementById('phone-resend-otp');
+    var changeBtn = document.getElementById('phone-change-btn');
+    var otpSection = document.getElementById('otp-section');
+    var otpInput = document.getElementById('otp-input');
+    var otpMsg = document.getElementById('otp-msg');
+    var otpTimerEl = document.getElementById('otp-timer');
+    var phoneInput = document.getElementById('phone-input');
+
+    var otpCode = '';
+    var timerInterval = null;
+    var timeLeft = 0;
+
+    function showMsg(msg, type) {
+      if (!otpMsg) return;
+      otpMsg.textContent = msg;
+      otpMsg.className = 'text-sm font-black px-3 py-2 border-2 border-black ' +
+        (type === 'ok' ? 'bg-neon-green text-black bg-white' : 'bg-neon-pink text-white');
+      otpMsg.classList.remove('hidden');
+    }
+
+    function startTimer(secs) {
+      timeLeft = secs;
+      if (otpTimerEl) otpTimerEl.textContent = timeLeft + ' detik';
+      if (timerInterval) clearInterval(timerInterval);
+      if (resendBtn) resendBtn.disabled = true;
+      timerInterval = setInterval(function() {
+        timeLeft--;
+        if (otpTimerEl) otpTimerEl.textContent = timeLeft + ' detik';
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (resendBtn) resendBtn.disabled = false;
+          if (otpTimerEl) otpTimerEl.textContent = '';
+        }
+      }, 1000);
+    }
+
+    function simulateSendOTP(phone) {
+      otpCode = String(Math.floor(Math.random() * 999999)).padStart(6, '0');
+      showMsg('[DEMO] Kode OTP: ' + otpCode, 'ok');
+      if (otpSection) otpSection.classList.remove('hidden');
+      startTimer(120);
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener('click', function() {
+        var phone = phoneInput ? phoneInput.value.trim() : '';
+        if (!phone) { showMsg('Nomor HP wajib diisi', 'err'); return; }
+        if (!/^08\d{8,11}$/.test(phone)) { showMsg('Format: 08xxxxxxxxxx', 'err'); return; }
+        simulateSendOTP(phone);
+      });
+    }
+
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', function() {
+        var code = otpInput ? otpInput.value.trim() : '';
+        if (!code) { showMsg('Masukkan kode OTP', 'err'); return; }
+        if (code === otpCode) {
+          var phone = phoneInput ? phoneInput.value.trim() : '';
+          savePhoneData({ number: phone, verified: true, verifiedAt: new Date().toISOString() });
+          showMsg('✅ Nomor berhasil diverifikasi!', 'ok');
+          setTimeout(function() { initPhoneVerification(); }, 1500);
+        } else {
+          showMsg('❌ Kode OTP salah, coba lagi', 'err');
+        }
+      });
+    }
+
+    if (resendBtn) {
+      resendBtn.addEventListener('click', function() {
+        if (resendBtn.disabled) return;
+        var phone = phoneInput ? phoneInput.value.trim() : '';
+        simulateSendOTP(phone);
+      });
+    }
+
+    if (changeBtn) {
+      changeBtn.addEventListener('click', function() {
+        savePhoneData({ number: '', verified: false });
+        initPhoneVerification();
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPhoneVerification);
+  } else {
+    initPhoneVerification();
+  }
+  user.subscribe(function () { setTimeout(initPhoneVerification, 50); });
+</script>
