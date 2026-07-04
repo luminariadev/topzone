@@ -237,18 +237,18 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Add avatar upload (Supabase Storage) | feat | ☐ |
-| 2 | Add shipping address management (CRUD) | feat | ☐ |
-| 3 | Add phone number verification (OTP) | feat | ☐ |
-| 4 | Add email change with verification | feat | ☐ |
-| 5 | Add account deletion (with confirmation) | feat | ☐ |
-| 6 | Add user preferences (notifications, language) | feat | ☐ |
-| 7 | Add profile completion bar | feat | ☐ |
-| 8 | Add connected accounts display (Google, Discord) | feat | ☐ |
+| 1 | Add avatar upload (Supabase Storage) | feat | ✅ |
+| 2 | Add shipping address management (CRUD) | feat | ✅ |
+| 3 | Add phone number verification (OTP) | feat | ✅ |
+| 4 | Add email change with verification | feat | ✅ |
+| 5 | Add account deletion (with confirmation) | feat | ✅ |
+| 6 | Add user preferences (notifications, language) | feat | ✅ |
+| 7 | Add profile completion bar | feat | ✅ |
+| 8 | Add connected accounts display (Google, Discord) | feat | ✅ |
 | 9 | Add order statistics dashboard in profile | feat | ☐ |
 | 10 | Add vouchers tab in profile | feat | ☐ |
 | 11 | Add recent activity timeline | feat | ☐ |
-| 12 | Style profile page for all states (loading, empty, error) | style | ☐ |
+| 12 | Style profile page for all states (loading, empty, error) | style | ✅ |
 
 ### ☐ 3.2 Email & Notification System (14 commit)
 
