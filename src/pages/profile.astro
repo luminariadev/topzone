@@ -14,6 +14,7 @@ import UserPreferences from '../components/UserPreferences.astro';
 import RecentActivity from '../components/RecentActivity.astro';
 import OrderStats from '../components/OrderStats.astro';
 import VoucherManager from '../components/VoucherManager.astro';
+import NotificationCenter from '../components/NotificationCenter.astro';
 ---
 
 <Layout>
@@ -71,6 +72,7 @@ import VoucherManager from '../components/VoucherManager.astro';
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="completion">📊 Kelengkapan</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="stats">📊 Statistik</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="activity">🕐 Aktivitas</button>
+        <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="notifications">🔔 Notifikasi</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="prefs">⚙️ Preferensi</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="email">📧 Ganti Email</button>
         <button class="profile-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000]" data-tab="deletion">🗑️ Hapus Akun</button>
@@ -155,6 +157,16 @@ import VoucherManager from '../components/VoucherManager.astro';
       <!-- Tab: Recent Activity -->
       <div id="panel-activity" class="hidden space-y-6">
         <div id="recent-activity-wrap"></div>
+      </div>
+
+      <!-- Tab: Recent Activity -->
+      <div id="panel-activity" class="hidden space-y-6">
+        <div id="recent-activity-wrap"></div>
+      </div>
+
+      <!-- Tab: Notifications -->
+      <div id="panel-notifications" class="hidden space-y-6">
+        <div id="notification-center-wrap"></div>
       </div>
 
       <!-- Tab: Preferences -->
@@ -298,7 +310,7 @@ import VoucherManager from '../components/VoucherManager.astro';
         b.style.boxShadow = '2px_2px_0px_0px_#000';
       });
       this.style.background = '#39FF14';
-      ['orders','settings','phone','addresses','completion','connected','stats','activity','prefs','email','deletion','vouchers'].forEach(function(p) {
+      ['orders','settings','phone','addresses','completion','connected','stats','activity','notifications','prefs','email','deletion','vouchers'].forEach(function(p) {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + this.dataset.tab).classList.remove('hidden');
