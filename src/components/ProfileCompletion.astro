@@ -1,0 +1,60 @@
+---
+// src/components/ProfileCompletion.astro
+// Profile completion progress bar (Fase 3.1 item 7)
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initCompletionBar() {
+    var el = document.getElementById('profile-completion-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var total = 5;
+    var done = 0;
+
+    if (currentUser.full_name && currentUser.full_name.length > 0) done++;
+    if (currentUser.avatar_url && currentUser.avatar_url.length > 0) done++;
+    try {
+      var phoneData = JSON.parse(localStorage.getItem('topzone_phone_' + email) || '{}');
+      if (phoneData.verified === true) done++;
+    } catch(e) {}
+    try {
+      var addresses = JSON.parse(localStorage.getItem('topzone_addresses_' + email) || '[]');
+      if (addresses.length > 0) done++;
+    } catch(e) {}
+    try {
+      var ordersKey = 'topzone_orders_' + email;
+      var orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+      if (orders.length > 0) done++;
+    } catch(e) {}
+
+    var pct = Math.round((done / total) * 100);
+    var tipsList = ['Isi nama', 'Upload avatar', 'Verifikasi HP', 'Tambah alamat', 'Buat pesanan'];
+    var tipsRemaining = [];
+    for (var i = done; i < total; i++) tipsRemaining.push(tipsList[i]);
+
+    el.innerHTML =
+      '<div class="mb-4">' +
+        '<div class="flex justify-between items-center mb-2">' +
+          '<span class="text-sm font-black text-black dark:text-white">Profil ' + pct + '% lengkap</span>' +
+          '<span class="text-xs font-bold text-gray-500">' + done + '/' + total + '</span>' +
+        '</div>' +
+        '<div class="w-full h-4 bg-gray-200 dark:bg-gray-600 border-2 border-black overflow-hidden">' +
+          '<div class="h-full bg-neon-green transition-all duration-500" style="width:' + pct + '%"></div>' +
+        '</div>' +
+        (pct < 100
+          ? '<div class="mt-2"><p class="text-xs font-bold text-gray-500 dark:text-gray-400">Tips: ' + tipsRemaining.join(', ') + '</p></div>'
+          : '<div class="mt-2"><p class="text-xs font-bold text-neon-green">Profil lengkap! ✅</p></div>') +
+      '</div>';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCompletionBar);
+  } else { initCompletionBar(); }
+  user.subscribe(function () { setTimeout(initCompletionBar, 100); });
+</script>

@@ -1,0 +1,39 @@
+---
+// src/components/ConnectedAccounts.astro
+// Display connected OAuth accounts (Google, Discord) - Fase 3.1 item 8
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initConnectedAccounts() {
+    var el = document.getElementById('connected-accounts-wrap');
+    if (!el || el.children.length > 0) return;
+
+    el.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-black dark:text-white">Akun Terhubung</h3>' +
+        '<div class="flex flex-col gap-3">' +
+          '<div class="flex items-center justify-between p-4 border-2 border-black">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="text-2xl">G</span>' +
+              '<div><p class="font-black text-black dark:text-white">Google</p><p class="text-xs font-bold text-gray-500">Terhubung saat login</p></div>' +
+            '</div>' +
+            '<span class="px-3 py-1 text-xs font-black bg-neon-green border-2 border-black text-black">Aktif</span>' +
+          '</div>' +
+          '<div class="flex items-center justify-between p-4 border-2 border-black">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="text-2xl">D</span>' +
+              '<div><p class="font-black text-black dark:text-white">Discord</p><p class="text-xs font-bold text-gray-500">Belum terhubung</p></div>' +
+            '</div>' +
+            '<button class="px-4 py-2 text-xs font-black uppercase border-2 border-black bg-black text-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">Hubungkan</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initConnectedAccounts);
+  } else { initConnectedAccounts(); }
+  user.subscribe(function () { setTimeout(initConnectedAccounts, 50); });
+</script>
