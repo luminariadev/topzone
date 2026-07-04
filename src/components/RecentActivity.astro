@@ -1,0 +1,81 @@
+---
+// src/components/RecentActivity.astro
+// Recent activity timeline - Fase 3.1 item 11
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initRecentActivity() {
+    var el = document.getElementById('recent-activity-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var activities = [];
+
+    try {
+      var orders = JSON.parse(localStorage.getItem('topzone_orders_' + email) || '[]');
+      orders.slice(-5).reverse().forEach(function(o) {
+        activities.push({
+          icon: '📦',
+          text: 'Pesan ' + (o.name || 'Produk') + ' - Rp ' + Number(o.total).toLocaleString('id-ID'),
+          time: new Date(o.createdAt).toLocaleString('id-ID'),
+          sort: new Date(o.createdAt).getTime()
+        });
+      });
+    } catch(e) {}
+
+    try {
+      var addrs = JSON.parse(localStorage.getItem('topzone_addresses_' + email) || '[]');
+      if (addrs.length > 0) {
+        activities.push({
+          icon: '📍',
+          text: addrs.length + ' alamat tersimpan',
+          time: 'Saat ini',
+          sort: Date.now()
+        });
+      }
+    } catch(e) {}
+
+    activities.push({
+      icon: '👤',
+      text: 'Akun aktif',
+      time: 'Saat ini',
+      sort: Date.now()
+    });
+
+    activities.sort(function(a, b) { return b.sort - a.sort; });
+
+    if (activities.length === 0) {
+      el.innerHTML =
+        '<div class="text-center py-12 border-4 border-dashed border-black dark:border-gray-600">' +
+          '<p class="font-black text-gray-400">Belum ada aktivitas</p>' +
+        '</div>';
+      return;
+    }
+
+    el.innerHTML =
+      '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+        '<h3 class="text-xl font-black mb-4 text-black dark:text-white">Aktivitas Terkini</h3>' +
+        '<div class="space-y-3">' +
+          activities.map(function(a) {
+            return '<div class="flex items-start gap-3 p-3 border-2 border-black/10 dark:border-gray-600">' +
+              '<span class="text-xl">' + a.icon + '</span>' +
+              '<div class="flex-1">' +
+                '<p class="font-bold text-sm text-black dark:text-white">' + a.text + '</p>' +
+                '<p class="text-xs font-bold text-gray-500">' + a.time + '</p>' +
+              '</div>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRecentActivity);
+  } else { initRecentActivity(); }
+  user.subscribe(function () { setTimeout(initRecentActivity, 50); });
+</script>
