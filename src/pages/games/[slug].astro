@@ -134,6 +134,15 @@ const { game } = Astro.props;
         <p class="font-black text-lg mb-2">🎮 Beli game ini dulu untuk memberi ulasan!</p>
       </div>
 
+      <!-- Sort Controls -->
+      <div class="flex justify-end mb-4">
+        <select id="review-sort" class="px-3 py-2 border-4 border-black font-bold text-sm bg-white dark:bg-gray-700 dark:text-white shadow-[2px_2px_0px_0px_#000] focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all">
+          <option value="newest">Terbaru</option>
+          <option value="highest">Rating Tertinggi</option>
+          <option value="lowest">Rating Terendah</option>
+        </select>
+      </div>
+
       <!-- Reviews List -->
       <div id="reviews-list" class="space-y-4"></div>
       <div id="reviews-empty" class="text-center py-8 border-4 border-dashed border-black">
@@ -163,10 +172,20 @@ const { game } = Astro.props;
     return { avg: (sum / revs.length).toFixed(1), count: revs.length, distribution: dist };
   }
 
+  var reviewSort = 'newest';
+
   function renderStars(n) {
     var s = '';
     for (var i = 1; i <= 5; i++) s += i <= Math.round(n) ? '★' : '☆';
     return s;
+  }
+
+  function sortReviews(reviews, sortBy) {
+    var sorted = reviews.slice();
+    if (sortBy === 'newest') return sorted.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+    else if (sortBy === 'highest') return sorted.sort(function(a, b) { return b.rating - a.rating; });
+    else if (sortBy === 'lowest') return sorted.sort(function(a, b) { return a.rating - b.rating; });
+    return sorted;
   }
 
   function renderReviews() {
@@ -176,7 +195,6 @@ const { game } = Astro.props;
     document.getElementById('avg-stars').textContent = renderStars(avg.avg);
     document.getElementById('review-count').textContent = avg.count + ' ulasan';
 
-    // Distribution bars
     var barsEl = document.getElementById('rating-bars');
     barsEl.innerHTML = '';
     for (var i = 5; i >= 1; i--) {
@@ -185,7 +203,13 @@ const { game } = Astro.props;
       barsEl.innerHTML += '<div class=\"flex items-center gap-2 text-sm\"><span class=\"w-4 font-bold\">' + i + '</span><div class=\"flex-1 h-3 bg-gray-200 border border-black\"><div class=\"h-full bg-neon-yellow\" style=\"width:' + pct + '%\"></div></div><span class=\"w-8 text-right text-xs font-bold\">' + count + '</span></div>';
     }
 
-    // Reviews list
+    // Sort controls
+    var sortEl = document.getElementById('review-sort');
+    if (sortEl) {
+      sortEl.value = reviewSort;
+      sortEl.onchange = function() { reviewSort = this.value; renderReviews(); };
+    }
+
     var list = document.getElementById('reviews-list');
     var empty = document.getElementById('reviews-empty');
     if (revs.length === 0) {
@@ -194,7 +218,7 @@ const { game } = Astro.props;
       return;
     }
     empty.classList.add('hidden');
-    list.innerHTML = revs.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); }).map(function(r) {
+    list.innerHTML = sortReviews(revs, reviewSort).map(function(r) {
       return '<div class=\"border-4 border-black bg-white p-5 shadow-[2px_2px_0px_0px_#000]\">' +
         '<div class=\"flex justify-between items-start mb-2\">' +
           '<div><span class=\"font-black\">' + (r.userName || 'Anonymous') + '</span>' +
