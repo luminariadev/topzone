@@ -1,0 +1,131 @@
+---
+// src/components/VoucherManager.astro
+// Voucher management component for profile page
+---
+
+<script>
+  import { user } from '../stores/auth';
+
+  function initVoucherManager() {
+    var el = document.getElementById('voucher-manager-wrap');
+    if (!el || el.children.length > 0) return;
+
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+
+    var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+    var userVouchersKey = 'topzone_user_vouchers_' + email;
+
+    function getVouchers() {
+      try { return JSON.parse(localStorage.getItem(userVouchersKey) || '[]'); } catch { return []; }
+    }
+
+    function saveVouchers(vouchers) {
+      localStorage.setItem(userVouchersKey, JSON.stringify(vouchers));
+    }
+
+    function formatRp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+    function render() {
+      var vouchers = getVouchers();
+      var now = new Date();
+
+      // Add welcome voucher if none exist
+      if (vouchers.length === 0) {
+        vouchers.push({
+          id: 'welcome-' + Date.now(),
+          code: 'WELCOME10',
+          type: 'percentage',
+          discount: 10,
+          minPurchase: 50000,
+          maxDiscount: 25000,
+          validFrom: new Date().toISOString(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          used: false,
+          createdAt: new Date().toISOString()
+        });
+        saveVouchers(vouchers);
+      }
+
+      var activeVouchers = vouchers.filter(function(v) {
+        return !v.used && new Date(v.validUntil) > now && new Date(v.validFrom) <= now;
+      });
+      var expiredVouchers = vouchers.filter(function(v) { return new Date(v.validUntil) <= now; });
+      var usedVouchers = vouchers.filter(function(v) { return v.used && new Date(v.validUntil) > now; });
+
+      el.innerHTML =
+        '<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">' +
+          '<h3 class="text-xl font-black mb-4 text-black dark:text-white">Voucher Saya</h3>' +
+
+          (activeVouchers.length > 0 ? (
+            '<div class="mb-6">' +
+              '<h4 class="font-black mb-3 text-black dark:text-white">Voucher Aktif</h4>' +
+              '<div class="space-y-3">' +
+                activeVouchers.map(function(v) {
+                  var daysLeft = Math.ceil((new Date(v.validUntil) - now) / (1000 * 60 * 60 * 24));
+                  return '<div class="border-4 border-black p-4 bg-neon-yellow shadow-[3px_3px_0px_0px_#000]">' +
+                    '<div class="flex justify-between items-start mb-2">' +
+                      '<div>' +
+                        '<p class="text-xl font-black">' + v.code + '</p>' +
+                        '<p class="text-sm font-bold">' + (v.type === 'percentage' ? v.discount + '% off' : formatRp(v.discount) + ' off') + '</p>' +
+                        '<p class="text-xs font-bold text-gray-500">Min ' + formatRp(v.minPurchase) + (v.maxDiscount ? ' / Max ' + formatRp(v.maxDiscount) : '') + '</p>' +
+                      '</div>' +
+                      '<span class="px-2 py-1 text-xs font-black bg-neon-green text-black border-2 border-black">Aktif</span>' +
+                    '</div>' +
+                    '<div class="flex justify-between items-center text-xs font-bold">' +
+                      '<span>Berlaku ' + daysLeft + ' hari lagi</span>' +
+                      '<button type="button" class="copy-voucher px-3 py-1 text-xs font-black border-2 border-black bg-white shadow-[1px_1px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all" data-code="' + v.code + '">Salin</button>' +
+                    '</div>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+            '</div>'
+          ) : '') +
+
+          (usedVouchers.length > 0 ? (
+            '<div class="mb-6">' +
+              '<h4 class="font-black mb-3 text-black dark:text-white">Sudah Digunakan</h4>' +
+              '<div class="space-y-2">' +
+                usedVouchers.map(function(v) {
+                  return '<div class="border-4 border-black p-4 bg-gray-100 dark:bg-gray-700 opacity-70">' +
+                    '<p class="text-xl font-black line-through">' + v.code + '</p>' +
+                    '<p class="text-sm font-bold text-gray-500">Digunakan ' + new Date(v.usedAt || v.createdAt).toLocaleDateString('id-ID') + '</p>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+            '</div>'
+          ) : '') +
+
+          (expiredVouchers.length > 0 ? (
+            '<div>' +
+              '<h4 class="font-black mb-3 text-black dark:text-white">Kedaluwarsa</h4>' +
+              '<div class="space-y-2">' +
+                expiredVouchers.map(function(v) {
+                  return '<div class="border-4 border-black p-4 bg-red-100 dark:bg-red-900 opacity-70">' +
+                    '<p class="text-xl font-black line-through">' + v.code + '</p>' +
+                    '<p class="text-sm font-bold text-gray-500">Kedaluwarsa ' + new Date(v.validUntil).toLocaleDateString('id-ID') + '</p>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+            '</div>'
+          ) : '') +
+        '</div>';
+
+      document.querySelectorAll('.copy-voucher').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          navigator.clipboard.writeText(this.dataset.code);
+          var original = this.textContent;
+          this.textContent = 'Tersalin!';
+          setTimeout(function() { btn.textContent = original; }, 1500);
+        });
+      });
+    }
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVoucherManager);
+  } else { initVoucherManager(); }
+  user.subscribe(function () { setTimeout(initVoucherManager, 50); });
+</script>
