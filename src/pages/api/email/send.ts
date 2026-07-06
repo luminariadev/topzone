@@ -248,6 +248,48 @@ function generateWelcomeEmail(user: any): string {
   `;
 }
 
+function generatePasswordReset(user: any, data: any): string {
+  return `
+    <html>
+    <head><style>
+      body { font-family: 'Space Grotesk', sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border: 4px solid #000; box-shadow: 8px 8px 0px #000; }
+      .header { background: #FFE600; padding: 30px; text-align: center; border-bottom: 4px solid #000; }
+      .header h1 { margin: 0; font-size: 28px; color: #000; }
+      .content { padding: 30px; }
+      .reset-box { background: #39FF14; border: 2px solid #000; padding: 20px; text-align: center; margin: 20px 0; }
+      .btn { display: inline-block; background: #39FF14; color: #000; padding: 12px 30px; text-decoration: none; font-weight: 900; border: 2px solid #000; margin-top: 20px; }
+      .footer { background: #000; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    </style></head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔑 Reset Password TopZone</h1>
+        </div>
+        <div class="content">
+          <p>Halo <strong>${user.full_name || user.email?.split('@')[0] || 'Gamer'}</strong>,</p>
+          <p>Kami menerima permintaan untuk mereset password akun kamu.</p>
+
+          <div class="reset-box">
+            <p style="margin:0;font-weight:900;">Klik tombol di bawah untuk reset password:</p>
+            <div style="margin-top:15px;">
+              <a href="${data.resetLink || import.meta.env.SITE_URL || 'https://topzone.id'}/reset-password?token=${data.token || ''}" class="btn">Reset Password</a>
+            </div>
+          </div>
+
+          <p style="margin-top:20px;font-size:14px;color:#666;">Link ini akan kedaluwarsa dalam 1 jam. Jika kamu tidak meminta reset password, abaikan email ini.</p>
+
+          <p style="margin-top:30px;">Atau salin link ini ke browser:<br><span style="word-break:break-all;font-size:12px;color:#888;">${data.resetLink || import.meta.env.SITE_URL || 'https://topzone.id'}/reset-password?token=${data.token || ''}</span></p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 // Template map
 const templates: Record<string, (data: any) => string> = {
   'order-confirmation': generateOrderConfirmation,
@@ -255,6 +297,7 @@ const templates: Record<string, (data: any) => string> = {
   'payment-failed': generatePaymentFailed,
   'order-shipped': generateOrderShipped,
   'welcome': generateWelcomeEmail,
+  'password-reset': (data: any) => generatePasswordReset({ full_name: data.full_name, email: data.to }, data),
 };
 
 export const POST: APIRoute = async ({ request }) => {
