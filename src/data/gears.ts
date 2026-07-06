@@ -69,7 +69,7 @@ export const gears: Gear[] = [
   {
     slug: 'gaming-chair',
     name: 'Gaming Chair Pro',
-    img: '/assets/gaming-chair.png',
+    img: '/assets/gaming-chair.jpg',
     price: 2500000,
     tag: 'Ergonomic',
     category: 'chair',
@@ -86,7 +86,7 @@ export const gears: Gear[] = [
   {
     slug: 'controller-pro',
     name: 'Controller Pro',
-    img: '/assets/controller.png',
+    img: '/assets/controller.jpg',
     price: 650000,
     tag: 'Wireless',
     category: 'controller',
@@ -103,7 +103,7 @@ export const gears: Gear[] = [
   {
     slug: 'webcam-4k',
     name: 'Webcam 4K',
-    img: '/assets/webcam.png',
+    img: '/assets/webcam.jpg',
     price: 850000,
     tag: '4K UHD',
     category: 'webcam',
@@ -120,7 +120,7 @@ export const gears: Gear[] = [
   {
     slug: 'condenser-mic',
     name: 'Condenser Microphone',
-    img: '/assets/microphone.png',
+    img: '/assets/microphone.jpg',
     price: 450000,
     tag: 'Studio Quality',
     category: 'microphone',
@@ -138,7 +138,7 @@ export const gears: Gear[] = [
   {
     slug: 'gaming-chair-rgb',
     name: 'Gaming Chair RGB Edition',
-    img: '/assets/gaming-chair-rgb.png',
+    img: '/assets/gaming-chair-rgb.jpg',
     price: 3200000,
     tag: 'RGB Lightning',
     category: 'chair',
@@ -155,7 +155,7 @@ export const gears: Gear[] = [
   {
     slug: 'budget-gaming-chair',
     name: 'Gaming Chair Value Series',
-    img: '/assets/gaming-chair-budget.png',
+    img: '/assets/gaming-chair-budget.jpg',
     price: 1200000,
     tag: 'Budget',
     category: 'chair',
@@ -172,7 +172,7 @@ export const gears: Gear[] = [
   {
     slug: 'racing-style-chair',
     name: 'Racing Style Gaming Chair',
-    img: '/assets/racing-chair.png',
+    img: '/assets/racing-chair.jpg',
     price: 1800000,
     tag: 'Racing',
     category: 'chair',
@@ -189,7 +189,7 @@ export const gears: Gear[] = [
   {
     slug: 'ergonomic-chair-pro',
     name: 'Ergonomic Gaming Chair Pro',
-    img: '/assets/ergo-chair.png',
+    img: '/assets/ergo-chair.jpg',
     price: 4500000,
     tag: 'Premium',
     category: 'chair',
@@ -206,7 +206,7 @@ export const gears: Gear[] = [
   {
     slug: 'monitor-1080p-144hz',
     name: 'Monitor 24" 144Hz',
-    img: '/assets/monitor-144hz.png',
+    img: '/assets/monitor-144hz.jpg',
     price: 2500000,
     tag: '144Hz',
     category: 'monitor',
@@ -224,7 +224,7 @@ export const gears: Gear[] = [
   {
     slug: 'monitor-2k-165hz',
     name: 'Monitor 27" 2K 165Hz',
-    img: '/assets/monitor-2k.png',
+    img: '/assets/monitor-2k.jpg',
     price: 4500000,
     tag: '2K Gaming',
     category: 'monitor',
@@ -242,7 +242,7 @@ export const gears: Gear[] = [
   {
     slug: 'monitor-4k-144hz',
     name: 'Monitor 32" 4K 144Hz',
-    img: '/assets/monitor-4k.png',
+    img: '/assets/monitor-4k.jpg',
     price: 8500000,
     tag: '4K UHD',
     category: 'monitor',
@@ -260,7 +260,7 @@ export const gears: Gear[] = [
   {
     slug: 'ultrawide-monitor',
     name: 'Monitor Ultrawide 34"',
-    img: '/assets/ultrawide-monitor.png',
+    img: '/assets/ultrawide-monitor.jpg',
     price: 7000000,
     tag: 'Ultrawide',
     category: 'monitor',
@@ -278,7 +278,7 @@ export const gears: Gear[] = [
   {
     slug: 'monitor-touch-portable',
     name: 'Monitor Portable 15.6"',
-    img: '/assets/portable-monitor.png',
+    img: '/assets/portable-monitor.jpg',
     price: 1800000,
     tag: 'Portable',
     category: 'monitor',
@@ -296,7 +296,7 @@ export const gears: Gear[] = [
   {
     slug: 'ps5-controller',
     name: 'DualSense PS5 Controller',
-    img: '/assets/ps5-controller.png',
+    img: '/assets/ps5-controller.jpg',
     price: 1200000,
     tag: 'Next-Gen',
     category: 'controller',
@@ -313,7 +313,7 @@ export const gears: Gear[] = [
   {
     slug: 'switch-pro-controller',
     name: 'Nintendo Switch Pro Controller',
-    img: '/assets/switch-pro.png',
+    img: '/assets/switch-pro.jpg',
     price: 750000,
     tag: 'Official',
     category: 'controller',
@@ -330,7 +330,7 @@ export const gears: Gear[] = [
   {
     slug: 'mobile-gamepad',
     name: 'Mobile Gamepad Bluetooth',
-    img: '/assets/mobile-gamepad.png',
+    img: '/assets/mobile-gamepad.jpg',
     price: 350000,
     tag: 'Mobile',
     category: 'controller',
@@ -347,7 +347,7 @@ export const gears: Gear[] = [
   {
     slug: 'fight-stick-arcade',
     name: 'Arcade Fight Stick',
-    img: '/assets/fight-stick.png',
+    img: '/assets/fight-stick.jpg',
     price: 1500000,
     tag: 'Fighting',
     category: 'controller',
@@ -364,7 +364,7 @@ export const gears: Gear[] = [
   {
     slug: 'webcam-1080p-pro',
     name: 'Webcam 1080p Pro',
-    img: '/assets/webcam-1080p.png',
+    img: '/assets/webcam-1080p.jpg',
     price: 350000,
     tag: 'Full HD',
     category: 'webcam',
@@ -381,7 +381,7 @@ export const gears: Gear[] = [
   {
     slug: 'webcam-streaming-pro',
     name: 'Streaming Webcam Pro',
-    img: '/assets/streaming-cam.png',
+    img: '/assets/streaming-cam.jpg',
     price: 2500000,
     tag: 'Streaming',
     category: 'webcam',
@@ -398,7 +398,7 @@ export const gears: Gear[] = [
   {
     slug: 'usb-microphone-pro',
     name: 'USB Microphone Pro',
-    img: '/assets/usb-mic.png',
+    img: '/assets/usb-mic.jpg',
     price: 750000,
     tag: 'Professional',
     category: 'microphone',
@@ -415,7 +415,7 @@ export const gears: Gear[] = [
   {
     slug: 'lavalier-microphone',
     name: 'Lavalier Wireless Microphone',
-    img: '/assets/lavalier-mic.png',
+    img: '/assets/lavalier-mic.jpg',
     price: 250000,
     tag: 'Wireless',
     category: 'microphone',
@@ -432,7 +432,7 @@ export const gears: Gear[] = [
   {
     slug: 'mousepad-xl',
     name: 'Mousepad XL Desk Mat',
-    img: '/assets/mousepad-xl.png',
+    img: '/assets/mousepad-xl.jpg',
     price: 150000,
     tag: 'Desk Mat',
     category: 'mousepad',
@@ -449,7 +449,7 @@ export const gears: Gear[] = [
   {
     slug: 'mousepad-rgb',
     name: 'RGB Mousepad XXL',
-    img: '/assets/mousepad-rgb.png',
+    img: '/assets/mousepad-rgb.jpg',
     price: 350000,
     tag: 'RGB',
     category: 'mousepad',
@@ -466,7 +466,7 @@ export const gears: Gear[] = [
   {
     slug: 'mousepad-hard',
     name: 'Hard Mousepad Speed',
-    img: '/assets/mousepad-hard.png',
+    img: '/assets/mousepad-hard.jpg',
     price: 120000,
     tag: 'Speed',
     category: 'mousepad',
@@ -517,7 +517,7 @@ export const gears: Gear[] = [
   {
     slug: 'speaker-stereo',
     name: 'Gaming Speaker Stereo',
-    img: '/assets/speaker-stereo.png',
+    img: '/assets/speaker-stereo.jpg',
     price: 450000,
     tag: '2.0 Channel',
     category: 'speaker',
@@ -534,7 +534,7 @@ export const gears: Gear[] = [
   {
     slug: 'speaker-2-1',
     name: '2.1 Speaker Subwoofer',
-    img: '/assets/speaker-2-1.png',
+    img: '/assets/speaker-2-1.jpg',
     price: 850000,
     tag: '2.1 Channel',
     category: 'speaker',
@@ -551,7 +551,7 @@ export const gears: Gear[] = [
   {
     slug: 'soundbar-gaming',
     name: 'Gaming Soundbar',
-    img: '/assets/soundbar.png',
+    img: '/assets/soundbar.jpg',
     price: 650000,
     tag: 'Soundbar',
     category: 'speaker',
@@ -569,7 +569,7 @@ export const gears: Gear[] = [
   {
     slug: 'capture-card-hdmi',
     name: 'Capture Card HDMI 4K',
-    img: '/assets/capture-card.png',
+    img: '/assets/capture-card.jpg',
     price: 1200000,
     tag: 'Streaming',
     category: 'streaming',
@@ -587,7 +587,7 @@ export const gears: Gear[] = [
   {
     slug: 'ring-light',
     name: 'Ring Light 12" LED',
-    img: '/assets/ring-light.png',
+    img: '/assets/ring-light.jpg',
     price: 250000,
     tag: 'Lighting',
     category: 'streaming',
@@ -605,7 +605,7 @@ export const gears: Gear[] = [
   {
     slug: 'green-screen',
     name: 'Portable Green Screen',
-    img: '/assets/green-screen.png',
+    img: '/assets/green-screen.jpg',
     price: 350000,
     tag: 'Chroma Key',
     category: 'streaming',
@@ -622,7 +622,7 @@ export const gears: Gear[] = [
   {
     slug: 'stream-deck',
     name: 'Stream Deck Mini',
-    img: '/assets/stream-deck.png',
+    img: '/assets/stream-deck.jpg',
     price: 750000,
     tag: 'Control',
     category: 'streaming',
@@ -639,7 +639,7 @@ export const gears: Gear[] = [
   {
     slug: 'boom-arm-mic',
     name: 'Microphone Boom Arm',
-    img: '/assets/boom-arm.png',
+    img: '/assets/boom-arm.jpg',
     price: 350000,
     tag: 'Mount',
     category: 'streaming',
