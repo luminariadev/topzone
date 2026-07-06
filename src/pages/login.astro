@@ -105,6 +105,7 @@ import Button from '../components/Button.astro';
 <script>
   import { setLocalUser, setUser } from '../stores/auth';
   import { supabase, signInWithPassword, onAuthStateChange, supabaseQuery } from '../lib/supabase';
+  import { mergeCartOnLogin } from '../stores/cart';
 
   // --- OAuth Login Buttons ---
   async function loginOAuth(provider: 'google' | 'discord') {
@@ -181,6 +182,9 @@ import Button from '../components/Button.astro';
     if (!supabase) {
       setLocalUser(email, data.user?.user_metadata?.full_name);
     }
+
+    // Merge guest cart with server-side cart after login
+    await mergeCartOnLogin();
 
     var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
     window.location.href = redirectUrl;
