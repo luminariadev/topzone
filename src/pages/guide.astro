@@ -1,0 +1,185 @@
+---
+// src/pages/guide.astro
+// Guide & Tutorial Page - Cara Top Up, Beli Gear, Pakai Voucher
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+
+  <section class="py-16 min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Page Header -->
+      <div class="text-center mb-12">
+        <div class="text-6xl mb-6 flex justify-center gap-4">
+          <i class="bi bi-controller text-neon-pink"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-black mb-4 text-black dark:text-white">
+          Panduan <span class="bg-neon-yellow px-3">TopZone</span>
+        </h1>
+        <p class="text-lg font-bold text-gray-600 dark:text-gray-300">Cara Top Up, Belanja Gear, Pakai Voucher, dan Checkout</p>
+      </div>
+
+      <!-- Section 1: Top Up Game -->
+      <div id="topup-guide" class="border-4 border-black p-8 mb-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-14 h-14 bg-neon-green border-4 border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+            <i class="bi bi-controller text-3xl"></i>
+          </div>
+          <h2 class="text-3xl font-black text-black dark:text-white">Top Up Game</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">1️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Pilih Game</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Dari halaman utama, klik menu "Games" atau scroll ke bagian Featured Games. Klik game yang ingin di top up.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">2️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Pilih Paket</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Pilih jumlah diamond/UC/VP/Robux yang diinginkan. Harga tercantum jelas, tinggal klik tombol paket.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">3️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Checkout</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Masuk ke keranjang, isi data pembayar, pilih metode pembayaran (Transfer Bank, E-Wallet, GoPay).</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">4️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Terima & Main</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Setelah bayar, diamond/UC masuk ke akun game kamu dalam hitungan menit. Cek status di halaman Pesanan.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Beli Gear -->
+      <div id="gear-guide" class="border-4 border-black p-8 mb-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-14 h-14 bg-neon-pink border-4 border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+            <i class="bi bi-pc-display text-3xl"></i>
+          </div>
+          <h2 class="text-3xl font-black text-black dark:text-white">Beli Gaming Gear</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">1️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Browse Gear</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Klik menu "Gear" atau scroll ke Featured Gears. Filter berdasarkan kategori, brand, atau harga.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">2️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Lihat Detail</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Klik gear untuk lihat spesifikasi lengkap, harga, warna, dan review dari pembeli lain.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">3️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Tambah ke Keranjang</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Setelah yakin, klik "Tambah ke Keranjang". Kamu bisa beli beberapa item sekaligus.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <div class="text-2xl mb-2 font-black">4️⃣</div>
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">Pembayaran & Pengiriman</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Checkout dan pilih metode bayar. Gear akan dikirim ke alamat kamu dalam 1-3 hari kerja.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Voucher & Promo -->
+      <div id="voucher-guide" class="border-4 border-black p-8 mb-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-14 h-14 bg-neon-yellow border-4 border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+            <i class="bi bi-ticket-perforated text-3xl"></i>
+          </div>
+          <h2 class="text-3xl font-black text-black dark:text-white">Voucher & Promo</h2>
+        </div>
+        <div class="space-y-4">
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black text-lg mb-2 text-neon-green">🎁 Voucher Selamat Datang</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Setiap user baru mendapatkan voucher <strong>WELCOME10</strong> — diskon 10% untuk pembelian pertama (min. Rp 50.000, maks. Rp 25.000).</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black text-lg mb-2 text-neon-pink">🔥 Flash Sale</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Di halaman promo, ada flash sale dengan hitung mundur. Harga spesial untuk waktu terbatas — jangan sampai kehabisan!</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black text-lg mb-2 text-black dark:text-white">🎟 Cara Pakai Voucher</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Di halaman checkout, masukkan kode voucher di kolom "Punya Voucher?" lalu klik "Pakai". Diskon otomatis terpotong.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Points & Loyalty -->
+      <div id="points-guide" class="border-4 border-black p-8 mb-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-14 h-14 bg-black border-4 border-neon-green flex items-center justify-center shadow-[3px_3px_0px_0px_#39FF14]">
+            <i class="bi bi-gem text-3xl text-neon-green"></i>
+          </div>
+          <h2 class="text-3xl font-black text-black dark:text-white">Points & Loyalty</h2>
+        </div>
+
+        <!-- Tier Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="border-4 border-black p-4 text-center bg-gradient-to-b from-orange-100 to-orange-200">
+            <div class="text-3xl mb-1">🥉</div>
+            <p class="font-black text-sm">Bronze</p>
+            <p class="text-xs font-bold">0 - Rp 499k</p>
+            <p class="text-xs mt-1">1 poin/Rp1.000</p>
+          </div>
+          <div class="border-4 border-black p-4 text-center bg-gradient-to-b from-gray-100 to-gray-200">
+            <div class="text-3xl mb-1">🥈</div>
+            <p class="font-black text-sm">Silver</p>
+            <p class="text-xs font-bold">Rp 500k - Rp 2jt</p>
+            <p class="text-xs mt-1">1.5x poin + voucher</p>
+          </div>
+          <div class="border-4 border-black p-4 text-center bg-gradient-to-b from-yellow-100 to-yellow-200">
+            <div class="text-3xl mb-1">🥇</div>
+            <p class="font-black text-sm">Gold</p>
+            <p class="text-xs font-bold">Rp 2jt - Rp 5jt</p>
+            <p class="text-xs mt-1">2x poin + free shipping</p>
+          </div>
+          <div class="border-4 border-black p-4 text-center bg-gradient-to-b from-purple-100 to-purple-200">
+            <div class="text-3xl mb-1">💎</div>
+            <p class="font-black text-sm">Platinum</p>
+            <p class="text-xs font-bold">&gt; Rp 5jt</p>
+            <p class="text-xs mt-1">3x poin + birthday gift</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="border-4 border-black p-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-14 h-14 bg-neon-green border-4 border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+            <i class="bi bi-question-circle text-3xl"></i>
+          </div>
+          <h2 class="text-3xl font-black text-black dark:text-white">Pertanyaan Umum</h2>
+        </div>
+        <div class="space-y-4">
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black mb-2 text-black dark:text-white">❓ Berapa lama proses top up?</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Setelah pembayaran dikonfirmasi, diamond/UC/VP masuk ke akun dalam 1-5 menit untuk game populer. Maksimal 1 jam.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black mb-2 text-black dark:text-white">❓ Bagaimana cara refund?</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">Hubungi customer support via chat atau email. Refund diproses 1×24 jam untuk gear. Top up game tidak bisa direfund setelah diproses.</p>
+          </div>
+          <div class="border-4 border-black p-5 bg-gray-50 dark:bg-gray-700">
+            <h3 class="font-black mb-2 text-black dark:text-white">❓ Apakah aman berbelanja di TopZone?</h3>
+            <p class="font-medium text-gray-600 dark:text-gray-300">100% aman! Kami menggunakan Supabase Auth untuk keamanan data, Midtrans untuk pembayaran terenkripsi, dan SSL untuk seluruh situs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to Home -->
+      <div class="text-center mt-8">
+        <a href="/" class="inline-flex items-center gap-2 px-8 py-4 font-black uppercase border-2 border-black bg-black text-neon-green shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#39FF14] transition-all">
+          <i class="bi bi-house-fill"></i> Kembali ke Beranda
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
