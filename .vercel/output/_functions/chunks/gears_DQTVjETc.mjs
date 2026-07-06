@@ -1,0 +1,663 @@
+function formatCurrency(amount, currency = "IDR") {
+  if (currency === "IDR") {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  }
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
+const gears = [
+  {
+    slug: "mechanical-keyboard",
+    name: "Mechanical Keyboard",
+    img: "/assets/keyboard.png",
+    price: 35e4,
+    tag: "RGB Ready",
+    category: "keyboard",
+    brand: "Logitech",
+    description: "Keyboard mekanikal 75% compact dengan switch taktil dan RGB per-key. Cocok untuk gaming marathon.",
+    priority: 1,
+    specs: [
+      { label: "Layout", value: "75% Compact" },
+      { label: "Switch", value: "Blue Tactile" },
+      { label: "Backlight", value: "Per-key RGB" },
+      { label: "Interface", value: "USB-C + Wireless" },
+      { label: "Battery", value: "4000 mAh" }
+    ]
+  },
+  {
+    slug: "gaming-mouse",
+    name: "Gaming Mouse",
+    img: "/assets/mouse.png",
+    price: 25e4,
+    tag: "12000 DPI",
+    category: "mouse",
+    brand: "Razer",
+    description: "Mouse gaming ergonomis dengan sensor optik presisi tinggi, 7 tombol programmable, dan RGB side strip.",
+    priority: 2,
+    specs: [
+      { label: "DPI", value: "200 – 12.000" },
+      { label: "Polling Rate", value: "1000 Hz" },
+      { label: "Buttons", value: "7 programmable" },
+      { label: "Weight", value: "88g" },
+      { label: "Interface", value: "USB 2.0" }
+    ]
+  },
+  {
+    slug: "rgb-headset",
+    name: "RGB Headset",
+    img: "/assets/headset.png",
+    price: 3e5,
+    tag: "Surround Sound",
+    category: "headset",
+    brand: "SteelSeries",
+    description: "Headset gaming dengan virtual 7.1 surround sound, mikrofon noise-cancelling, dan RGB earcup.",
+    priority: 3,
+    specs: [
+      { label: "Driver", value: "50mm Neodymium" },
+      { label: "Frequency", value: "20Hz – 20kHz" },
+      { label: "Microphone", value: "Noise-cancelling" },
+      { label: "Audio", value: "Virtual 7.1 Surround" },
+      { label: "Interface", value: "3.5mm + USB" }
+    ]
+  },
+  {
+    slug: "gaming-chair",
+    name: "Gaming Chair Pro",
+    img: "/assets/gaming-chair.png",
+    price: 25e5,
+    tag: "Ergonomic",
+    category: "chair",
+    brand: "Secretlab",
+    description: "Kursi gaming ergonomis dengan lumbar support, adjustable armrest, dan material PU leather premium.",
+    priority: 4,
+    specs: [
+      { label: "Material", value: "PU Leather" },
+      { label: "Weight Capacity", value: "150 kg" },
+      { label: "Recline", value: "90° – 165°" },
+      { label: "Armrest", value: "4D Adjustable" }
+    ]
+  },
+  {
+    slug: "controller-pro",
+    name: "Controller Pro",
+    img: "/assets/controller.png",
+    price: 65e4,
+    tag: "Wireless",
+    category: "controller",
+    brand: "Xbox",
+    description: "Controller wireless premium dengan trigger vibration, customizable buttons, dan baterai tahan lama.",
+    priority: 5,
+    specs: [
+      { label: "Connectivity", value: "Bluetooth 5.0 + USB-C" },
+      { label: "Battery", value: "30 jam" },
+      { label: "Buttons", value: "10 + 2 programmable" },
+      { label: "Platform", value: "PC, Xbox, Mobile" }
+    ]
+  },
+  {
+    slug: "webcam-4k",
+    name: "Webcam 4K",
+    img: "/assets/webcam.png",
+    price: 85e4,
+    tag: "4K UHD",
+    category: "webcam",
+    brand: "Logitech",
+    description: "Webcam 4K dengan autofocus, dual microphone, dan privacy shutter untuk streaming dan meeting.",
+    priority: 6,
+    specs: [
+      { label: "Resolution", value: "4K @ 30fps / 1080p @ 60fps" },
+      { label: "FOV", value: "90°" },
+      { label: "Microphone", value: "Dual Omnidirectional" },
+      { label: "Focus", value: "Auto + Manual" }
+    ]
+  },
+  {
+    slug: "condenser-mic",
+    name: "Condenser Microphone",
+    img: "/assets/microphone.png",
+    price: 45e4,
+    tag: "Studio Quality",
+    category: "microphone",
+    brand: "Blue",
+    description: "Mikrofon kondenser dengan cardioid polar pattern, pop filter, dan shock mount untuk streaming.",
+    priority: 7,
+    specs: [
+      { label: "Type", value: "Condenser" },
+      { label: "Pattern", value: "Cardioid" },
+      { label: "Frequency", value: "20Hz – 20kHz" },
+      { label: "Interface", value: "USB-C" }
+    ]
+  },
+  // ── 2.3 New Gear ──────────────────────────────────────────────────
+  {
+    slug: "gaming-chair-rgb",
+    name: "Gaming Chair RGB Edition",
+    img: "/assets/gaming-chair-rgb.png",
+    price: 32e5,
+    tag: "RGB Lightning",
+    category: "chair",
+    brand: "Razer",
+    description: "Kursi gaming dengan RGB lighting strip, lumbar support magnetik, dan material breathable premium.",
+    priority: 8,
+    specs: [
+      { label: "Material", value: "PU Leather + Mesh" },
+      { label: "RGB", value: "16.8M Colors" },
+      { label: "Recline", value: "90°-180°" },
+      { label: "Weight Capacity", value: "160 kg" }
+    ]
+  },
+  {
+    slug: "budget-gaming-chair",
+    name: "Gaming Chair Value Series",
+    img: "/assets/gaming-chair-budget.png",
+    price: 12e5,
+    tag: "Budget",
+    category: "chair",
+    brand: "Armaggeddon",
+    description: "Kursi gaming terjangkau dengan desain ergonomis, lumbar pillow, dan konstruksi baja kokoh.",
+    priority: 9,
+    specs: [
+      { label: "Material", value: "PU Leather" },
+      { label: "Frame", value: "Steel" },
+      { label: "Weight Capacity", value: "120 kg" },
+      { label: "Armrest", value: "2D Adjustable" }
+    ]
+  },
+  {
+    slug: "racing-style-chair",
+    name: "Racing Style Gaming Chair",
+    img: "/assets/racing-chair.png",
+    price: 18e5,
+    tag: "Racing",
+    category: "chair",
+    brand: "Secretlab",
+    description: "Kursi gaming bergaya racing dengan bucket seat, adjustable lumbar support, dan build quality premium.",
+    priority: 10,
+    specs: [
+      { label: "Material", value: "Nappa Leather" },
+      { label: "Recline", value: "90°-165°" },
+      { label: "Weight Capacity", value: "150 kg" },
+      { label: "Armrest", value: "4D" }
+    ]
+  },
+  {
+    slug: "ergonomic-chair-pro",
+    name: "Ergonomic Gaming Chair Pro",
+    img: "/assets/ergo-chair.png",
+    price: 45e5,
+    tag: "Premium",
+    category: "chair",
+    brand: "Herman Miller",
+    description: "Kursi gaming ergonomis kelas atas dengan mesh back, adjustable lumbar, dan garansi 12 tahun.",
+    priority: 11,
+    specs: [
+      { label: "Material", value: "Mesh + Foam" },
+      { label: "Adjustability", value: "Full" },
+      { label: "Weight Capacity", value: "180 kg" },
+      { label: "Warranty", value: "12 Years" }
+    ]
+  },
+  {
+    slug: "monitor-1080p-144hz",
+    name: 'Monitor 24" 144Hz',
+    img: "/assets/monitor-144hz.png",
+    price: 25e5,
+    tag: "144Hz",
+    category: "monitor",
+    brand: "ASUS",
+    description: "Monitor gaming 24 inch Full HD 144Hz dengan 1ms response time, cocok untuk FPS kompetitif.",
+    priority: 12,
+    specs: [
+      { label: "Size", value: "24 inch" },
+      { label: "Resolution", value: "1920x1080" },
+      { label: "Refresh Rate", value: "144Hz" },
+      { label: "Response Time", value: "1ms" },
+      { label: "Panel", value: "IPS" }
+    ]
+  },
+  {
+    slug: "monitor-2k-165hz",
+    name: 'Monitor 27" 2K 165Hz',
+    img: "/assets/monitor-2k.png",
+    price: 45e5,
+    tag: "2K Gaming",
+    category: "monitor",
+    brand: "LG",
+    description: "Monitor gaming 27 inch QHD 165Hz dengan HDR10 dan G-Sync untuk visual gaming terbaik.",
+    priority: 13,
+    specs: [
+      { label: "Size", value: "27 inch" },
+      { label: "Resolution", value: "2560x1440" },
+      { label: "Refresh Rate", value: "165Hz" },
+      { label: "Response Time", value: "1ms" },
+      { label: "HDR", value: "HDR10" }
+    ]
+  },
+  {
+    slug: "monitor-4k-144hz",
+    name: 'Monitor 32" 4K 144Hz',
+    img: "/assets/monitor-4k.png",
+    price: 85e5,
+    tag: "4K UHD",
+    category: "monitor",
+    brand: "Samsung",
+    description: "Monitor gaming 32 inch 4K 144Hz dengan Mini LED, HDR1000, dan 1ms response time.",
+    priority: 14,
+    specs: [
+      { label: "Size", value: "32 inch" },
+      { label: "Resolution", value: "3840x2160" },
+      { label: "Refresh Rate", value: "144Hz" },
+      { label: "Response Time", value: "1ms" },
+      { label: "Panel", value: "Mini LED" }
+    ]
+  },
+  {
+    slug: "ultrawide-monitor",
+    name: 'Monitor Ultrawide 34"',
+    img: "/assets/ultrawide-monitor.png",
+    price: 7e6,
+    tag: "Ultrawide",
+    category: "monitor",
+    brand: "Dell",
+    description: "Monitor ultrawide 34 inch 21:9 dengan WQHD, 144Hz, dan split-screen untuk produktivitas maksimal.",
+    priority: 15,
+    specs: [
+      { label: "Size", value: "34 inch" },
+      { label: "Resolution", value: "3440x1440" },
+      { label: "Refresh Rate", value: "144Hz" },
+      { label: "Aspect Ratio", value: "21:9" },
+      { label: "Curvature", value: "1800R" }
+    ]
+  },
+  {
+    slug: "monitor-touch-portable",
+    name: 'Monitor Portable 15.6"',
+    img: "/assets/portable-monitor.png",
+    price: 18e5,
+    tag: "Portable",
+    category: "monitor",
+    brand: "ASUS",
+    description: "Monitor portabel 15.6 inch FullHD IPS dengan USB-C, cocok untuk setup dual monitor mobile.",
+    priority: 16,
+    specs: [
+      { label: "Size", value: "15.6 inch" },
+      { label: "Resolution", value: "1920x1080" },
+      { label: "Panel", value: "IPS" },
+      { label: "Connectivity", value: "USB-C + Mini HDMI" },
+      { label: "Weight", value: "780g" }
+    ]
+  },
+  {
+    slug: "ps5-controller",
+    name: "DualSense PS5 Controller",
+    img: "/assets/ps5-controller.png",
+    price: 12e5,
+    tag: "Next-Gen",
+    category: "controller",
+    brand: "Sony",
+    description: "DualSense wireless controller dengan haptic feedback, adaptive triggers, dan built-in mic untuk PS5 & PC.",
+    priority: 17,
+    specs: [
+      { label: "Connectivity", value: "Bluetooth 5.1 + USB-C" },
+      { label: "Battery", value: "12 jam" },
+      { label: "Features", value: "Haptic + Adaptive Triggers" },
+      { label: "Platform", value: "PS5, PC, Mobile" }
+    ]
+  },
+  {
+    slug: "switch-pro-controller",
+    name: "Nintendo Switch Pro Controller",
+    img: "/assets/switch-pro.png",
+    price: 75e4,
+    tag: "Official",
+    category: "controller",
+    brand: "Nintendo",
+    description: "Pro Controller resmi Nintendo dengan grip ergonomis, NFC untuk Amiibo, dan gyro motion control.",
+    priority: 18,
+    specs: [
+      { label: "Connectivity", value: "Bluetooth + USB-C" },
+      { label: "Battery", value: "40 jam" },
+      { label: "Features", value: "HD Rumble + Gyro" },
+      { label: "Platform", value: "Switch, PC" }
+    ]
+  },
+  {
+    slug: "mobile-gamepad",
+    name: "Mobile Gamepad Bluetooth",
+    img: "/assets/mobile-gamepad.png",
+    price: 35e4,
+    tag: "Mobile",
+    category: "controller",
+    brand: "Razer",
+    description: "Gamepad bluetooth telescopic untuk mobile gaming dengan analog stick hall-effect dan trigger tactile.",
+    priority: 19,
+    specs: [
+      { label: "Connectivity", value: "Bluetooth 5.0" },
+      { label: "Battery", value: "20 jam" },
+      { label: "Compatibility", value: "Android + iOS" },
+      { label: "Size", value: "Telescopic 6-11 inch" }
+    ]
+  },
+  {
+    slug: "fight-stick-arcade",
+    name: "Arcade Fight Stick",
+    img: "/assets/fight-stick.png",
+    price: 15e5,
+    tag: "Fighting",
+    category: "controller",
+    brand: "Hori",
+    description: "Arcade fight stick dengan joystick Sanwa dan 8 tombol responsive untuk game fighting kompetitif.",
+    priority: 20,
+    specs: [
+      { label: "Joystick", value: "Sanwa JLF" },
+      { label: "Buttons", value: "8x Sanwa OBSF" },
+      { label: "Interface", value: "USB + Headphone Jack" },
+      { label: "Platform", value: "PS5, PS4, PC" }
+    ]
+  },
+  {
+    slug: "webcam-1080p-pro",
+    name: "Webcam 1080p Pro",
+    img: "/assets/webcam-1080p.png",
+    price: 35e4,
+    tag: "Full HD",
+    category: "webcam",
+    brand: "Logitech",
+    description: "Webcam 1080p dengan light correction, stereo mic, dan universal clip untuk laptop & monitor.",
+    priority: 21,
+    specs: [
+      { label: "Resolution", value: "1080p @ 30fps" },
+      { label: "FOV", value: "78°" },
+      { label: "Microphone", value: "Stereo" },
+      { label: "Mount", value: "Universal Clip + Tripod" }
+    ]
+  },
+  {
+    slug: "webcam-streaming-pro",
+    name: "Streaming Webcam Pro",
+    img: "/assets/streaming-cam.png",
+    price: 25e5,
+    tag: "Streaming",
+    category: "webcam",
+    brand: "Elgato",
+    description: "Webcam profesional untuk streaming dengan sensor 4K 60fps, FOV adjustable, dan kontrol via software.",
+    priority: 22,
+    specs: [
+      { label: "Resolution", value: "4K @ 60fps" },
+      { label: "FOV", value: "82° adjustable" },
+      { label: "Focus", value: "Auto + Manual" },
+      { label: "Software", value: "Camera Hub" }
+    ]
+  },
+  {
+    slug: "usb-microphone-pro",
+    name: "USB Microphone Pro",
+    img: "/assets/usb-mic.png",
+    price: 75e4,
+    tag: "Professional",
+    category: "microphone",
+    brand: "Razer",
+    description: "Mikrofon USB condenser dengan 4 polar patterns, gain control, dan mute button untuk streaming.",
+    priority: 23,
+    specs: [
+      { label: "Type", value: "Condenser USB" },
+      { label: "Patterns", value: "4 (Cardioid, Stereo, Omni, Figure-8)" },
+      { label: "Frequency", value: "20Hz-20kHz" },
+      { label: "Interface", value: "USB-C + 3.5mm" }
+    ]
+  },
+  {
+    slug: "lavalier-microphone",
+    name: "Lavalier Wireless Microphone",
+    img: "/assets/lavalier-mic.png",
+    price: 25e4,
+    tag: "Wireless",
+    category: "microphone",
+    brand: "Rode",
+    description: "Mikrofon lavalier wireless dengan noise cancellation, 100m range, cocok untuk presentasi dan vlog.",
+    priority: 24,
+    specs: [
+      { label: "Type", value: "Lavalier Wireless" },
+      { label: "Range", value: "100m" },
+      { label: "Battery", value: "7 jam TX + RX" },
+      { label: "Compatibility", value: "Smartphone, Kamera, Laptop" }
+    ]
+  },
+  {
+    slug: "mousepad-xl",
+    name: "Mousepad XL Desk Mat",
+    img: "/assets/mousepad-xl.png",
+    price: 15e4,
+    tag: "Desk Mat",
+    category: "mousepad",
+    brand: "SteelSeries",
+    description: "Mousepad XL ukuran 90x40cm dengan surface micro-textured untuk tracking presisi dan anti-slip base.",
+    priority: 25,
+    specs: [
+      { label: "Size", value: "900x400x4mm" },
+      { label: "Surface", value: "Micro-textured" },
+      { label: "Base", value: "Anti-slip Rubber" },
+      { label: "Waterproof", value: "Yes" }
+    ]
+  },
+  {
+    slug: "mousepad-rgb",
+    name: "RGB Mousepad XXL",
+    img: "/assets/mousepad-rgb.png",
+    price: 35e4,
+    tag: "RGB",
+    category: "mousepad",
+    brand: "Razer",
+    description: "Mousepad RGB ukuran XXL dengan 16.8M colors lighting, surface presisi, dan kontrol via software.",
+    priority: 26,
+    specs: [
+      { label: "Size", value: "920x410x4mm" },
+      { label: "Lighting", value: "16.8M RGB" },
+      { label: "Surface", value: "Hard Textured" },
+      { label: "Software", value: "Synapse 3" }
+    ]
+  },
+  {
+    slug: "mousepad-hard",
+    name: "Hard Mousepad Speed",
+    img: "/assets/mousepad-hard.png",
+    price: 12e4,
+    tag: "Speed",
+    category: "mousepad",
+    brand: "Logitech",
+    description: "Mousepad hard surface untuk glide speed maksimal, ideal untuk FPS dan tracking cepat.",
+    priority: 27,
+    specs: [
+      { label: "Size", value: "350x280x3mm" },
+      { label: "Surface", value: "Hard Polymer" },
+      { label: "Base", value: "Non-slip" },
+      { label: "Thickness", value: "3mm" }
+    ]
+  },
+  {
+    slug: "mousepad-ergonomic",
+    name: "Mousepad Wrist Rest",
+    img: "/assets/mousepad-wrist.png",
+    price: 85e3,
+    tag: "Ergonomic",
+    category: "mousepad",
+    brand: "Corsair",
+    description: "Mousepad dengan gel wrist rest ergonomis untuk mengurangi kelelahan pergelangan saat gaming marathon.",
+    priority: 28,
+    specs: [
+      { label: "Size", value: "300x250x20mm" },
+      { label: "Wrist Rest", value: "Gel Memory Foam" },
+      { label: "Surface", value: "Cloth" },
+      { label: "Base", value: "Anti-slip" }
+    ]
+  },
+  {
+    slug: "mousepad-mini",
+    name: "Mousepad Mini Travel",
+    img: "/assets/mousepad-mini.png",
+    price: 5e4,
+    tag: "Portable",
+    category: "mousepad",
+    brand: "Generic",
+    description: "Mousepad mini ukuran compact untuk mobilitas tinggi, cocok dibawa ke kafe atau event gaming.",
+    priority: 29,
+    specs: [
+      { label: "Size", value: "220x180x3mm" },
+      { label: "Surface", value: "Cloth" },
+      { label: "Base", value: "Rubber" },
+      { label: "Weight", value: "50g" }
+    ]
+  },
+  {
+    slug: "speaker-stereo",
+    name: "Gaming Speaker Stereo",
+    img: "/assets/speaker-stereo.png",
+    price: 45e4,
+    tag: "2.0 Channel",
+    category: "speaker",
+    brand: "Logitech",
+    description: "Speaker stereo gaming 10W RMS dengan suara jernih, bass port, dan kontrol volume di kabel.",
+    priority: 30,
+    specs: [
+      { label: "Power", value: "10W RMS" },
+      { label: "Speaker", value: "2x 3 inch" },
+      { label: "Frequency", value: "80Hz-20kHz" },
+      { label: "Interface", value: "3.5mm + USB" }
+    ]
+  },
+  {
+    slug: "speaker-2-1",
+    name: "2.1 Speaker Subwoofer",
+    img: "/assets/speaker-2-1.png",
+    price: 85e4,
+    tag: "2.1 Channel",
+    category: "speaker",
+    brand: "Creative",
+    description: "Speaker 2.1 dengan subwoofer 20W, satellite speaker, dan EQ preset untuk mode game/movie/music.",
+    priority: 31,
+    specs: [
+      { label: "Power", value: "30W RMS (20W sub + 5Wx2)" },
+      { label: "Subwoofer", value: "4 inch" },
+      { label: "Controls", value: "Wired Remote + EQ" },
+      { label: "Interface", value: "3.5mm, Bluetooth, USB" }
+    ]
+  },
+  {
+    slug: "soundbar-gaming",
+    name: "Gaming Soundbar",
+    img: "/assets/soundbar.png",
+    price: 65e4,
+    tag: "Soundbar",
+    category: "speaker",
+    brand: "Razer",
+    description: "Soundbar gaming ultra-wide dengan virtual surround, RGB Chroma, dan dua full-range driver.",
+    priority: 32,
+    specs: [
+      { label: "Power", value: "16W RMS" },
+      { label: "Driver", value: "2x Full Range" },
+      { label: "Virtual Surround", value: "Yes" },
+      { label: "Lighting", value: "RGB Chroma" },
+      { label: "Interface", value: "USB-C + Bluetooth 5.0" }
+    ]
+  },
+  {
+    slug: "capture-card-hdmi",
+    name: "Capture Card HDMI 4K",
+    img: "/assets/capture-card.png",
+    price: 12e5,
+    tag: "Streaming",
+    category: "streaming",
+    brand: "Elgato",
+    description: "Capture card HDMI 4K60 HDR10 untuk streaming gameplay dengan latency rendah dan bypass passthrough.",
+    priority: 33,
+    specs: [
+      { label: "Input", value: "HDMI 2.0" },
+      { label: "Capture", value: "4K60 HDR10" },
+      { label: "Passthrough", value: "4K60 HDR10" },
+      { label: "Interface", value: "USB 3.1 Type-C" },
+      { label: "Latency", value: "<50ms" }
+    ]
+  },
+  {
+    slug: "ring-light",
+    name: 'Ring Light 12" LED',
+    img: "/assets/ring-light.png",
+    price: 25e4,
+    tag: "Lighting",
+    category: "streaming",
+    brand: "Neewer",
+    description: "Ring light 12 inch dengan dimming 10 tingkat, 3 color temperatures, dan tripod adjustable untuk streaming.",
+    priority: 34,
+    specs: [
+      { label: "Diameter", value: "12 inch" },
+      { label: "Color Temp", value: "3000K-6500K" },
+      { label: "Brightness", value: "10-level dimming" },
+      { label: "Power", value: "USB + AC Adapter" },
+      { label: "Stand", value: "Tripod 150cm" }
+    ]
+  },
+  {
+    slug: "green-screen",
+    name: "Portable Green Screen",
+    img: "/assets/green-screen.png",
+    price: 35e4,
+    tag: "Chroma Key",
+    category: "streaming",
+    brand: "Elgato",
+    description: "Green screen chroma key portable dengan auto-lock mechanism, wrinkle-resistant, dan mudah dilipat.",
+    priority: 35,
+    specs: [
+      { label: "Size", value: "142x150cm" },
+      { label: "Material", value: "Polyester Wrinkle-Resistant" },
+      { label: "Setup", value: "Auto-lock, 1 menit" },
+      { label: "Stand", value: "Aluminium Tripod" }
+    ]
+  },
+  {
+    slug: "stream-deck",
+    name: "Stream Deck Mini",
+    img: "/assets/stream-deck.png",
+    price: 75e4,
+    tag: "Control",
+    category: "streaming",
+    brand: "Elgato",
+    description: "Stream Deck 6 tombol LCD dengan programmable keys untuk kontrol streaming, OBS, dan aplikasi kreatif.",
+    priority: 36,
+    specs: [
+      { label: "Keys", value: "6 LCD Buttons" },
+      { label: "Profiles", value: "Unlimited" },
+      { label: "Compatibility", value: "OBS, Twitch, YouTube, Spotify" },
+      { label: "Interface", value: "USB-C" }
+    ]
+  },
+  {
+    slug: "boom-arm-mic",
+    name: "Microphone Boom Arm",
+    img: "/assets/boom-arm.png",
+    price: 35e4,
+    tag: "Mount",
+    category: "streaming",
+    brand: "Rode",
+    description: "Boom arm mikrofon dengan spring-loaded design, internal cable management, dan clamp universal.",
+    priority: 37,
+    specs: [
+      { label: "Reach", value: "70cm" },
+      { label: "Rotation", value: "360°" },
+      { label: "Clamp", value: "Up to 55mm" },
+      { label: "Cable Mgmt", value: "Internal" },
+      { label: "Weight Capacity", value: "1.2 kg" }
+    ]
+  }
+];
+
+export { formatCurrency as f, gears as g };

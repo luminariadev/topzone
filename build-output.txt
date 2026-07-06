@@ -1,0 +1,46 @@
+
+> topzone@0.0.1 build
+> astro build
+
+[2m16:12:50[22m [34m[types][39m Generated [2m60ms[22m
+[2m16:12:50[22m [34m[build][39m output: [34m"static"[39m
+[2m16:12:50[22m [34m[build][39m mode: [34m"server"[39m
+[2m16:12:50[22m [34m[build][39m directory: [34mD:\Rizkia\Project Software\TopZone\dist\[39m
+[2m16:12:50[22m [34m[build][39m adapter: [32m@astrojs/vercel[39m
+[2m16:12:50[22m [34m[build][39m Collecting build info...
+[2m16:12:50[22m [34m[build][39m [32m✓ Completed in 110ms.[39m
+[2m16:12:50[22m [34m[build][39m Building server entrypoints...
+[31m[1m16:12:51[22m [ERROR] [vite][39m [31m✗[39m Build failed in 854ms
+[31m[RollupError][39m [vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] src/pages/games/[slug].astro (47:76): There was an error during the build:
+  Unable to assign attributes when using <> Fragment shorthand syntax!
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  Unable to assign attributes when using <> Fragment shorthand syntax!
+file: D:/Rizkia/Project Software/TopZone/src/pages/games/[slug].astro:47:76
+  [1mHint:[22m
+[33m    To fix this, please change <  5;
+              return (
+                <button
+                  class={`package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer ${outOfStock ? 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[4px_4px_0px_0px_#000]' : ''}`}
+                  data-id={pkg.id}
+                  data-name={`${game.name} — ${pkg.label}`}
+                  data-price={pkg.price}
+                  data-img={game.img}
+                  disabled={outOfStock}
+                > to use the longhand Fragment syntax: <Fragment  5;
+              return (
+                <button
+                  class={`package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer ${outOfStock ? 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[4px_4px_0px_0px_#000]' : ''}`}
+                  data-id={pkg.id}
+                  data-name={`${game.name} — ${pkg.label}`}
+                  data-price={pkg.price}
+                  data-img={game.img}
+                  disabled={outOfStock}
+                >[39m
+  [1mLocation:[22m
+    [4mD:/Rizkia/Project Software/TopZone/src/pages/games/[slug].astro:47:76[24m
+  [1mStack trace:[22m
+[2m    at getRollupError (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/rollup/dist/es/shared/parseAst.js:317:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async rollupInternal (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/rollup/dist/es/shared/node-entry.js:23856:5)
+    at async Object.build (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/vite/dist/node/chunks/config.js:33980:19)
+    at async Object.buildApp (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/vite/dist/node/chunks/config.js:33972:6)[22m
