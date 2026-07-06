@@ -1,0 +1,1 @@
+import{c as t}from"./cart.CRGCHWGR.js";const e=document.getElementById("cart-badge");e&&t.subscribe(s=>{s>0?(e.textContent=String(s),e.classList.remove("hidden"),e.classList.add("flex")):(e.classList.add("hidden"),e.classList.remove("flex"))});

@@ -1,0 +1,12 @@
+
+> topzone@0.0.1 build
+> astro build
+
+[2m16:34:49[22m [34m[types][39m Generated [2m58ms[22m
+[2m16:34:49[22m [34m[build][39m output: [34m"server"[39m
+[2m16:34:49[22m [34m[build][39m mode: [34m"server"[39m
+[2m16:34:49[22m [34m[build][39m directory: [34mD:\Rizkia\Project Software\TopZone\dist\[39m
+[2m16:34:49[22m [34m[build][39m adapter: [32m@astrojs/vercel[39m
+[2m16:34:49[22m [34m[build][39m Collecting build info...
+[2m16:34:49[22m [34m[build][39m [32m✓ Completed in 101ms.[39m
+[2m16:34:49[22m [34m[build][39m Building server entrypoints...

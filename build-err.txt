@@ -1,0 +1,19 @@
+[31m[1m16:34:49[22m [ERROR] [vite][39m [31m✗[39m Build failed in 615ms
+[31m[CompilerError][39m [astro:build] Unable to assign attributes when using <> Fragment shorthand syntax!
+file: D:/Rizkia/Project Software/TopZone/src/pages/games/[slug].astro:48:76
+  [1mHint:[22m
+[33m    To fix this, please change <  5;
+              const btnClass = `package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer ${outOfStock ? 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[4px_4px_0px_0px_#000]' : ''}`;
+              const btnName = `${game.name} — ${pkg.label}`;
+              return (
+                <button class={btnClass} data-id={pkg.id} data-name={btnName} data-price={pkg.price} data-img={game.img} disabled={outOfStock}> to use the longhand Fragment syntax: <Fragment  5;
+              const btnClass = `package-btn border-4 border-black p-4 bg-white text-left shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer ${outOfStock ? 'opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-[4px_4px_0px_0px_#000]' : ''}`;
+              const btnName = `${game.name} — ${pkg.label}`;
+              return (
+                <button class={btnClass} data-id={pkg.id} data-name={btnName} data-price={pkg.price} data-img={game.img} disabled={outOfStock}>[39m
+  [1mLocation:[22m
+    [4mD:/Rizkia/Project Software/TopZone/src/pages/games/[slug].astro:48:76[24m
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/astro/dist/core/compile/compile.js:63:11)
+    at async compileAstro (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/astro/dist/vite-plugin-astro/compile.js:13:23)
+    at async transform (file:///D:/Rizkia/Project%20Software/TopZone/node_modules/rollup/dist/es/shared/node-entry.js:21678:16)[22m
