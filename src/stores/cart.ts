@@ -1,5 +1,6 @@
 // src/stores/cart.ts
 import { atom, computed } from 'nanostores';
+import { user, getCurrentEmail } from './auth';
 
 export interface CartItem {
   id: string;
@@ -11,6 +12,7 @@ export interface CartItem {
 }
 
 const STORAGE_KEY = 'topzone_cart';
+const SUPABASE_CART_KEY = 'topzone_supabase_cart_';
 
 function loadCart(): CartItem[] {
   try {
@@ -28,6 +30,77 @@ function saveCart(items: CartItem[]) {
     }
   } catch {
     // Storage full or unavailable, cart state stays in memory
+  }
+}
+
+// Save cart to Supabase when user is logged in
+async function saveCartToSupabase(items: CartItem[]) {
+  const email = getCurrentEmail();
+  if (!email) return;
+
+  try {
+    const { supabase } = await import('../lib/supabase');
+    if (!supabase) return;
+
+    const key = SUPABASE_CART_KEY + email.replace(/[^a-zA-Z0-9]/g, '_');
+    await supabase.from('user_data').upsert({
+      key: key,
+      value: JSON.stringify(items),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'key' });
+  } catch (e) {
+    console.warn('[cart] Supabase sync failed:', e);
+  }
+}
+
+// Load cart from Supabase (for logged-in users)
+async function loadCartFromSupabase(): Promise<CartItem[]> {
+  const email = getCurrentEmail();
+  if (!email) return [];
+
+  try {
+    const { supabase } = await import('../lib/supabase');
+    if (!supabase) return [];
+
+    const key = SUPABASE_CART_KEY + email.replace(/[^a-zA-Z0-9]/g, '_');
+    const { data } = await supabase
+      .from('user_data')
+      .select('value')
+      .eq('key', key)
+      .single();
+
+    if (data?.value) {
+      return JSON.parse(data.value);
+    }
+  } catch (e) {
+    console.warn('[cart] Supabase load failed:', e);
+  }
+  return [];
+}
+
+// Merge guest cart with Supabase cart on login
+export async function mergeCartOnLogin(): Promise<void> {
+  const localCart = loadCart();
+  const supabaseCart = await loadCartFromSupabase();
+
+  if (localCart.length === 0) {
+    // Use Supabase cart
+    cartItems.set(supabaseCart);
+    saveCart(supabaseCart);
+  } else if (supabaseCart.length > 0) {
+    // Merge: combine items, sum quantities for duplicates
+    const merged = [...supabaseCart];
+    localCart.forEach(localItem => {
+      const existing = merged.find(i => i.id === localItem.id);
+      if (existing) {
+        existing.qty += localItem.qty;
+      } else {
+        merged.push(localItem);
+      }
+    });
+    cartItems.set(merged);
+    saveCart(merged);
+    saveCartToSupabase(merged);
   }
 }
 
@@ -85,6 +158,10 @@ export function addToCart(item: Omit<CartItem, 'qty'>): CartActionResult {
   }
   cartItems.set(updated);
   saveCart(updated);
+
+  // Sync to Supabase if logged in
+  saveCartToSupabase(updated);
+
   return { success: true };
 }
 
@@ -92,6 +169,7 @@ export function removeFromCart(id: string) {
   const updated = cartItems.get().filter((i) => i.id !== id);
   cartItems.set(updated);
   saveCart(updated);
+  saveCartToSupabase(updated);
 }
 
 export function updateQty(id: string, qty: number) {
@@ -104,9 +182,11 @@ export function updateQty(id: string, qty: number) {
   );
   cartItems.set(updated);
   saveCart(updated);
+  saveCartToSupabase(updated);
 }
 
 export function clearCart() {
   cartItems.set([]);
   saveCart([]);
+  saveCartToSupabase([]);
 }
