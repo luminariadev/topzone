@@ -1,41 +1,52 @@
-<!-- src/components/PromoBanner.astro -->
 ---
-// Static promo banner
+// src/components/PromoBanner.astro
+// Configurable promo banner with flash sale countdown - Fase 3.4 items 6-7
 ---
 
 <section id="promo" class="py-16 bg-black text-white border-t-4 border-neon-pink">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="border-4 border-neon-pink shadow-[8px_8px_0px_0px_#FF007F] p-10 text-center relative overflow-hidden">
-      <!-- Decorative background text -->
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
-        <span class="text-[12rem] font-black uppercase text-white">SALE</span>
+      <!-- Flash sale countdown badge -->
+      <div id="promo-countdown-wrap" class="hidden mb-6">
+        <div class="inline-flex items-center gap-2 bg-neon-pink text-white px-4 py-2 font-black text-sm tracking-wider border-2 border-white">
+          <span class="animate-pulse">🔥</span>
+          <span>Berakhir dalam:</span>
+          <span id="promo-countdown" class="font-mono text-lg"></span>
+        </div>
       </div>
 
-      <div class="relative z-10">
-        <span class="inline-block mb-4 px-4 py-1 bg-neon-pink text-white font-black text-sm uppercase tracking-widest border-2 border-white">
-          Limited Time Offer
-        </span>
-        <h2 class="text-4xl md:text-6xl font-black uppercase mb-4">
-          20% OFF <span style="color:#FFE600;">All Credits</span>
-        </h2>
-        <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Top up your favorite game with our exclusive promo. Use code below at checkout.
-        </p>
-
-        <!-- Promo code box -->
-        <div class="inline-flex items-center gap-0 mb-8">
-          <span class="px-6 py-3 border-4 border-neon-yellow bg-black text-neon-yellow font-black text-xl tracking-widest">
-            TOPZONE20
-          </span>
-          <button class="px-6 py-3 bg-neon-yellow text-black font-black border-4 border-neon-yellow hover:bg-yellow-300 transition-colors uppercase">
-            Copy
-          </button>
+      <!-- Dynamic promo content -->
+      <div id="promo-content">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+          <span class="text-[12rem] font-black uppercase text-white">SALE</span>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#games" class="inline-block px-8 py-4 bg-neon-green text-black font-black uppercase tracking-wider border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">
-            Claim Now
-          </a>
+        <div class="relative z-10">
+          <span id="promo-badge" class="inline-block mb-4 px-4 py-1 bg-neon-pink text-white font-black text-sm uppercase tracking-widest border-2 border-white">
+            Limited Time Offer
+          </span>
+          <h2 id="promo-title" class="text-4xl md:text-6xl font-black uppercase mb-4">
+            20% OFF <span style="color:#FFE600;">All Credits</span>
+          </h2>
+          <p id="promo-desc" class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Top up your favorite game with our exclusive promo. Use code below at checkout.
+          </p>
+
+          <!-- Promo code box -->
+          <div id="promo-code-box" class="inline-flex items-center gap-0 mb-8">
+            <span id="promo-code" class="px-6 py-3 border-4 border-neon-yellow bg-black text-neon-yellow font-black text-xl tracking-widest">
+              TOPZONE20
+            </span>
+            <button id="promo-copy" class="px-6 py-3 bg-neon-yellow text-black font-black border-4 border-neon-yellow hover:bg-yellow-300 transition-colors uppercase">
+              Salin
+            </button>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#games" class="inline-block px-8 py-4 bg-neon-green text-black font-black uppercase tracking-wider border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">
+              Mulai Belanja
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -43,11 +54,91 @@
 </section>
 
 <script>
-  // Copy promo code to clipboard
-  document.querySelector('button[class*="Copy"]')?.addEventListener('click', (e) => {
-    navigator.clipboard.writeText('TOPZONE20');
-    const btn = e.target as HTMLButtonElement;
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  // Configurable promo banner with flash sale countdown
+  // Default promo, overridden by localStorage config from admin
+
+  var defaultPromo = {
+    title: '20% OFF <span style="color:#FFE600;">All Credits</span>',
+    description: 'Top up your favorite game with our exclusive promo. Use code below at checkout.',
+    badge: 'Limited Time Offer',
+    code: 'TOPZONE20',
+    discount: 20,
+    endDate: '',
+    active: true
+  };
+
+  function loadPromo() {
+    try {
+      var saved = localStorage.getItem('topzone_promo_config');
+      if (saved) {
+        var config = JSON.parse(saved);
+        return Object.assign({}, defaultPromo, config);
+      }
+    } catch(e) {}
+    return defaultPromo;
+  }
+
+  function renderPromo() {
+    var promo = loadPromo();
+    if (!promo.active) {
+      var el = document.getElementById('promo');
+      if (el) el.style.display = 'none';
+      return;
+    }
+
+    // Update content
+    var titleEl = document.getElementById('promo-title');
+    var descEl = document.getElementById('promo-desc');
+    var badgeEl = document.getElementById('promo-badge');
+    var codeEl = document.getElementById('promo-code');
+
+    if (titleEl) titleEl.innerHTML = promo.title;
+    if (descEl) descEl.textContent = promo.description;
+    if (badgeEl) badgeEl.textContent = promo.badge;
+    if (codeEl) codeEl.textContent = promo.code;
+
+    // Flash sale countdown
+    if (promo.endDate) {
+      var end = new Date(promo.endDate).getTime();
+      var countdownWrap = document.getElementById('promo-countdown-wrap');
+      if (countdownWrap) countdownWrap.classList.remove('hidden');
+
+      function updateCountdown() {
+        var now = Date.now();
+        var diff = end - now;
+        var cdEl = document.getElementById('promo-countdown');
+        if (diff <= 0) {
+          if (cdEl) cdEl.textContent = 'BERAKHIR!';
+          return;
+        }
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var secs = Math.floor((diff % (1000 * 60)) / 1000);
+        var display = '';
+        if (days > 0) display += days + 'h ';
+        display += String(hours).padStart(2, '0') + ':' +
+                   String(mins).padStart(2, '0') + ':' +
+                   String(secs).padStart(2, '0');
+        if (cdEl) cdEl.textContent = display;
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+  }
+
+  // Copy promo code
+  document.getElementById('promo-copy')?.addEventListener('click', function() {
+    var code = document.getElementById('promo-code')?.textContent || 'TOPZONE20';
+    navigator.clipboard.writeText(code);
+    var btn = document.getElementById('promo-copy');
+    if (btn) {
+      var orig = btn.textContent;
+      btn.textContent = 'Tersalin!';
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
   });
+
+  renderPromo();
 </script>
