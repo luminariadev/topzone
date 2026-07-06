@@ -13,9 +13,23 @@ export interface CartItem {
 
 const STORAGE_KEY = 'topzone_cart';
 const SUPABASE_CART_KEY = 'topzone_supabase_cart_';
+const CART_EXPIRY_KEY = 'topzone_cart_expiry_';
+const CART_EXPIRY_HOURS = 24; // 24 hours
 
 function loadCart(): CartItem[] {
   try {
+    // Check cart expiry
+    if (typeof localStorage !== 'undefined') {
+      const expiryKey = CART_EXPIRY_KEY + (getCurrentEmail()?.replace(/[^a-zA-Z0-9]/g, '_') || 'guest');
+      const expiry = localStorage.getItem(expiryKey);
+      if (expiry && Date.now() > parseInt(expiry)) {
+        // Cart expired, clear it
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(expiryKey);
+        return [];
+      }
+    }
+
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
     return saved ? JSON.parse(saved) : [];
   } catch {
@@ -27,10 +41,22 @@ function saveCart(items: CartItem[]) {
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      // Update expiry timestamp
+      const expiryKey = CART_EXPIRY_KEY + (getCurrentEmail()?.replace(/[^a-zA-Z0-9]/g, '_') || 'guest');
+      localStorage.setItem(expiryKey, String(Date.now() + CART_EXPIRY_HOURS * 60 * 60 * 1000));
     }
   } catch {
     // Storage full or unavailable, cart state stays in memory
   }
+}
+
+function clearCartExpiry() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const expiryKey = CART_EXPIRY_KEY + (getCurrentEmail()?.replace(/[^a-zA-Z0-9]/g, '_') || 'guest');
+      localStorage.removeItem(expiryKey);
+    }
+  } catch {}
 }
 
 // Save cart to Supabase when user is logged in
@@ -189,4 +215,5 @@ export function clearCart() {
   cartItems.set([]);
   saveCart([]);
   saveCartToSupabase([]);
+  clearCartExpiry();
 }
