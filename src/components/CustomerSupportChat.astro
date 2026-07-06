@@ -1,0 +1,236 @@
+---
+// src/components/CustomerSupportChat.astro
+// Floating AI Customer Support Chat Widget - Fase 3.5 item 8 + enhancement
+---
+
+<div id="cs-chat-widget" class="fixed bottom-6 right-6 z-[9999]">
+  <!-- Floating Button -->
+  <button
+    id="cs-toggle-btn"
+    class="w-16 h-16 rounded-full bg-neon-green border-4 border-black shadow-[6px_6px_0px_0px_#000] flex items-center justify-center hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all focus:outline-none focus:ring-4 focus:ring-neon-green"
+    aria-label="Buka Customer Support"
+    aria-expanded="false"
+  >
+    <i class="bi bi-headset text-3xl text-black"></i>
+    <span id="cs-badge" class="absolute -top-1 -right-1 w-5 h-5 text-xs font-black bg-neon-pink text-white border-2 border-black rounded-full flex items-center justify-center hidden">1</span>
+  </button>
+
+  <!-- Chat Window -->
+  <div
+    id="cs-chat-window"
+    class="absolute bottom-18 right-0 w-full max-w-sm md:max-w-md hidden bg-white dark:bg-gray-800 border-4 border-black shadow-[8px_8px_0px_0px_#000] flex flex-col overflow-hidden"
+    aria-live="polite"
+  >
+    <!-- Header -->
+    <div class="bg-black text-white border-b-4 border-neon-green p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-neon-green flex items-center justify-center">
+          <i class="bi bi-robot text-xl text-black"></i>
+        </div>
+        <div>
+          <p class="font-black text-sm">TopZone Support</p>
+          <p class="text-xs text-gray-300">AI Assistant + Admin</p>
+        </div>
+      </div>
+      <button
+        id="cs-close-btn"
+        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+        aria-label="Tutup chat"
+      >
+        <i class="bi bi-x-lg text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Messages Area -->
+    <div
+      id="cs-messages"
+      class="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px]"
+      role="log"
+      aria-label="Percakapan"
+    >
+      <!-- Welcome message -->
+      <div class="flex gap-3 animate-slide-up">
+        <div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0">
+          <i class="bi bi-robot text-sm text-black"></i>
+        </div>
+        <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3 max-w-[80%]">
+          <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Halo! 👋 Ada yang bisa saya bantu?</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Saya asisten AI TopZone. Ketik pertanyaan Anda atau pilih topik di bawah.</p>
+        </div>
+      </div>
+
+      <!-- Quick Replies -->
+      <div class="flex flex-wrap gap-2 justify-start">
+        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="topup">🎮 Cara Top Up</button>
+        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="gear">💻 Beli Gear</button>
+        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="voucher">🎟 Voucher & Promo</button>
+        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="order">📦 Cek Pesanan</button>
+        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-pink text-white border-2 border-black rounded-full hover:bg-pink-400 transition-colors" data-topic="human">👤 Bicara dengan Admin</button>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="border-t-2 border-black p-3 bg-gray-50 dark:bg-gray-700">
+      <div class="flex gap-2">
+        <input
+          type="text"
+          id="cs-input"
+          placeholder="Ketik pesan..."
+          class="flex-1 px-3 py-2 border-2 border-black text-sm font-medium bg-white dark:bg-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-neon-green"
+          aria-label="Ketik pesan Anda"
+        />
+        <button
+          id="cs-send-btn"
+          class="px-4 py-2 bg-black text-neon-green border-2 border-black font-black text-sm hover:bg-gray-800 transition-colors"
+          aria-label="Kirim pesan"
+        >
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 text-center mt-2">Tekan Enter untuk kirim</p>
+    </div>
+  </div>
+</div>
+
+<!-- Typing Indicator Template (hidden) -->
+<div id="cs-typing-template" class="hidden">
+  <div class="flex gap-3">
+    <div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0">
+      <i class="bi bi-robot text-sm text-black"></i>
+    </div>
+    <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3">
+      <div class="flex gap-1 h-6 items-center">
+        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .typing-dot { animation: typing-bounce 1.4s infinite ease-in-out both; }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes typing-bounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
+  .animate-slide-up { animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  #cs-messages::-webkit-scrollbar { width: 6px; }
+  #cs-messages::-webkit-scrollbar-track { background: transparent; }
+  #cs-messages::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  .dark #cs-messages::-webkit-scrollbar-thumb { background: #555; }
+</style>
+
+<script>
+  (function() {
+    var toggleBtn = document.getElementById('cs-toggle-btn');
+    var chatWindow = document.getElementById('cs-chat-window');
+    var closeBtn = document.getElementById('cs-close-btn');
+    var messagesEl = document.getElementById('cs-messages');
+    var inputEl = document.getElementById('cs-input');
+    var sendBtn = document.getElementById('cs-send-btn');
+    var quickReplies = document.querySelectorAll('.cs-quick-reply');
+    var badge = document.getElementById('cs-badge');
+
+    var isOpen = false;
+    var messageId = 0;
+
+    var knowledgeBase = {
+      'topup': { title: '🎮 Cara Top Up Game', response: 'Pilih game → pilih paket → klik "Beli" → isi ID game → checkout → bayar → diamond/UC/VP masuk langsung dalam hitungan menit.' },
+      'gear': { title: '💻 Beli Gaming Gear', response: 'Browse ke Gear → pilih kategori → pilih produk → Tambah ke Keranjang → Checkout. Gratis ongkir > Rp 500.000!' },
+      'voucher': { title: '🎟 Voucher & Promo', response: 'User baru: WELCOME10 (diskon 10% min Rp 50k). Masukkan kode di checkout dan klik Pakai. Cek halaman Promo untuk flash sale!' },
+      'order': { title: '📦 Cek Status Pesanan', response: 'Login → Profil → tab "Riwayat Pesanan". Top up < 1 jam. Gear 1-3 hari. Notifikasi dikirim via email.' },
+      'human': { title: '👤 Transfer ke Admin', response: 'Menghubungkan dengan admin... <br><br><strong>Waktu respons: 5-15 menit (09:00-21:00 WIB)</strong>' }
+    };
+
+    function addMessage(content, isUser) {
+      var id = 'msg-' + (++messageId);
+      var div = document.createElement('div');
+      div.id = id;
+      div.className = 'flex gap-3 animate-slide-up' + (isUser ? ' flex-row-reverse' : '');
+      var avatarHtml = isUser
+        ? '<div class="w-8 h-8 rounded-full bg-neon-pink flex items-center justify-center flex-shrink-0"><i class="bi bi-person-fill text-sm text-white"></i></div>'
+        : '<div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0"><i class="bi bi-robot text-sm text-black"></i></div>';
+      var bubbleClass = isUser
+        ? 'bg-black text-white rounded-2xl rounded-tr-sm p-3 max-w-[80%]'
+        : 'bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3 max-w-[80%]';
+      div.innerHTML = avatarHtml + '<div class="' + bubbleClass + '">' + content + '</div>';
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function showTyping() {
+      var tpl = document.getElementById('cs-typing-template');
+      var clone = tpl.cloneNode(true);
+      clone.id = 'cs-typing-indicator';
+      clone.classList.remove('hidden');
+      messagesEl.appendChild(clone);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function hideTyping() {
+      var t = document.getElementById('cs-typing-indicator');
+      if (t) t.remove();
+    }
+
+    function botResponse(topic) {
+      var kb = knowledgeBase[topic];
+      if (!kb) return;
+      hideTyping();
+      if (topic === 'human') {
+        addMessage(kb.response, false);
+        setTimeout(function() {
+          addMessage('<div class="flex items-center gap-2"><i class="bi bi-person-badge-fill text-neon-green"></i> <span class="font-black text-neon-green">Admin TopZone</span></div><p class="mt-2 text-sm">Halo! Ada yang bisa saya bantu terkait pesanan?</p>', false);
+        }, 1500);
+      } else {
+        addMessage('<p class="font-black text-sm mb-1">' + kb.title + '</p><p class="text-sm">' + kb.response + '</p><div class="flex flex-wrap gap-1 mt-2"><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="topup">Cara Top Up</button><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="order">Cek Pesanan</button><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="human">Bicara Admin</button></div>', false);
+      }
+    }
+
+    function handleUserMessage(text) {
+      var lower = text.toLowerCase();
+      var topic = 'topup';
+      if (lower.includes('gear') || lower.includes('keyboard') || lower.includes('mouse')) topic = 'gear';
+      else if (lower.includes('voucher') || lower.includes('promo') || lower.includes('diskon')) topic = 'voucher';
+      else if (lower.includes('pesanan') || lower.includes('order') || lower.includes('status')) topic = 'order';
+      else if (lower.includes('admin') || lower.includes('operator')) topic = 'human';
+      addMessage('<p class="text-sm">' + text + '</p>', true);
+      showTyping();
+      setTimeout(function() { botResponse(topic); }, 800 + Math.random() * 1200);
+    }
+
+    toggleBtn?.addEventListener('click', function() {
+      isOpen = !isOpen;
+      chatWindow.classList.toggle('hidden', !isOpen);
+      toggleBtn.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) { badge.classList.add('hidden'); inputEl?.focus(); }
+    });
+
+    closeBtn?.addEventListener('click', function() {
+      isOpen = false;
+      chatWindow.classList.add('hidden');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    function sendMessage() {
+      var text = inputEl?.value?.trim();
+      if (!text) return;
+      inputEl.value = '';
+      handleUserMessage(text);
+    }
+
+    sendBtn?.addEventListener('click', sendMessage);
+    inputEl?.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    quickReplies.forEach(function(btn) {
+      btn.addEventListener('click', function() { handleUserMessage(this.textContent); });
+    });
+
+    messagesEl?.addEventListener('click', function(e) {
+      var target = e.target.closest('.cs-followup');
+      if (target) { handleUserMessage(target.textContent); }
+    });
+  })();
+</script>
