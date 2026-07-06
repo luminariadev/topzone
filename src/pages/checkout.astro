@@ -32,10 +32,25 @@ import Footer from '../components/Footer.astro';
         <div class="border-4 border-black p-6 mb-8 bg-white shadow-[4px_4px_0px_0px_#000]">
           <h2 class="text-2xl font-black mb-4">Ringkasan Pesanan</h2>
           <div id="checkout-items" class="flex flex-col gap-3 pb-4"></div>
-          <div class="flex justify-between items-center border-t-2 border-black pt-4">
-            <span class="text-xl font-black">Total</span>
-            <span class="text-3xl font-black" id="checkout-total">Rp 0</span>
+          <div class="border-t-2 border-black pt-4 space-y-2">
+            <div class="flex justify-between items-center text-sm font-bold text-gray-500">
+              <span>Subtotal</span>
+              <span id="checkout-subtotal">Rp 0</span>
+            </div>
+            <div id="checkout-discount-row" class="hidden flex justify-between items-center text-sm font-bold text-neon-green">
+              <span>Diskon</span>
+              <span id="checkout-discount-amount">- Rp 0</span>
+            </div>
+            <div id="checkout-voucher-row" class="hidden flex justify-between items-center text-sm font-bold text-neon-pink">
+              <span>Voucher</span>
+              <span id="checkout-voucher-label">-</span>
+            </div>
+            <div class="border-t border-gray-200 pt-2 flex justify-between items-center">
+              <span class="text-xl font-black">Total</span>
+              <span class="text-3xl font-black" id="checkout-total">Rp 0</span>
+            </div>
           </div>
+          <p class="text-xs font-bold text-gray-400 mt-3">* Pesanan akan diproses setelah pembayaran dikonfirmasi</p>
         </div>
 
         <!-- Payment Form -->
@@ -77,6 +92,14 @@ import Footer from '../components/Footer.astro';
             <button type="submit" id="checkout-btn" class="w-full py-4 font-black uppercase tracking-wider text-lg bg-black text-neon-green border-4 border-black shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#39FF14] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#39FF14] transition-all">
               Buat Pesanan
             </button>
+
+            <!-- Buy Now (Quick Checkout) -->
+            <div class="mt-4">
+              <button type="button" id="buy-now-btn" class="w-full py-4 font-black uppercase tracking-wider text-lg bg-neon-pink text-white border-4 border-black shadow-[4px_4px_0px_0px_#FF007F] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#FF007F] active:translate-y-0 active:shadow-[2px_2px_0px_0px_#FF007F] transition-all">
+                ⚡ Beli Sekarang (Quick Checkout)
+              </button>
+              <p class="text-xs font-bold text-gray-500 text-center mt-2">Langsung ke pembayaran tanpa form lengkap</p>
+            </div>
           </form>
         </div>
       </div>
@@ -132,7 +155,29 @@ import Footer from '../components/Footer.astro';
 
     emptyEl?.classList.add('hidden');
     contentEl?.classList.remove('hidden');
-    totalEl.textContent = formatRp(total);
+
+    // Calculate subtotal (before discount)
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    document.getElementById('checkout-subtotal').textContent = formatRp(subtotal);
+
+    // Update discount/voucher rows
+    var discountRow = document.getElementById('checkout-discount-row');
+    var voucherRow = document.getElementById('checkout-voucher-row');
+    var discountAmountEl = document.getElementById('checkout-discount-amount');
+    var voucherLabelEl = document.getElementById('checkout-voucher-label');
+
+    if (appliedDiscount > 0) {
+      var discountAmount = Math.round(subtotal * appliedDiscount / 100);
+      discountAmountEl.textContent = '- ' + formatRp(discountAmount);
+      discountRow?.classList.remove('hidden');
+      voucherLabelEl.textContent = appliedCode + ' (' + appliedDiscount + '%)';
+      voucherRow?.classList.remove('hidden');
+      totalEl.textContent = formatRp(subtotal - discountAmount);
+    } else {
+      discountRow?.classList.add('hidden');
+      voucherRow?.classList.add('hidden');
+      totalEl.textContent = formatRp(total);
+    }
 
     if (itemsEl) {
       itemsEl.innerHTML = items.map((item) => `
@@ -202,9 +247,74 @@ import Footer from '../components/Footer.astro';
   });
 
   function updateTotalWithDiscount() {
-    // Update total display to show discount
-    // The total calculation happens in the form submit
+    // Re-render summary with discount applied
+    renderSummary();
   }
+
+  // Real-time form validation
+  function setupValidation() {
+    var nameInput = document.getElementById('name');
+    var phoneInput = document.getElementById('phone');
+
+    if (nameInput) {
+      nameInput.addEventListener('input', function() {
+        if (this.value.trim().length < 2) {
+          this.style.borderColor = '#FF4444';
+          this.setAttribute('aria-invalid', 'true');
+        } else {
+          this.style.borderColor = '';
+          this.setAttribute('aria-invalid', 'false');
+        }
+      });
+    }
+
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function() {
+        var cleaned = this.value.replace(/[^0-9+\-\s()]/g, '');
+        if (cleaned !== this.value) this.value = cleaned;
+        if (this.value.length < 8) {
+          this.style.borderColor = '#FF4444';
+          this.setAttribute('aria-invalid', 'true');
+        } else {
+          this.style.borderColor = '';
+          this.setAttribute('aria-invalid', 'false');
+        }
+      });
+    }
+  }
+  setupValidation();
+
+  // Buy Now (Quick Checkout)
+  document.getElementById('buy-now-btn')?.addEventListener('click', function() {
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) {
+      window.location.href = '/login?redirect=/checkout';
+      return;
+    }
+
+    var items = cartItems.get();
+    if (items.length === 0) {
+      alert('Keranjang masih kosong!');
+      return;
+    }
+
+    // Auto-fill from user profile data if available
+    var nameInput = document.getElementById('name');
+    var phoneInput = document.getElementById('phone');
+    if (nameInput && !nameInput.value && currentUser.full_name) {
+      nameInput.value = currentUser.full_name;
+    }
+    if (phoneInput && !phoneInput.value) {
+      try {
+        var email = currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+        var userData = JSON.parse(localStorage.getItem('topzone_user_data_' + email) || '{}');
+        if (userData.phone) phoneInput.value = userData.phone;
+      } catch(e) {}
+    }
+
+    // Submit the form automatically
+    form?.requestSubmit();
+  });
 
 
   form?.addEventListener('submit', async (e) => {
