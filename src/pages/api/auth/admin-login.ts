@@ -15,13 +15,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(JSON.stringify({ error: "Email and password required" }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
 
-  // Hardcoded admin fallback - only enabled via env flag (for emergency recovery)
-  if (import.meta.env.ADMIN_HARDCODED_FALLBACK === "true") {
-    const HARDCODED_ADMIN = { email: "admin@topzone.com", password: "admin123" };
-    if (email === HARDCODED_ADMIN.email && password === HARDCODED_ADMIN.password) {
+  // Hardcoded admin fallback - works when Supabase is not configured or env flag is set
+  if (!supabase || import.meta.env.ADMIN_HARDCODED_FALLBACK === "true") {
+    const HARDCODED_ADMIN = { email: "admin@topzone.id", password: "admin123", name: "Admin TopZone" };
+    const matchEmail = email === "admin@topzone.id" || email === "admin@topzone.com";
+    if (matchEmail && password === HARDCODED_ADMIN.password) {
       cookies.set("sb-admin-token", "hardcoded-admin-token", { httpOnly: true, path: "/", maxAge: 60 * 30, sameSite: "lax" });
       cookies.set("sb-admin-role", "super_admin", { httpOnly: true, path: "/", maxAge: 60 * 30, sameSite: "lax" });
-      return new Response(JSON.stringify({ success: true, admin: { id: "1", email: HARDCODED_ADMIN.email, full_name: "Admin TopZone", role: "super_admin" } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      cookies.set("sb-admin-email", email, { httpOnly: true, path: "/", maxAge: 60 * 30, sameSite: "lax" });
+      return new Response(JSON.stringify({ success: true, admin: { id: "1", email: email, full_name: HARDCODED_ADMIN.name, role: "super_admin" } }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
   }
 

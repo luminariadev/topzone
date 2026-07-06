@@ -9,9 +9,10 @@ export const GET: APIRoute = async ({ cookies }) => {
   // Hardcoded admin fallback
   const token = cookies.get('sb-admin-token')?.value;
   const role = cookies.get('sb-admin-role')?.value;
-  if (token === 'hardcoded-admin-token' && role === 'super_admin') {
+  if (token && role === 'super_admin') {
+    const adminEmail = cookies.get('sb-admin-email')?.value || 'admin@topzone.id';
     return createSuccessResponse({
-      admin: { id: '1', email: 'admin@topzone.com', full_name: 'Admin TopZone', role: 'super_admin' }
+      admin: { id: '1', email: adminEmail, full_name: 'Admin TopZone', role: 'super_admin' }
     });
   }
 
