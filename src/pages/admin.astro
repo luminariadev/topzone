@@ -121,7 +121,6 @@ import Footer from '../components/Footer.astro';
           </select>
           <span class="text-sm font-bold text-gray-500" id="gear-count-label"></span>
         </div>
-        </div>
         <div id="gear-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
         <div id="gear-pagination" class="flex justify-center gap-2 mt-4"></div>
       </div>
@@ -423,6 +422,7 @@ import Footer from '../components/Footer.astro';
       adminUser = null;
       return false;
     }
+  }
 
   /** Login via Supabase Auth API */
   async function loginAdmin(email, password) {

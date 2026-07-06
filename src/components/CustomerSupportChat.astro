@@ -1,236 +1,351 @@
 ---
 // src/components/CustomerSupportChat.astro
-// Floating AI Customer Support Chat Widget - Fase 3.5 item 8 + enhancement
+// Floating AI Customer Support Chat Widget - Responsive
 ---
 
-<div id="cs-chat-widget" class="fixed bottom-6 right-6 z-[9999]">
-  <!-- Floating Button -->
+<!-- CS Chat Widget - Fixed Bottom Right -->
+<div id="cs-chat-root">
   <button
     id="cs-toggle-btn"
-    class="w-16 h-16 rounded-full bg-neon-green border-4 border-black shadow-[6px_6px_0px_0px_#000] flex items-center justify-center hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all focus:outline-none focus:ring-4 focus:ring-neon-green"
+    class="cs-fab"
     aria-label="Buka Customer Support"
     aria-expanded="false"
   >
-    <i class="bi bi-headset text-3xl text-black"></i>
-    <span id="cs-badge" class="absolute -top-1 -right-1 w-5 h-5 text-xs font-black bg-neon-pink text-white border-2 border-black rounded-full flex items-center justify-center hidden">1</span>
+    <i class="bi bi-headset"></i>
   </button>
 
-  <!-- Chat Window -->
   <div
     id="cs-chat-window"
-    class="absolute bottom-18 right-0 w-full max-w-sm md:max-w-md hidden bg-white dark:bg-gray-800 border-4 border-black shadow-[8px_8px_0px_0px_#000] flex flex-col overflow-hidden"
-    aria-live="polite"
+    class="cs-window"
+    aria-hidden="true"
   >
     <!-- Header -->
-    <div class="bg-black text-white border-b-4 border-neon-green p-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-neon-green flex items-center justify-center">
-          <i class="bi bi-robot text-xl text-black"></i>
-        </div>
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <div class="cs-avatar"><i class="bi bi-robot"></i></div>
         <div>
-          <p class="font-black text-sm">TopZone Support</p>
-          <p class="text-xs text-gray-300">AI Assistant + Admin</p>
+          <p class="cs-name">TopZone Support</p>
+          <p class="cs-status">AI + Admin</p>
         </div>
       </div>
-      <button
-        id="cs-close-btn"
-        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-        aria-label="Tutup chat"
-      >
-        <i class="bi bi-x-lg text-xl"></i>
+      <button id="cs-close-btn" class="cs-close" aria-label="Tutup">
+        <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
-    <!-- Messages Area -->
-    <div
-      id="cs-messages"
-      class="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px]"
-      role="log"
-      aria-label="Percakapan"
-    >
-      <!-- Welcome message -->
-      <div class="flex gap-3 animate-slide-up">
-        <div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0">
-          <i class="bi bi-robot text-sm text-black"></i>
-        </div>
-        <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3 max-w-[80%]">
-          <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Halo! 👋 Ada yang bisa saya bantu?</p>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Saya asisten AI TopZone. Ketik pertanyaan Anda atau pilih topik di bawah.</p>
+    <!-- Messages -->
+    <div id="cs-messages" class="cs-body" role="log">
+      <div class="cs-msg cs-msg-bot">
+        <div class="cs-avatar-sm"><i class="bi bi-robot"></i></div>
+        <div class="cs-bubble">
+          <p class="cs-text">Halo! 👋 Ada yang bisa saya bantu?</p>
+          <p class="cs-sub">Saya asisten AI TopZone. Pilih topik di bawah atau ketik pertanyaan.</p>
         </div>
       </div>
-
-      <!-- Quick Replies -->
-      <div class="flex flex-wrap gap-2 justify-start">
-        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="topup">🎮 Cara Top Up</button>
-        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="gear">💻 Beli Gear</button>
-        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="voucher">🎟 Voucher & Promo</button>
-        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-yellow border-2 border-black rounded-full hover:bg-yellow-300 transition-colors" data-topic="order">📦 Cek Pesanan</button>
-        <button class="cs-quick-reply px-3 py-1.5 text-xs font-bold bg-neon-pink text-white border-2 border-black rounded-full hover:bg-pink-400 transition-colors" data-topic="human">👤 Bicara dengan Admin</button>
+      <div class="cs-quick-replies">
+        <button class="cs-qr" data-topic="topup"><i class="bi bi-joystick"></i> Top Up</button>
+        <button class="cs-qr" data-topic="gear"><i class="bi bi-pc-display"></i> Gear</button>
+        <button class="cs-qr" data-topic="voucher"><i class="bi bi-ticket"></i> Voucher</button>
+        <button class="cs-qr" data-topic="order"><i class="bi bi-box"></i> Pesanan</button>
+        <button class="cs-qr cs-qr-admin" data-topic="human"><i class="bi bi-person-badge"></i> Admin</button>
       </div>
     </div>
 
-    <!-- Input Area -->
-    <div class="border-t-2 border-black p-3 bg-gray-50 dark:bg-gray-700">
-      <div class="flex gap-2">
-        <input
-          type="text"
-          id="cs-input"
-          placeholder="Ketik pesan..."
-          class="flex-1 px-3 py-2 border-2 border-black text-sm font-medium bg-white dark:bg-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-neon-green"
-          aria-label="Ketik pesan Anda"
-        />
-        <button
-          id="cs-send-btn"
-          class="px-4 py-2 bg-black text-neon-green border-2 border-black font-black text-sm hover:bg-gray-800 transition-colors"
-          aria-label="Kirim pesan"
-        >
-          <i class="bi bi-send-fill"></i>
-        </button>
+    <!-- Input -->
+    <div class="cs-footer">
+      <div class="cs-input-row">
+        <input type="text" id="cs-input" placeholder="Ketik pesan..." autocomplete="off" />
+        <button id="cs-send-btn" aria-label="Kirim"><i class="bi bi-send-fill"></i></button>
       </div>
-      <p class="text-xs text-gray-500 text-center mt-2">Tekan Enter untuk kirim</p>
     </div>
   </div>
 </div>
 
-<!-- Typing Indicator Template (hidden) -->
-<div id="cs-typing-template" class="hidden">
-  <div class="flex gap-3">
-    <div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0">
-      <i class="bi bi-robot text-sm text-black"></i>
-    </div>
-    <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3">
-      <div class="flex gap-1 h-6 items-center">
-        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
-        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
-        <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
-      </div>
+<!-- Typing indicator template -->
+<template id="cs-typing-tpl">
+  <div class="cs-msg cs-msg-bot">
+    <div class="cs-avatar-sm"><i class="bi bi-robot"></i></div>
+    <div class="cs-bubble cs-typing-bubble">
+      <span class="cs-dot"></span><span class="cs-dot"></span><span class="cs-dot"></span>
     </div>
   </div>
-</div>
+</template>
 
 <style>
-  .typing-dot { animation: typing-bounce 1.4s infinite ease-in-out both; }
-  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-  @keyframes typing-bounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
-  .animate-slide-up { animation: slideUp 0.3s ease-out; }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  #cs-messages::-webkit-scrollbar { width: 6px; }
-  #cs-messages::-webkit-scrollbar-track { background: transparent; }
-  #cs-messages::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-  .dark #cs-messages::-webkit-scrollbar-thumb { background: #555; }
+/* ── Root container, mobile-first ── */
+#cs-chat-root {
+  position: fixed;
+  bottom: 0; right: 0;
+  z-index: 9999;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* ── FAB ── */
+.cs-fab {
+  position: absolute;
+  bottom: 24px; right: 24px;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: #39FF14;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .15s ease;
+  z-index: 2;
+}
+.cs-fab:hover { transform: translateY(-2px); box-shadow: 6px 6px 0 #000; }
+.cs-fab i { font-size: 28px; color: #000; }
+.cs-fab[aria-expanded="true"] + .cs-window { display: flex; }
+
+/* ── Window ── */
+.cs-window {
+  display: none;
+  position: absolute;
+  bottom: 96px; right: 16px;
+  width: 360px; max-width: calc(100vw - 32px);
+  height: 540px; max-height: calc(100vh - 128px);
+  flex-direction: column;
+  background: #fff;
+  border: 3px solid #000;
+  box-shadow: 8px 8px 0 #000;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: cs-slideUp .25s ease-out;
+}
+
+@keyframes cs-slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Mobile responsive ── */
+@media (max-width: 480px) {
+  .cs-fab { bottom: 16px; right: 16px; width: 54px; height: 54px; }
+  .cs-fab i { font-size: 24px; }
+  .cs-window {
+    bottom: 84px; right: 8px;
+    width: calc(100vw - 16px);
+    height: calc(100vh - 160px);
+    max-height: none;
+    border-radius: 8px;
+  }
+}
+
+/* ── Header ── */
+.cs-header {
+  background: #000;
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.cs-header-left { display: flex; align-items: center; gap: 10px; }
+.cs-avatar, .cs-avatar-sm {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #39FF14; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cs-avatar i, .cs-avatar-sm i { font-size: 18px; color: #000; }
+.cs-avatar-sm { width: 28px; height: 28px; }
+.cs-avatar-sm i { font-size: 14px; }
+.cs-name { font-weight: 900; font-size: 14px; }
+.cs-status { font-size: 11px; color: #aaa; }
+.cs-close {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: rgba(255,255,255,.1); border: none;
+  color: #fff; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.cs-close:hover { background: rgba(255,255,255,.2); }
+
+/* ── Body ── */
+.cs-body {
+  flex: 1; overflow-y: auto; padding: 14px;
+  display: flex; flex-direction: column; gap: 12px;
+  background: #f5f5f5;
+}
+.dark .cs-body { background: #1f2937; }
+
+/* ── Message row ── */
+.cs-msg { display: flex; gap: 8px; animation: cs-fadeIn .2s ease-out; }
+.cs-msg.cs-msg-user { flex-direction: row-reverse; }
+@keyframes cs-fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.cs-bubble {
+  padding: 10px 14px; border-radius: 12px;
+  max-width: 80%; word-wrap: break-word;
+  border: 2px solid #000;
+}
+.cs-msg-bot .cs-bubble {
+  background: #fff; border-top-left-radius: 2px;
+}
+.dark .cs-msg-bot .cs-bubble { background: #374151; }
+.cs-msg-user .cs-bubble {
+  background: #000; color: #fff; border-top-right-radius: 2px;
+}
+.cs-text { font-size: 14px; font-weight: 500; line-height: 1.4; }
+.cs-sub { font-size: 12px; color: #666; margin-top: 4px; }
+.dark .cs-sub { color: #aaa; }
+
+/* ── Typing ── */
+.cs-typing-bubble { display: flex; gap: 4px; align-items: center; padding: 12px 16px; }
+.cs-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #999;
+  animation: cs-bounce 1.4s ease-in-out infinite;
+}
+.cs-dot:nth-child(2) { animation-delay: .16s; }
+.cs-dot:nth-child(3) { animation-delay: .32s; }
+@keyframes cs-bounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+/* ── Quick replies ── */
+.cs-quick-replies {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 4px 0;
+}
+.cs-qr {
+  padding: 6px 14px; font-size: 12px; font-weight: 900;
+  background: #FFE600; border: 2px solid #000; border-radius: 20px;
+  cursor: pointer; transition: all .12s;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.cs-qr:hover { background: #e6d000; transform: translateY(-1px); }
+.cs-qr-admin { background: #FF007F; color: #fff; }
+.cs-qr-admin:hover { background: #d4006a; }
+
+/* ── Followup buttons (injected) ── */
+.cs-fup {
+  display: inline-block; padding: 4px 10px; margin: 2px;
+  font-size: 11px; font-weight: 700;
+  background: rgba(0,0,0,.06); border: 1px solid #999; border-radius: 12px;
+  cursor: pointer; transition: background .12s;
+}
+.cs-fup:hover { background: rgba(0,0,0,.14); }
+
+/* ── Footer ── */
+.cs-footer {
+  border-top: 2px solid #000; padding: 10px 14px;
+  background: #fafafa; flex-shrink: 0;
+}
+.dark .cs-footer { background: #374151; }
+.cs-input-row { display: flex; gap: 8px; }
+.cs-input-row input {
+  flex: 1; padding: 10px 14px; font-size: 14px; font-weight: 500;
+  border: 2px solid #000; border-radius: 8px;
+  outline: none; background: #fff;
+}
+.dark .cs-input-row input { background: #4b5563; color: #fff; }
+.cs-input-row input:focus { box-shadow: 0 0 0 2px #39FF14; }
+.cs-input-row button {
+  width: 44px; height: 44px; border-radius: 8px;
+  background: #000; color: #39FF14; border: 2px solid #000;
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.cs-input-row button:hover { background: #222; }
+
+/* ── Scrollbar ── */
+.cs-body::-webkit-scrollbar { width: 4px; }
+.cs-body::-webkit-scrollbar-thumb { background: #bbb; border-radius: 2px; }
+.dark .cs-body::-webkit-scrollbar-thumb { background: #555; }
 </style>
 
 <script>
-  (function() {
-    var toggleBtn = document.getElementById('cs-toggle-btn');
-    var chatWindow = document.getElementById('cs-chat-window');
-    var closeBtn = document.getElementById('cs-close-btn');
-    var messagesEl = document.getElementById('cs-messages');
-    var inputEl = document.getElementById('cs-input');
-    var sendBtn = document.getElementById('cs-send-btn');
-    var quickReplies = document.querySelectorAll('.cs-quick-reply');
-    var badge = document.getElementById('cs-badge');
+(function(){
+  var root = document.getElementById('cs-chat-root');
+  var fab = document.getElementById('cs-toggle-btn');
+  var win = document.getElementById('cs-chat-window');
+  var close = document.getElementById('cs-close-btn');
+  var msgs = document.getElementById('cs-messages');
+  var input = document.getElementById('cs-input');
+  var send = document.getElementById('cs-send-btn');
+  var qrs = root.querySelectorAll('.cs-qr');
+  var tpl = document.getElementById('cs-typing-tpl');
 
-    var isOpen = false;
-    var messageId = 0;
+  var opened = false, mid = 0;
 
-    var knowledgeBase = {
-      'topup': { title: '🎮 Cara Top Up Game', response: 'Pilih game → pilih paket → klik "Beli" → isi ID game → checkout → bayar → diamond/UC/VP masuk langsung dalam hitungan menit.' },
-      'gear': { title: '💻 Beli Gaming Gear', response: 'Browse ke Gear → pilih kategori → pilih produk → Tambah ke Keranjang → Checkout. Gratis ongkir > Rp 500.000!' },
-      'voucher': { title: '🎟 Voucher & Promo', response: 'User baru: WELCOME10 (diskon 10% min Rp 50k). Masukkan kode di checkout dan klik Pakai. Cek halaman Promo untuk flash sale!' },
-      'order': { title: '📦 Cek Status Pesanan', response: 'Login → Profil → tab "Riwayat Pesanan". Top up < 1 jam. Gear 1-3 hari. Notifikasi dikirim via email.' },
-      'human': { title: '👤 Transfer ke Admin', response: 'Menghubungkan dengan admin... <br><br><strong>Waktu respons: 5-15 menit (09:00-21:00 WIB)</strong>' }
-    };
+  var KB = {
+    topup: { t:'🎮 Top Up Game', r:'Pilih game di halaman utama → pilih paket diamond/UC → klik tambah ke keranjang → checkout dan bayar. Saldo masuk dalam hitungan menit!' },
+    gear: { t:'💻 Beli Gear', r:'Browse di halaman Gear → filter kategori (keyboard, mouse, headset) → pilih produk → tambah ke keranjang → checkout. Gratis ongkir > Rp 500.000!' },
+    voucher: { t:'🎟 Voucher & Promo', r:'User baru: WELCOME10 (diskon 10%, min Rp 50.000). Masukkan kode di halaman checkout lalu klik "Pakai". Cek Promo untuk flash sale!' },
+    order: { t:'📦 Cek Pesanan', r:'Login → Profil → tab "Riwayat Pesanan". Top up selesai < 1 jam. Gear dikirim 1-3 hari. Notifikasi via email.' },
+    human: { t:'👤 Admin', r:'Menghubungkan dengan admin...<br><br><strong>⏱ 5-15 menit (09:00-21:00 WIB)</strong>' }
+  };
 
-    function addMessage(content, isUser) {
-      var id = 'msg-' + (++messageId);
-      var div = document.createElement('div');
-      div.id = id;
-      div.className = 'flex gap-3 animate-slide-up' + (isUser ? ' flex-row-reverse' : '');
-      var avatarHtml = isUser
-        ? '<div class="w-8 h-8 rounded-full bg-neon-pink flex items-center justify-center flex-shrink-0"><i class="bi bi-person-fill text-sm text-white"></i></div>'
-        : '<div class="w-8 h-8 rounded-full bg-neon-green flex items-center justify-center flex-shrink-0"><i class="bi bi-robot text-sm text-black"></i></div>';
-      var bubbleClass = isUser
-        ? 'bg-black text-white rounded-2xl rounded-tr-sm p-3 max-w-[80%]'
-        : 'bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm p-3 max-w-[80%]';
-      div.innerHTML = avatarHtml + '<div class="' + bubbleClass + '">' + content + '</div>';
-      messagesEl.appendChild(div);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+  function addMsg(html, user){
+    var d = document.createElement('div');
+    d.className = 'cs-msg ' + (user ? 'cs-msg-user' : 'cs-msg-bot');
+    var a = user
+      ? '<div class="cs-avatar-sm" style="background:#FF007F"><i class="bi bi-person-fill" style="color:#fff"></i></div>'
+      : '<div class="cs-avatar-sm"><i class="bi bi-robot"></i></div>';
+    d.innerHTML = a + '<div class="cs-bubble">' + html + '</div>';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping(){
+    var c = tpl.content.cloneNode(true);
+    c.firstElementChild.id = 'cs-typing';
+    msgs.appendChild(c);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function hideTyping(){
+    var e = document.getElementById('cs-typing');
+    if(e) e.remove();
+  }
+
+  function botReply(topic){
+    var k = KB[topic]; if(!k) return;
+    hideTyping();
+    if(topic === 'human'){
+      addMsg(k.r, false);
+      setTimeout(function(){
+        addMsg('<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="bi bi-person-badge-fill" style="color:#39FF14"></i> <strong style="color:#39FF14">Admin TopZone</strong></div><p style="margin:0;font-size:14px">Halo! Ada yang bisa saya bantu terkait pesanan atau kendala Anda?</p>', false);
+      },1500);
+    } else {
+      var fups = '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">'
+        + '<button class="cs-fup" data-t="topup">Top Up</button>'
+        + '<button class="cs-fup" data-t="order">Pesanan</button>'
+        + '<button class="cs-fup" data-t="human">Admin</button></div>';
+      addMsg('<strong style="font-size:14px">' + k.t + '</strong><p style="margin:6px 0 0;font-size:14px">' + k.r + '</p>' + fups, false);
     }
+  }
 
-    function showTyping() {
-      var tpl = document.getElementById('cs-typing-template');
-      var clone = tpl.cloneNode(true);
-      clone.id = 'cs-typing-indicator';
-      clone.classList.remove('hidden');
-      messagesEl.appendChild(clone);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+  function userSaid(text){
+    var l = text.toLowerCase();
+    var t = 'topup';
+    if(l.includes('gear')||l.includes('keyboard')||l.includes('mouse')||l.includes('headset')) t='gear';
+    else if(l.includes('voucher')||l.includes('promo')||l.includes('diskon')||l.includes('kode')) t='voucher';
+    else if(l.includes('pesanan')||l.includes('order')||l.includes('status')||l.includes('tracking')) t='order';
+    else if(l.includes('admin')||l.includes('operator')||l.includes('manusia')) t='human';
+    addMsg(text, true);
+    showTyping();
+    setTimeout(function(){ botReply(t); }, 700 + Math.random()*1000);
+  }
 
-    function hideTyping() {
-      var t = document.getElementById('cs-typing-indicator');
-      if (t) t.remove();
-    }
+  // ── Event listeners ──
+  fab.addEventListener('click', function(){
+    opened = !opened;
+    win.setAttribute('aria-hidden', String(!opened));
+    if(opened){ win.style.display = 'flex'; input.focus(); }
+    else win.style.display = 'none';
+  });
 
-    function botResponse(topic) {
-      var kb = knowledgeBase[topic];
-      if (!kb) return;
-      hideTyping();
-      if (topic === 'human') {
-        addMessage(kb.response, false);
-        setTimeout(function() {
-          addMessage('<div class="flex items-center gap-2"><i class="bi bi-person-badge-fill text-neon-green"></i> <span class="font-black text-neon-green">Admin TopZone</span></div><p class="mt-2 text-sm">Halo! Ada yang bisa saya bantu terkait pesanan?</p>', false);
-        }, 1500);
-      } else {
-        addMessage('<p class="font-black text-sm mb-1">' + kb.title + '</p><p class="text-sm">' + kb.response + '</p><div class="flex flex-wrap gap-1 mt-2"><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="topup">Cara Top Up</button><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="order">Cek Pesanan</button><button class="cs-followup px-2 py-1 text-xs bg-white/50 border border-gray-300 rounded" data-topic="human">Bicara Admin</button></div>', false);
-      }
-    }
+  close.addEventListener('click', function(){ opened = false; win.style.display = 'none'; win.setAttribute('aria-hidden','true'); });
 
-    function handleUserMessage(text) {
-      var lower = text.toLowerCase();
-      var topic = 'topup';
-      if (lower.includes('gear') || lower.includes('keyboard') || lower.includes('mouse')) topic = 'gear';
-      else if (lower.includes('voucher') || lower.includes('promo') || lower.includes('diskon')) topic = 'voucher';
-      else if (lower.includes('pesanan') || lower.includes('order') || lower.includes('status')) topic = 'order';
-      else if (lower.includes('admin') || lower.includes('operator')) topic = 'human';
-      addMessage('<p class="text-sm">' + text + '</p>', true);
-      showTyping();
-      setTimeout(function() { botResponse(topic); }, 800 + Math.random() * 1200);
-    }
+  send.addEventListener('click', function(){
+    var v = input.value.trim(); if(!v) return;
+    input.value = ''; userSaid(v);
+  });
+  input.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send.click(); } });
 
-    toggleBtn?.addEventListener('click', function() {
-      isOpen = !isOpen;
-      chatWindow.classList.toggle('hidden', !isOpen);
-      toggleBtn.setAttribute('aria-expanded', String(isOpen));
-      if (isOpen) { badge.classList.add('hidden'); inputEl?.focus(); }
-    });
+  qrs.forEach(function(b){ b.addEventListener('click', function(){ userSaid(b.textContent.trim()); }); });
 
-    closeBtn?.addEventListener('click', function() {
-      isOpen = false;
-      chatWindow.classList.add('hidden');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-    });
-
-    function sendMessage() {
-      var text = inputEl?.value?.trim();
-      if (!text) return;
-      inputEl.value = '';
-      handleUserMessage(text);
-    }
-
-    sendBtn?.addEventListener('click', sendMessage);
-    inputEl?.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-
-    quickReplies.forEach(function(btn) {
-      btn.addEventListener('click', function() { handleUserMessage(this.textContent); });
-    });
-
-    messagesEl?.addEventListener('click', function(e) {
-      var target = e.target.closest('.cs-followup');
-      if (target) { handleUserMessage(target.textContent); }
-    });
-  })();
+  msgs.addEventListener('click', function(e){
+    var t = e.target.closest('.cs-fup');
+    if(t) userSaid(t.textContent.trim());
+  });
+})();
 </script>
