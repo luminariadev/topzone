@@ -217,3 +217,32 @@ export function clearCart() {
   saveCartToSupabase([]);
   clearCartExpiry();
 }
+
+/**
+ * Check if cart is expired and optionally show notification
+ */
+export function checkCartExpiry(): boolean {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const email = getCurrentEmail()?.replace(/[^a-zA-Z0-9]/g, '_') || 'guest';
+      const expiryKey = CART_EXPIRY_KEY + email;
+      const expiry = localStorage.getItem(expiryKey);
+      if (expiry && Date.now() > parseInt(expiry)) {
+        return true;
+      }
+    }
+  } catch {}
+  return false;
+}
+
+/**
+ * Clean up expired carts and return true if cart was cleared
+ */
+export function cleanupExpiredCart(): boolean {
+  const isExpired = checkCartExpiry();
+  if (isExpired) {
+    clearCart();
+    return true;
+  }
+  return false;
+}
