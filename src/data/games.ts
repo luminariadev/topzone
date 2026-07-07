@@ -79,7 +79,7 @@ export const games: Game[] = [
   {
     slug: 'pubg-mobile',
     name: 'PUBG Mobile',
-    img: '/assets/pubg.svg',
+    img: '/assets/pubg.png',
     color: '#F5A623',
     badge: 'Baru',
     category: 'mobile',
@@ -98,7 +98,7 @@ export const games: Game[] = [
   {
     slug: 'genshin-impact',
     name: 'Genshin Impact',
-    img: '/assets/genshin.svg',
+    img: '/assets/genshin.png',
     color: '#4FC1E9',
     badge: 'Populer',
     category: 'mobile',
@@ -117,7 +117,7 @@ export const games: Game[] = [
   {
     slug: 'roblox',
     name: 'Roblox',
-    img: '/assets/roblox.svg',
+    img: '/assets/roblox.png',
     color: '#E74C3C',
     badge: 'Favorit',
     category: 'mobile',
@@ -135,7 +135,7 @@ export const games: Game[] = [
   {
     slug: 'fortnite',
     name: 'Fortnite',
-    img: '/assets/fortnite.svg',
+    img: '/assets/fortnite.png',
     color: '#9B59B6',
     badge: 'Promo',
     category: 'pc',
@@ -222,7 +222,7 @@ export const games: Game[] = [
   {
     slug: 'pokemon-unite',
     name: 'Pokémon Unite',
-    img: '/assets/pokemon-unite.svg',
+    img: '/assets/pokemon-unite.png',
     color: '#FFD700',
     badge: 'Populer',
     category: 'mobile',
@@ -403,7 +403,7 @@ export const games: Game[] = [
   {
     slug: 'league-of-legends',
     name: 'League of Legends',
-    img: '/assets/league-of-legends.svg',
+    img: '/assets/league-of-legends.png',
     color: '#C28F2C',
     badge: 'MOBA',
     category: 'pc',
@@ -422,7 +422,7 @@ export const games: Game[] = [
   {
     slug: 'honkai-star-rail',
     name: 'Honkai: Star Rail',
-    img: '/assets/honkai-star-rail.svg',
+    img: '/assets/honkai-star-rail.png',
     color: '#7B68EE',
     badge: 'RPG',
     category: 'mobile',
