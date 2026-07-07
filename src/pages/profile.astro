@@ -15,6 +15,7 @@ import RecentActivity from '../components/RecentActivity.astro';
 import OrderStats from '../components/OrderStats.astro';
 import VoucherManager from '../components/VoucherManager.astro';
 import NotificationCenter from '../components/NotificationCenter.astro';
+import ReferralDashboard from '../components/ReferralDashboard.astro';
 ---
 
 <Layout>
@@ -162,7 +163,7 @@ import NotificationCenter from '../components/NotificationCenter.astro';
 
       <!-- Tab: Points & Loyalty -->
       <div id="panel-loyalty" class="hidden space-y-6">
-        <div id="points-loyalty-wrap"></div>
+        <ReferralDashboard />
       </div>
 
       <!-- Tab: Notifications -->

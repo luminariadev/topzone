@@ -356,5 +356,22 @@ import Footer from '../components/Footer.astro';
 
     clearCart();
     window.location.href = '/orders';
+
+    // Attempt to complete referral (non-blocking)
+    if (currentUser && currentUser.email) {
+      try {
+        await fetch('/api/auth/referral-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            referred_email: currentUser.email,
+            order_id: orderId,
+            order_total: order.total,
+          }),
+        });
+      } catch (refCompleteErr) {
+        console.warn('Referral completion failed (non-blocking):', refCompleteErr);
+      }
+    }
   });
 </script>

@@ -76,6 +76,9 @@ import Footer from '../components/Footer.astro';
   import { setLocalUser } from '../stores/auth';
   import { supabase, signUp } from '../lib/supabase';
 
+  // Check for referral code in URL
+  const refCode = new URLSearchParams(window.location.search).get('ref');
+
   const form = document.getElementById('register-form') as HTMLFormElement;
   const errorMsg = document.getElementById('error-msg');
   const successMsg = document.getElementById('success-msg');
@@ -122,6 +125,19 @@ import Footer from '../components/Footer.astro';
       registerBtn.textContent = 'Daftar Sekarang';
       registerBtn.disabled = false;
       return;
+    }
+
+    // Track referral if user came via a referral link
+    if (refCode && data.user) {
+      try {
+        await fetch('/api/auth/referral-track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: refCode, referred_email: email }),
+        });
+      } catch (refErr) {
+        console.warn('Referral tracking failed (non-blocking):', refErr);
+      }
     }
 
     // Supabase success — unconfirmed email
