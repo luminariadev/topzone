@@ -1,9 +1,6 @@
----
-// src/pages/api/email/send.ts
-// Email sending API endpoint (Supabase Edge Function compatible) - Fase 3.2 item 1
-export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
+import type { EmailTemplate, EmailData } from '../../../lib/types';
 
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -12,8 +9,24 @@ function jsonResponse(data: unknown, status = 200): Response {
   });
 }
 
-// Email template generator
-function generateOrderConfirmation(order: any): string {
+// --- Email Template Generators ---
+function generateOrderConfirmation(data: EmailData['order-confirmation']): string {
+  const itemsHtml = (data.items || []).map(item => `
+    <div class="order-item">
+      <span>${item.name}</span>
+      <span style="font-weight:900;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
+    </div>
+  `).join('');
+
+  const discountHtml = data.discount_amount ? `
+    <div class="order-item" style="color:#39FF14;">
+      <span>Discount</span>
+      <span style="font-weight:900;">- Rp ${data.discount_amount.toLocaleString('id-ID')}</span>
+    </div>
+  ` : '';
+
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
+
   return `
     <html>
     <head><style>
@@ -35,44 +48,33 @@ function generateOrderConfirmation(order: any): string {
           <p style="margin:5px 0 0;font-weight:bold;">Konfirmasi Pesanan</p>
         </div>
         <div class="content">
-          <p>Halo <strong>${order.customer_name || 'Customer'}</strong>,</p>
+          <p>Halo <strong>${data.customer_name || 'Customer'}</strong>,</p>
           <p>Pesanan kamu berhasil dibuat! Berikut detailnya:</p>
 
           <div class="order-box">
-            <p><strong>ID Pesanan:</strong> ${order.id}</p>
-            <p><strong>Tanggal:</strong> ${new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-            <p><strong>Metode Bayar:</strong> ${order.payment_method === 'bank' ? 'Transfer Bank' : order.payment_method === 'ewallet' ? 'E-Wallet' : 'GoPay'}</p>
+            <p><strong>ID Pesanan:</strong> ${data.order_id}</p>
+            <p><strong>Tanggal:</strong> ${new Date(data.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p><strong>Metode Bayar:</strong> ${data.payment_method === 'bank' ? 'Transfer Bank' : data.payment_method === 'ewallet' ? 'E-Wallet' : 'GoPay'}</p>
           </div>
 
           <div class="order-box">
             <h3 style="margin-top:0;">Ringkasan Pesanan</h3>
-            ${JSON.parse(order.items || '[]').map((item: any) => `
-              <div class="order-item">
-                <span>${item.name}</span>
-                <span style="font-weight:900;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
-              </div>
-            `).join('')}
-            ${order.discount > 0 ? `
-              <div class="order-item" style="color:#39FF14;">
-                <span>Discount (${order.discount}%)</span>
-                <span style="font-weight:900;">- Rp ${Math.round(order.total * order.discount / (100 - order.discount)).toLocaleString('id-ID')}</span>
-              </div>
-            ` : ''}
+            ${itemsHtml}
+            ${discountHtml}
           </div>
 
           <div class="total-box">
-            <p style="margin:0;font-size:24px;">Total: Rp ${order.total.toLocaleString('id-ID')}</p>
+            <p style="margin:0;font-size:24px;">Total: Rp ${data.total.toLocaleString('id-ID')}</p>
           </div>
 
           <p style="margin-top:30px;">Silakan lakukan pembayaran sesuai metode yang dipilih. Pesanan akan diproses setelah pembayaran terkonfirmasi.</p>
 
           <div style="text-align:center;">
-            <a href="${import.meta.env.SITE_URL || 'https://topzone.id'}/orders?id=${order.id}" class="btn">Lihat Pesanan</a>
+            <a href="${siteUrl}/orders?id=${data.order_id}" class="btn">Lihat Pesanan</a>
           </div>
         </div>
         <div class="footer">
           <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
-          <p>Platform Top-Up & Gaming Gear Terpercaya</p>
         </div>
       </div>
     </body>
@@ -80,7 +82,8 @@ function generateOrderConfirmation(order: any): string {
   `;
 }
 
-function generatePaymentSuccess(order: any): string {
+function generatePaymentSuccess(data: EmailData['payment-success']): string {
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
   return `
     <html>
     <head><style>
@@ -90,6 +93,7 @@ function generatePaymentSuccess(order: any): string {
       .header h1 { margin: 0; font-size: 28px; color: #000; }
       .content { padding: 30px; }
       .success-box { background: #39FF14; border: 2px solid #000; padding: 20px; text-align: center; margin: 20px 0; }
+      .btn { display: inline-block; background: #39FF14; color: #000; padding: 12px 30px; text-decoration: none; font-weight: 900; border: 2px solid #000; margin-top: 20px; }
       .footer { background: #000; color: white; padding: 20px; text-align: center; font-size: 12px; }
     </style></head>
     <body>
@@ -98,21 +102,24 @@ function generatePaymentSuccess(order: any): string {
           <h1>✅ Pembayaran Berhasil!</h1>
         </div>
         <div class="content">
-          <p>Halo <strong>${order.customer_name || 'Customer'}</strong>,</p>
-          <p>Pembayaran untuk pesanan <strong>${order.id}</strong> telah berhasil dikonfirmasi!</p>
+          <p>Halo <strong>${data.customer_name || 'Customer'}</strong>,</p>
+          <p>Pembayaran untuk pesanan <strong>${data.order_id}</strong> telah berhasil dikonfirmasi!</p>
 
           <div class="success-box">
-            <p style="margin:0;font-size:20px;font-weight:900;">Total Dibayar: Rp ${order.total.toLocaleString('id-ID')}</p>
+            <p style="margin:0;font-size:20px;font-weight:900;">Total Dibayar: Rp ${data.total.toLocaleString('id-ID')}</p>
           </div>
 
           <p>Pesanan kamu sedang diproses. Kamu akan menerima notifikasi lagi saat pesanan dikirim.</p>
 
           <p style="margin-top:20px;"><strong>Detail Pesanan:</strong></p>
           <ul>
-            <li>ID Pesanan: ${order.id}</li>
+            <li>ID Pesanan: ${data.order_id}</li>
             <li>Status: Dalam Proses</li>
             <li>Estimasi: 1×24 jam untuk digital goods</li>
           </ul>
+          <div style="text-align:center;">
+            <a href="${siteUrl}/orders?id=${data.order_id}" class="btn">Lihat Pesanan</a>
+          </div>
         </div>
         <div class="footer">
           <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
@@ -123,7 +130,8 @@ function generatePaymentSuccess(order: any): string {
   `;
 }
 
-function generatePaymentFailed(order: any): string {
+function generatePaymentFailed(data: EmailData['payment-failed']): string {
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
   return `
     <html>
     <head><style>
@@ -142,8 +150,8 @@ function generatePaymentFailed(order: any): string {
           <h1>❌ Pembayaran Gagal</h1>
         </div>
         <div class="content">
-          <p>Halo <strong>${order.customer_name || 'Customer'}</strong>,</p>
-          <p>Pembayaran untuk pesanan <strong>${order.id}</strong> gagal atau kedaluwarsa.</p>
+          <p>Halo <strong>${data.customer_name || 'Customer'}</strong>,</p>
+          <p>Pembayaran untuk pesanan <strong>${data.order_id}</strong> gagal atau kedaluwarsa.</p>
 
           <div class="fail-box">
             <p style="margin:0;font-weight:900;color:#FF4444;">Pesanan akan dibatalkan otomatis dalam 24 jam jika tidak dibayar.</p>
@@ -152,7 +160,7 @@ function generatePaymentFailed(order: any): string {
           <p>Kamu bisa mencoba lagi dengan klik tombol di bawah:</p>
 
           <div style="text-align:center;">
-            <a href="${import.meta.env.SITE_URL || 'https://topzone.id'}/checkout?retry=${order.id}" class="btn">Bayar Ulang</a>
+            <a href="${siteUrl}/checkout?retry=${data.order_id}" class="btn">Bayar Ulang</a>
           </div>
         </div>
         <div class="footer">
@@ -164,7 +172,9 @@ function generatePaymentFailed(order: any): string {
   `;
 }
 
-function generateOrderShipped(order: any): string {
+function generateOrderShipped(data: EmailData['order-shipped']): string {
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
+  const trackingInfo = data.courier ? `<p><strong>Kurir:</strong> ${data.courier} ${data.tracking_number ? `- No. Resi: ${data.tracking_number}` : ''}</p>` : '';
   return `
     <html>
     <head><style>
@@ -174,6 +184,7 @@ function generateOrderShipped(order: any): string {
       .header h1 { margin: 0; font-size: 28px; color: white; }
       .content { padding: 30px; }
       .track-box { background: #E8F4FD; border: 2px solid #4FC1E9; padding: 20px; text-align: center; margin: 20px 0; }
+      .btn { display: inline-block; background: #39FF14; color: #000; padding: 12px 30px; text-decoration: none; font-weight: 900; border: 2px solid #000; margin-top: 20px; }
       .footer { background: #000; color: white; padding: 20px; text-align: center; font-size: 12px; }
     </style></head>
     <body>
@@ -182,14 +193,17 @@ function generateOrderShipped(order: any): string {
           <h1>🚚 Pesanan Dikirim!</h1>
         </div>
         <div class="content">
-          <p>Halo <strong>${order.customer_name || 'Customer'}</strong>,</p>
-          <p>Pesanan <strong>${order.id}</strong> sedang dalam perjalanan!</p>
+          <p>Halo <strong>${data.customer_name || 'Customer'}</strong>,</p>
+          <p>Pesanan <strong>${data.order_id}</strong> sedang dalam perjalanan!</p>
 
           <div class="track-box">
-            <p style="margin:0;font-weight:900;">Digital goods akan dikirim ke akun game kamu dalam 1×24 jam.</p>
+            <p style="margin:0;font-weight:900;">${trackingInfo || 'Digital goods akan dikirim ke akun game kamu dalam 1×24 jam.'}</p>
           </div>
 
           <p>Kamu akan menerima email konfirmasi lagi saat pesanan selesai diproses.</p>
+          <div style="text-align:center;">
+            <a href="${siteUrl}/orders?id=${data.order_id}" class="btn">Lacak Pesanan</a>
+          </div>
         </div>
         <div class="footer">
           <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
@@ -200,7 +214,9 @@ function generateOrderShipped(order: any): string {
   `;
 }
 
-function generateWelcomeEmail(user: any): string {
+function generateWelcomeEmail(data: EmailData['welcome']): string {
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
+  const voucherHtml = data.voucher_code ? `<p style="margin:5px 0 0;font-weight:bold;">🎟 Kode Voucher: ${data.voucher_code}</p>` : '';
   return `
     <html>
     <head><style>
@@ -212,6 +228,8 @@ function generateWelcomeEmail(user: any): string {
       .welcome-box { background: #FFE600; border: 2px solid #000; padding: 20px; text-align: center; margin: 20px 0; }
       .btn { display: inline-block; background: #39FF14; color: #000; padding: 12px 30px; text-decoration: none; font-weight: 900; border: 2px solid #000; margin-top: 20px; }
       .footer { background: #000; color: white; padding: 20px; text-align: center; font-size: 12px; }
+      .unsubscribe { text-align: center; margin-top: 15px; }
+      .unsubscribe a { font-size: 11px; color: #888; }
     </style></head>
     <body>
       <div class="container">
@@ -219,12 +237,12 @@ function generateWelcomeEmail(user: any): string {
           <h1>🎮 Selamat Datang di TopZone!</h1>
         </div>
         <div class="content">
-          <p>Halo <strong>${user.full_name || user.email?.split('@')[0] || 'Gamer'}</strong>,</p>
+          <p>Halo <strong>${data.customer_name || 'Gamer'}</strong>,</p>
           <p>Terima kasih sudah bergabung dengan TopZone! 🎉</p>
 
           <div class="welcome-box">
-            <p style="margin:0;font-weight:900;">🎁 Voucher Selamat Datang: WELCOME10</p>
-            <p style="margin:5px 0 0;font-weight:bold;">Diskon 10% untuk pembelian pertama (min. Rp 50.000)</p>
+            <p style="margin:0;font-weight:900;">🎁 Selamat Datang!</p>
+            ${voucherHtml}
           </div>
 
           <p>Berikut yang bisa kamu lakukan di TopZone:</p>
@@ -236,8 +254,11 @@ function generateWelcomeEmail(user: any): string {
           </ul>
 
           <div style="text-align:center;">
-            <a href="${import.meta.env.SITE_URL || 'https://topzone.id'}" class="btn">Mulai Belanja</a>
+            <a href="${siteUrl}" class="btn">Mulai Belanja</a>
           </div>
+        </div>
+        <div class="unsubscribe">
+          <a href="${siteUrl}/unsubscribe?email={{email}}">Berhenti berlangganan email promosi</a>
         </div>
         <div class="footer">
           <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
@@ -248,7 +269,9 @@ function generateWelcomeEmail(user: any): string {
   `;
 }
 
-function generatePasswordReset(user: any, data: any): string {
+function generatePasswordReset(data: EmailData['password-reset']): string {
+  const siteUrl = import.meta.env.SITE_URL || 'https://topzone.id';
+  const resetLink = data.reset_link || `${siteUrl}/auth/reset-password?token=${data.token || ''}`;
   return `
     <html>
     <head><style>
@@ -267,19 +290,19 @@ function generatePasswordReset(user: any, data: any): string {
           <h1>🔑 Reset Password TopZone</h1>
         </div>
         <div class="content">
-          <p>Halo <strong>${user.full_name || user.email?.split('@')[0] || 'Gamer'}</strong>,</p>
+          <p>Halo <strong>${data.customer_name || 'Gamer'}</strong>,</p>
           <p>Kami menerima permintaan untuk mereset password akun kamu.</p>
 
           <div class="reset-box">
             <p style="margin:0;font-weight:900;">Klik tombol di bawah untuk reset password:</p>
             <div style="margin-top:15px;">
-              <a href="${data.resetLink || import.meta.env.SITE_URL || 'https://topzone.id'}/reset-password?token=${data.token || ''}" class="btn">Reset Password</a>
+              <a href="${resetLink}" class="btn">Reset Password</a>
             </div>
           </div>
 
           <p style="margin-top:20px;font-size:14px;color:#666;">Link ini akan kedaluwarsa dalam 1 jam. Jika kamu tidak meminta reset password, abaikan email ini.</p>
 
-          <p style="margin-top:30px;">Atau salin link ini ke browser:<br><span style="word-break:break-all;font-size:12px;color:#888;">${data.resetLink || import.meta.env.SITE_URL || 'https://topzone.id'}/reset-password?token=${data.token || ''}</span></p>
+          <p style="margin-top:30px;">Atau salin link ini ke browser:<br><span style="word-break:break-all;font-size:12px;color:#888;">${resetLink}</span></p>
         </div>
         <div class="footer">
           <p>© ${new Date().getFullYear()} TopZone. All rights reserved.</p>
@@ -297,7 +320,7 @@ const templates: Record<string, (data: any) => string> = {
   'payment-failed': generatePaymentFailed,
   'order-shipped': generateOrderShipped,
   'welcome': generateWelcomeEmail,
-  'password-reset': (data: any) => generatePasswordReset({ full_name: data.full_name, email: data.to }, data),
+  'password-reset': (data: any) => generatePasswordReset({ customer_name: data.full_name || data.customer_name || data.to?.split('@')[0] || 'Gamer', reset_link: data.reset_link || `${import.meta.env.SITE_URL || 'https://topzone.id'}/auth/reset-password?token=${data.token || ''}`, token: data.token }),
 };
 
 export const POST: APIRoute = async ({ request }) => {
@@ -324,11 +347,9 @@ export const POST: APIRoute = async ({ request }) => {
         template: template,
         status: 'sent',
         sent_at: new Date().toISOString(),
-      }).catch((e) => console.error('Email log save failed:', e));
+      }).catch((e: any) => console.error('Email log save failed:', e));
     }
 
-    // In production, integrate with email provider (SendGrid, Resend, etc.)
-    // For now, return the HTML for preview/testing
     return jsonResponse({
       success: true,
       message: 'Email generated successfully',
@@ -337,8 +358,8 @@ export const POST: APIRoute = async ({ request }) => {
       subject: subject || `TopZone - ${template}`,
       htmlPreview: htmlContent,
     });
-  } catch (err) {
-    console.error('Email send error:', err);
+  } catch (err: any) {
+    console.error('Email send error:', err.message);
     return jsonResponse({ error: 'Internal server error' }, 500);
   }
 };
