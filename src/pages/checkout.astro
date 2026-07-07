@@ -88,6 +88,18 @@ import Footer from '../components/Footer.astro';
               </select>
             </div>
 
+            <!-- Shipping Address (for gear purchases) -->
+            <div id="shipping-section" class="hidden">
+              <div class="border-2 border-dashed border-black p-4 bg-gray-50 dark:bg-gray-700">
+                <label class="block text-sm font-black uppercase tracking-wider mb-2">📦 Alamat Pengiriman</label>
+                <select id="shipping-address-select" class="w-full px-3 py-2 border-2 border-black font-bold text-sm bg-white">
+                  <option value="">-- Pilih Alamat --</option>
+                </select>
+                <div id="shipping-address-detail" class="mt-2 p-3 border-2 border-black bg-white text-sm font-bold hidden"></div>
+                <p class="text-xs text-gray-500 mt-1 font-bold">Alamat ini akan digunakan untuk pengiriman gear. Untuk top-up digital, alamat tidak diperlukan.</p>
+              </div>
+            </div>
+
                         <div class="border-2 border-dashed border-black p-4 bg-gray-50">
               <label class="block text-sm font-black uppercase tracking-wider mb-2">🎟 Punya Voucher?</label>
               <div class="flex gap-2">
@@ -203,6 +215,70 @@ import Footer from '../components/Footer.astro';
     }
   }
 
+
+  // ═══════════════════════════════════════════════════════
+  // SHIPPING ADDRESS
+  // ═══════════════════════════════════════════════════════
+  function detectShippingNeeded() {
+    var items = cartItems.get();
+    var hasGear = items.some(function(i) { return i.type === 'gear'; });
+    var shippingSection = document.getElementById('shipping-section');
+    if (shippingSection) {
+      if (hasGear) { shippingSection.classList.remove('hidden'); }
+      else { shippingSection.classList.add('hidden'); }
+    }
+  }
+  cartItems.subscribe(detectShippingNeeded);
+  setTimeout(detectShippingNeeded, 100);
+
+  function loadShippingAddresses() {
+    var currentUser = user.get();
+    if (!currentUser || !currentUser.isLoggedIn) return;
+    var email = currentUser.email;
+    var addressesKey = 'topzone_addresses_' + email.replace(/[^a-zA-Z0-9]/g, '_');
+    var select = document.getElementById('shipping-address-select');
+    var detail = document.getElementById('shipping-address-detail');
+    if (!select) return;
+
+    try {
+      var addrs = JSON.parse(localStorage.getItem(addressesKey) || '[]');
+      if (addrs.length === 0) {
+        select.innerHTML = '<option value="">-- Belum ada alamat --</option>';
+        select.disabled = true;
+        return;
+      }
+      select.disabled = false;
+      var options = '<option value="">-- Pilih Alamat --</option>';
+      addrs.forEach(function(addr, idx) {
+        options += '<option value="' + idx + '"' + (addr.isDefault ? ' selected' : '') + '>' + addr.label + ' - ' + addr.city + (addr.isDefault ? ' (Utama)' : '') + '</option>';
+      });
+      select.innerHTML = options;
+      if (addrs.some(function(a) { return a.isDefault; })) {
+        select.dispatchEvent(new Event('change'));
+      }
+    } catch(e) {}
+  }
+
+  document.getElementById('shipping-address-select')?.addEventListener('change', function() {
+    var currentUser = user.get();
+    if (!currentUser) return;
+    var email = currentUser.email;
+    var addressesKey = 'topzone_addresses_' + email.replace(/[^a-zA-Z0-9]/g, '_');
+    var detail = document.getElementById('shipping-address-detail');
+    try {
+      var addrs = JSON.parse(localStorage.getItem(addressesKey) || '[]');
+      var idx = parseInt(this.value);
+      if (!isNaN(idx) && addrs[idx]) {
+        var a = addrs[idx];
+        detail.innerHTML = '<strong>' + a.recipient + '</strong><br>' + a.phone + '<br>' + a.address + ', ' + a.city + ' ' + (a.postalCode || '');
+        detail.classList.remove('hidden');
+      } else {
+        detail.classList.add('hidden');
+      }
+    } catch(e) {}
+  });
+
+  setTimeout(loadShippingAddresses, 200);
 
   // ═══════════════════════════════════════════════════════
   // POINTS SYSTEM
