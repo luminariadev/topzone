@@ -813,29 +813,24 @@ Setiap hari **minimal 10 commit** dengan format:
 
 ## Progress Tracker Harian
 
-### Sheet Harian: 2026-07-06
+### Sheet Harian: 2026-07-07
 
 ```
-Tanggal: 2026-07-06
-Hari ke: 14 / ___
+Tanggal: 2026-07-07
+Hari ke: 15 / ___
 
 | # | Commit | Scope | Selesai? |
 |:-:|--------|-------|:--------:|
-| 1 | fix(profile): remove duplicate + loyalty tab | profile | ✅ |
-| 2 | feat(promo): flash sale countdown banner | promo | ✅ |
-| 3 | feat(reviews): verified badge + helpful votes | reviews | ✅ |
-| 4 | feat(email): email API + 5 HTML templates | email | ✅ |
-| 5 | feat(checkout): cart Supabase sync + Q&A | checkout | ✅ |
-| 6 | feat(checkout): buy now + order breakdown | checkout | ✅ |
-| 7 | feat(notif): enhanced notification center | notif | ✅ |
-| 8 | docs(roadmap): Phase 3 progress update | docs | ✅ |
-| 9 | feat(cart): 24-hour abandoned cart expiry | cart | ✅ |
-|10 | feat(email): password reset template | email | ✅ |
-|11 | feat(loyalty): loyalty & referral tables | loyalty | ✅ |
-|12 | feat: CS chat, guide page, Bootstrap Icons | features | ✅ |
+| 1 | feat(referral): referral code generation, tracking & dashboard | referral | ✅ |
+| 2 | feat(points): points spending in checkout & points API | points | ✅ |
+| 3 | feat(vouchers): migrate voucher storage to Supabase + user_vouchers | voucher | ✅ |
+| 4 | feat(admin): voucher analytics and customer management | admin | ✅ |
+| 5 | feat(reviews): migrate reviews to Supabase with admin moderation | reviews | ✅ |
+| 6 | feat(shipping): shipping address API + table migration | shipping | ✅ |
+| 7 | feat(profile): birthday bonus & remaining features | profile | ✅ |
 
-Total commit hari ini: 12/10 ✅
-Target tercapai? ✅ Ya
+Total commit hari ini: 7/10 ⏳
+Target tercapai? 🟡 In Progress
 ```
 
 ### Grafik Progress (per Fase)
@@ -843,14 +838,14 @@ Target tercapai? ✅ Ya
 ```
 Fase 1: Infrastructure ████████████████████  [76/76 ✅ 100%]
 Fase 2: Catalog        ████████████████████  [59/59 ✅ 100%]
-Fase 3: User Features  ████████████████░░░░  [55/70 🔄 ~79%]
-Fase 4: Admin Panel    ░░░░░░░░░░░░░░░░░░░░  [0/44 ☐ ~0%]
+Fase 3: User Features  ████████████████░░░░  [65/70 🔄 ~93%]
+Fase 4: Admin Panel    ████████░░░░░░░░░░░░  [12/44 🔄 ~27%]
 Fase 5: SEO & Perf     ░░░░░░░░░░░░░░░░░░░░  [0/50 ☐ ~0%]
 Fase 6: Testing        ░░░░░░░░░░░░░░░░░░░░  [0/71 ☐ ~0%]
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/103 ☐ ~0%]
 Fase 8: DevOps         ████░░░░░░░░░░░░░░░░  [5/35 🔄 ~14%]
 
-Total: 195/508 commit (~38%)
+Total: 217/508 commit (~43%)
 ```
 
 ---
