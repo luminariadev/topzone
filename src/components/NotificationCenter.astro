@@ -68,7 +68,7 @@
         ) : (
           '<div class="space-y-3">' +
             notifs.slice(0, 15).map(function(n) {
-              var icons = { info: 'ℹ️', success: '✅', warning: '⚠️', order: '📦', promo: '🎁', points: '💰' };
+              var icons = { info: 'ℹ️', success: '✅', warning: '⚠️', order: '📦', promo: '🎁', points: '💰', 'tier-upgrade': '⭐' };
               return '<div class="flex items-start gap-3 p-4 border-2 border-black ' + (n.read ? 'bg-gray-50 dark:bg-gray-700 opacity-70' : 'bg-neon-yellow/30 dark:bg-gray-600') + ' cursor-pointer notif-item" data-id="' + n.id + '">' +
                 '<span class="text-xl">' + (icons[n.type] || '🔔') + '</span>' +
                 '<div class="flex-1">' +
