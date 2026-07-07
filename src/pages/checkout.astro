@@ -96,6 +96,21 @@ import Footer from '../components/Footer.astro';
                   <option value="">-- Pilih Alamat --</option>
                 </select>
                 <div id="shipping-address-detail" class="mt-2 p-3 border-2 border-black bg-white text-sm font-bold hidden"></div>
+
+                <!-- Courier Selection -->
+                <div id="courier-section" class="hidden mt-3">
+                  <label class="block text-sm font-black uppercase tracking-wider mb-2">🚚 Pilih Kurir</label>
+                  <select id="courier-select" class="w-full px-3 py-2 border-2 border-black font-bold text-sm bg-white">
+                    <option value="">-- Pilih Kurir --</option>
+                    <option value="jne">JNE (2-3 hari)</option>
+                    <option value="jnt">J&T Express (2-3 hari)</option>
+                    <option value="sicepat">SiCepat (1-2 hari)</option>
+                    <option value="gosend">GoSend (Same Day)</option>
+                  </select>
+                  <div id="shipping-cost-display" class="mt-2 p-3 border-2 border-black bg-neon-yellow text-sm font-black text-center hidden">
+                    Ongkos Kirim: <span id="shipping-cost-amount">Rp 0</span>
+                  </div>
+                </div>
                 <p class="text-xs text-gray-500 mt-1 font-bold">Alamat ini akan digunakan untuk pengiriman gear. Untuk top-up digital, alamat tidak diperlukan.</p>
               </div>
             </div>
@@ -265,6 +280,7 @@ import Footer from '../components/Footer.astro';
     var email = currentUser.email;
     var addressesKey = 'topzone_addresses_' + email.replace(/[^a-zA-Z0-9]/g, '_');
     var detail = document.getElementById('shipping-address-detail');
+    var courierSection = document.getElementById('courier-section');
     try {
       var addrs = JSON.parse(localStorage.getItem(addressesKey) || '[]');
       var idx = parseInt(this.value);
@@ -276,6 +292,32 @@ import Footer from '../components/Footer.astro';
         detail.classList.add('hidden');
       }
     } catch(e) {}
+  });
+
+  // Courier selection with shipping cost estimation
+  document.getElementById('courier-select')?.addEventListener('change', function() {
+    var costDisplay = document.getElementById('shipping-cost-display');
+    var costAmount = document.getElementById('shipping-cost-amount');
+    var courier = this.value;
+    if (!courier) {
+      costDisplay?.classList.add('hidden');
+      return;
+    }
+    // Estimate shipping costs (mock — in production this would call RajaOngkir or similar API)
+    var costs = { jne: 15000, jnt: 13000, sicepat: 20000, gosend: 25000 };
+    var cost = costs[courier] || 15000;
+    if (costAmount) costAmount.textContent = 'Rp ' + cost.toLocaleString('id-ID');
+    if (costDisplay) costDisplay.classList.remove('hidden');
+
+    // Update total with shipping
+    var subtotalText = document.getElementById('checkout-subtotal')?.textContent?.replace(/[^0-9]/g, '') || '0';
+    var subtotal = parseInt(subtotalText);
+    var currentTotalText = document.getElementById('checkout-total')?.textContent?.replace(/[^0-9]/g, '') || '0';
+    var currentTotal = parseInt(currentTotalText);
+    // Show estimated total with shipping
+    if (document.getElementById('checkout-total')) {
+      document.getElementById('checkout-total').textContent = 'Rp ' + (subtotal + cost).toLocaleString('id-ID');
+    }
   });
 
   setTimeout(loadShippingAddresses, 200);
