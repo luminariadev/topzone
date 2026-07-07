@@ -75,19 +75,19 @@ const testimonials: Testimonial[] = [
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-10">
       <h2 id="testimonials-heading" class="text-5xl font-black uppercase tracking-tighter mb-3 text-black dark:text-white">
-        What <span class="bg-neon-yellow px-2 border-2 border-black">Gamers</span> Say
+        What <span class="bg-neon-yellow px-2 border-2 border-black dark:border-gray-600">Gamers</span> Say
       </h2>
       <p class="text-gray-600 dark:text-gray-300 font-bold text-lg">Ribuan gamers udah trust TopZone. Sekarang giliran kamu!</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {testimonials.map((t) => (
-        <article class="border-4 border-black bg-white dark:bg-gray-900 shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all duration-150 p-6">
+        <article class="border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all duration-150 p-6">
           <!-- Stars -->
           <div class="flex gap-1 mb-3" aria-label={`${t.rating} out of 5 stars`}>
             {Array.from({ length: 5 }).map((_, i) => (
               <svg
-                class={`w-5 h-5 ${i < t.rating ? 'text-black' : 'text-gray-300'}`}
+                class={`w-5 h-5 ${i < t.rating ? 'text-black' : 'text-gray-300 dark:text-gray-600'}`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 aria-hidden="true"
@@ -105,16 +105,16 @@ const testimonials: Testimonial[] = [
           <!-- Author -->
           <div class="flex items-center gap-3">
             <div
-              class="w-10 h-10 flex items-center justify-center border-2 border-black font-black text-sm text-black shadow-[2px_2px_0px_0px_#000]"
+              class="w-10 h-10 flex items-center justify-center border-2 border-black dark:border-gray-600 font-black text-sm text-black shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333]"
               style={`background:${t.avatarBg};`}
               aria-hidden="true"
             >
               {t.avatarInitial}
             </div>
             <div>
-              <p class="font-black text-sm">{t.name}</p>
+              <p class="font-black text-sm dark:text-white">{t.name}</p>
               <span
-                class="inline-block px-2 py-0.5 text-xs font-black uppercase tracking-wider border-2 border-black shadow-[1px_1px_0px_0px_#000]"
+                class="inline-block px-2 py-0.5 text-xs font-black uppercase tracking-wider border-2 border-black dark:border-gray-600 shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_#333]"
                 style={`background:${t.platformColor};`}
               >
                 {t.platform}

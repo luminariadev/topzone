@@ -39,11 +39,11 @@ const faqItems: FaqItem[] = [
 ];
 ---
 
-<section class="py-16 bg-white border-t-4 border-black dark:bg-gray-900 dark:border-gray-700" id="faq" aria-labelledby="faq-heading">
+<section class="py-16 bg-white border-t-4 border-black dark:bg-[#111] dark:border-[#27272a]" id="faq" aria-labelledby="faq-heading">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-10">
-      <h2 id="faq-heading" class="text-5xl font-black uppercase tracking-tighter mb-3">
-        Frequently <span class="bg-neon-pink px-2 border-2 border-black text-white">Asked</span>
+      <h2 id="faq-heading" class="text-5xl font-black uppercase tracking-tighter mb-3 dark:text-white">
+        Frequently <span class="bg-neon-pink px-2 border-2 border-black dark:border-gray-600 text-white">Asked</span>
       </h2>
       <p class="text-gray-600 font-bold text-lg dark:text-gray-300">Pertanyaan yang sering ditanyain gamers.</p>
     </div>
@@ -51,7 +51,7 @@ const faqItems: FaqItem[] = [
     <div class="space-y-4">
       {faqItems.map((item, index) => (
         <div
-          class="faq-item border-4 border-black shadow-[4px_4px_0px_0px_#000] bg-white dark:bg-gray-900 transition-all"
+          class="faq-item border-4 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#333] bg-white dark:bg-[#1a1a1a] transition-all"
           data-index={index}
         >
           <button
@@ -62,15 +62,12 @@ const faqItems: FaqItem[] = [
           >
             <span class="flex items-center gap-3">
               <span
-                class="inline-flex items-center justify-center w-8 h-8 border-2 border-black font-black text-sm"
-                style={`background:${item.accent};`}
-              >
-                {index + 1}
-              </span>
-              <span>{item.question}</span>
+                class="inline-flex items-center justify-center w-8 h-8 border-2 border-black dark:border-gray-600 font-black text-sm"
+                style={`background:${item.accent};`}>{index + 1}</span>
+              <span class="dark:text-gray-200">{item.question}</span>
             </span>
             <span
-              class="faq-icon flex-shrink-0 w-8 h-8 border-2 border-black flex items-center justify-center font-black text-xl leading-none transition-transform duration-200"
+              class="faq-icon flex-shrink-0 w-8 h-8 border-2 border-black dark:border-gray-600 flex items-center justify-center font-black text-xl leading-none transition-transform duration-200"
               style={`background:${item.accent};`}
               aria-hidden="true"
             >
@@ -79,7 +76,7 @@ const faqItems: FaqItem[] = [
           </button>
           <div
             id={`faq-answer-${index}`}
-            class="faq-answer hidden overflow-hidden border-t-4 border-black"
+            class="faq-answer hidden overflow-hidden border-t-4 border-black dark:border-gray-600"
             role="region"
             aria-labelledby={`faq-question-${index}`}
           >
