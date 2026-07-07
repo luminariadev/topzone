@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle.astro';
 import SearchBar from './SearchBar.astro';
 ---
 
-<header class="border-b-4 border-black bg-white sticky top-0 z-50 dark:bg-gray-900 dark:border-gray-700">
+<header class="border-b border-gray-200 bg-white sticky top-0 z-50 dark:bg-[#111] dark:border-[#27272a]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
     <!-- Logo -->
     <a href="/" class="text-2xl md:text-3xl font-black tracking-tight hover:skew-x-2 transition-transform inline-block">
@@ -15,11 +15,11 @@ import SearchBar from './SearchBar.astro';
 
     <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center gap-6">
-      <a href="/#hero" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Home</a>
-      <a href="/#games" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Games</a>
-      <a href="/#gear" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Gear</a>
-      <a href="/#promo" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors">Promo</a>
-      <a href="/guide" class="font-bold text-black dark:text-white hover:text-neon-pink transition-colors"><i class="bi bi-book me-1"></i>Panduan</a>
+      <a href="/#hero" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Home</a>
+      <a href="/#games" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Games</a>
+      <a href="/#gear" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Gear</a>
+      <a href="/#promo" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Promo</a>
+      <a href="/guide" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors"><i class="bi bi-book me-1"></i>Panduan</a>
     </nav>
     <SearchBar />
 
@@ -30,25 +30,25 @@ import SearchBar from './SearchBar.astro';
       <ThemeToggle />
       <button
         id="hamburger-btn"
-        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black bg-white dark:bg-gray-800 dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black dark:border-gray-600 bg-white dark:bg-gray-800 shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
-        <span class="block w-5 h-0.5 bg-black transition-all duration-200" id="ham-line-1"></span>
-        <span class="block w-5 h-0.5 bg-black transition-all duration-200" id="ham-line-2"></span>
-        <span class="block w-5 h-0.5 bg-black transition-all duration-200" id="ham-line-3"></span>
+        <span class="block w-5 h-0.5 bg-black dark:bg-white transition-all duration-200" id="ham-line-1"></span>
+        <span class="block w-5 h-0.5 bg-black dark:bg-white transition-all duration-200" id="ham-line-2"></span>
+        <span class="block w-5 h-0.5 bg-black dark:bg-white transition-all duration-200" id="ham-line-3"></span>
       </button>
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden border-t-4 border-black bg-white dark:bg-gray-800 dark:text-white">
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white dark:bg-[#111] dark:border-[#27272a] text-black dark:text-gray-200">
     <nav class="flex flex-col p-4 gap-3">
-      <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Home</a>
-      <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Games</a>
-      <a href="/#gear" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Gear</a>
-      <a href="/#promo" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors">Promo</a>
-      <a href="/guide" class="font-bold py-2 border-b-2 border-black/10 text-black dark:text-white dark:border-gray-600 hover:text-neon-pink transition-colors"><i class="bi bi-book me-1"></i>Panduan</a>
+      <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Home</a>
+      <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Games</a>
+      <a href="/#gear" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Gear</a>
+      <a href="/#promo" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Promo</a>
+      <a href="/guide" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors"><i class="bi bi-book me-1"></i>Panduan</a>
 
       <div id="auth-mobile" class="flex flex-col gap-2 mt-2"></div>
     </nav>
