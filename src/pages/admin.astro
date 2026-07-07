@@ -77,6 +77,8 @@ import Footer from '../components/Footer.astro';
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="orders">&#x1F4E6; Orders</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">&#x1F3B0; Vouchers</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="reports">&#x1F4CA; Reports</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="voucher-analytics">&#x1F4C8; Voucher Analytics</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="customers">&#x1F465; Customers</button>
       </div>
 
       <!-- GAMES -->
@@ -197,6 +199,23 @@ import Footer from '../components/Footer.astro';
             <div id="laporan-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada transaksi.</p></div>
           </div>
         </div>
+
+      <!-- VOUCHER ANALYTICS -->
+      <div id="panel-voucher-analytics" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">📈 Voucher Analytics</h2>
+        <div id="voucher-analytics-content">
+          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading voucher analytics...</p></div>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div id="panel-customers" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">👥 Customers</h2>
+        <div id="customers-content">
+          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading customer data...</p></div>
+        </div>
+      </div>
+
       </div>
     </div>
   </div>
@@ -581,12 +600,151 @@ import Footer from '../components/Footer.astro';
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach((b) => { b.style.background = '#fff'; });
       btn.style.background = '#39FF14';
-      ['games','gear','orders','vouchers','reports'].forEach((p) => {
+      ['games','gear','orders','vouchers','reports','voucher-analytics','customers'].forEach((p) => {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
+
+      // Load data for newly opened panels
+      if (btn.dataset.tab === 'voucher-analytics') loadVoucherAnalytics();
+      if (btn.dataset.tab === 'customers') loadCustomers();
     });
   });
+
+  // ═══════════════════════════════════════════════════════
+  // VOUCHER ANALYTICS
+  // ═══════════════════════════════════════════════════════
+  async function loadVoucherAnalytics() {
+    const content = document.getElementById('voucher-analytics-content');
+    try {
+      const resp = await fetch('/api/admin/voucher-analytics');
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+
+      const s = data.summary;
+      content.innerHTML = `
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Voucher</p>
+            <p class="text-3xl font-black">${s.total_vouchers}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Active</p>
+            <p class="text-3xl font-black text-neon-green">${s.active_vouchers}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Claims</p>
+            <p class="text-3xl font-black">${s.total_claims}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Diskon</p>
+            <p class="text-3xl font-black text-neon-pink">Rp ${s.total_discount_given.toLocaleString('id-ID')}</p>
+          </div>
+        </div>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="border-b-4 border-black bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 font-black text-sm">Kode</th>
+                <th class="px-4 py-3 font-black text-sm">Diskon</th>
+                <th class="px-4 py-3 font-black text-sm">Claims</th>
+                <th class="px-4 py-3 font-black text-sm">Usage Rate</th>
+                <th class="px-4 py-3 font-black text-sm">Orders</th>
+                <th class="px-4 py-3 font-black text-sm">Total Diskon</th>
+                <th class="px-4 py-3 font-black text-sm">Revenue</th>
+                <th class="px-4 py-3 font-black text-sm">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.vouchers.map(v => `
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                  <td class="px-4 py-3 font-black text-sm">${v.code}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${v.discount}%</td>
+                  <td class="px-4 py-3 text-sm font-bold">${v.claims}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${v.usage_rate}%</td>
+                  <td class="px-4 py-3 text-sm font-bold">${v.orders_using}</td>
+                  <td class="px-4 py-3 text-sm font-bold text-neon-pink">Rp ${v.total_discount_given.toLocaleString('id-ID')}</td>
+                  <td class="px-4 py-3 text-sm font-bold text-neon-green">Rp ${v.total_revenue_from.toLocaleString('id-ID')}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${v.is_active ? '<span class="text-neon-green">Active</span>' : '<span class="text-red-500">Inactive</span>'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } catch(e) {
+      content.innerHTML = '<p class="text-red-500 font-bold">Gagal memuat analytics: ' + e.message + '</p>';
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // CUSTOMERS
+  // ═══════════════════════════════════════════════════════
+  async function loadCustomers() {
+    const content = document.getElementById('customers-content');
+    try {
+      const resp = await fetch('/api/admin/customers');
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+
+      content.innerHTML = `
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Customers</p>
+            <p class="text-3xl font-black">${data.customers.length}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Revenue</p>
+            <p class="text-3xl font-black text-neon-green">Rp ${data.customers.reduce((s, c) => s + c.total_spent, 0).toLocaleString('id-ID')}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Avg. Order Value</p>
+            <p class="text-3xl font-black">${data.customers.length > 0 ? Math.round(data.customers.reduce((s, c) => s + c.total_spent, 0) / data.customers.length).toLocaleString('id-ID') : 0}</p>
+          </div>
+          <div class="border-4 border-black p-4 bg-white shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Top Tier</p>
+            <p class="text-3xl font-black text-neon-pink">${data.customers.filter(c => c.tier === 'platinum').length} Platinum</p>
+          </div>
+        </div>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="border-b-4 border-black bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 font-black text-sm">Email</th>
+                <th class="px-4 py-3 font-black text-sm">Nama</th>
+                <th class="px-4 py-3 font-black text-sm">Total Pesanan</th>
+                <th class="px-4 py-3 font-black text-sm">Total Belanja</th>
+                <th class="px-4 py-3 font-black text-sm">Tier</th>
+                <th class="px-4 py-3 font-black text-sm">Poin</th>
+                <th class="px-4 py-3 font-black text-sm">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.customers.map(c => `
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm font-bold">${c.email}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${c.name || '-'}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${c.total_orders}</td>
+                  <td class="px-4 py-3 text-sm font-bold text-neon-green">Rp ${c.total_spent.toLocaleString('id-ID')}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${c.tier || 'bronze'}</td>
+                  <td class="px-4 py-3 text-sm font-bold">${c.points || 0}</td>
+                  <td class="px-4 py-3 text-sm font-bold">
+                    <button class="text-blue-500 hover:underline" onclick="viewCustomerDetail('${c.email}')">View</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } catch(e) {
+      content.innerHTML = '<p class="text-red-500 font-bold">Gagal memuat data customer: ' + e.message + '</p>';
+    }
+  }
+
+  window.viewCustomerDetail = function(email) {
+    alert('Customer detail view for: ' + email + '\n(Coming soon in next update)');
+  };
 
   // -------------------------------------------------------
   // HELPERS
