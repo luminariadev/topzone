@@ -53,7 +53,17 @@ import Footer from '../components/Footer.astro';
           <p class="text-xs font-bold text-gray-400 mt-3">* Pesanan akan diproses setelah pembayaran dikonfirmasi</p>
         </div>
 
-        <!-- Payment Form -->
+        // Points usage UI
+    <div class="border-2 border-black p-4 bg-white dark:bg-gray-800 mb-4">
+      <label class="block text-sm font-black uppercase tracking-wider mb-2">Gunakan Poin (1 poin = Rp 1000)</label>
+      <div class="flex items-center gap-2">
+        <input type="number" id="points-use" min="0" value="0" class="w-20 px-2 py-1 border-3 border-black font-bold" />
+        <span id="points-available" class="text-sm font-bold text-gray-600">0 pts</span>
+        <button type="button" id="apply-points" class="px-3 py-1 font-black border-2 border-black bg-neon-green text-black">Gunakan</button>
+      </div>
+      <p id="points-msg" class="mt-2 text-xs font-bold text-gray-500 hidden"></p>
+    </div>
+
         <div class="border-4 border-black p-6 bg-neon-yellow shadow-[4px_4px_0px_0px_#000]">
           <h2 class="text-2xl font-black mb-4">Data Pembayar</h2>
           <form id="checkout-form" class="space-y-5">
@@ -193,6 +203,59 @@ import Footer from '../components/Footer.astro';
     }
   }
 
+
+  // ═══════════════════════════════════════════════════════
+  // POINTS SYSTEM
+  // ═══════════════════════════════════════════════════════
+  var availablePoints = 0;
+  var appliedPoints = 0;
+
+  async function fetchAvailablePoints() {
+    try {
+      var resp = await fetch('/api/user/points');
+      var data = await resp.json();
+      if (resp.ok) {
+        availablePoints = data.total_points || 0;
+        document.getElementById('points-available').textContent = availablePoints.toLocaleString('id-ID') + ' pts';
+      }
+    } catch(e) {
+      console.warn('Failed to fetch points:', e);
+    }
+  }
+
+  document.getElementById('apply-points')?.addEventListener('click', function() {
+    var input = document.getElementById('points-use');
+    var points = parseInt(input.value) || 0;
+    var msg = document.getElementById('points-msg');
+
+    if (points <= 0) {
+      msg.textContent = 'Masukkan jumlah poin yang valid!';
+      msg.className = 'mt-2 text-xs font-bold text-red-500';
+      msg.classList.remove('hidden');
+      return;
+    }
+
+    if (points > availablePoints) {
+      msg.textContent = 'Poin tidak mencukupi! Maksimal ' + availablePoints.toLocaleString('id-ID') + ' pts.';
+      msg.className = 'mt-2 text-xs font-bold text-red-500';
+      msg.classList.remove('hidden');
+      return;
+    }
+
+    appliedPoints = points;
+    msg.textContent = '✅ ' + points.toLocaleString('id-ID') + ' poin digunakan untuk diskon: Rp ' + (points * 1000).toLocaleString('id-ID');
+    msg.className = 'mt-2 text-xs font-bold text-neon-green';
+    msg.classList.remove('hidden');
+    input.value = points;
+
+    var subtotalEl = document.getElementById('checkout-subtotal');
+    var totalEl = document.getElementById('checkout-total');
+    var subtotalText = subtotalEl.textContent.replace(/[^0-9]/g, '');
+    var subtotal = parseInt(subtotalText) || 0;
+    totalEl.textContent = formatRp(subtotal - (points * 1000));
+  });
+
+  fetchAvailablePoints();
 
   // ═══════════════════════════════════════════════════════
   // VOUCHER SYSTEM
@@ -336,6 +399,10 @@ import Footer from '../components/Footer.astro';
         finalTotal = Math.round(finalTotal * (100 - appliedDiscount) / 100);
         try { var v = JSON.parse(localStorage.getItem('topzone_voucher')); if (v) { v.used = true; localStorage.setItem('topzone_voucher', JSON.stringify(v)); } } catch(e) {}
       }
+      // Apply points discount
+      if (appliedPoints > 0) {
+        finalTotal = Math.max(0, finalTotal - (appliedPoints * 1000));
+      }
 
     const order = {
       id: orderId,
@@ -371,6 +438,19 @@ import Footer from '../components/Footer.astro';
         });
       } catch (refCompleteErr) {
         console.warn('Referral completion failed (non-blocking):', refCompleteErr);
+      }
+    }
+
+    // Deduct points (non-blocking)
+    if (appliedPoints > 0 && currentUser && currentUser.email) {
+      try {
+        await fetch('/api/user/spend-points', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points: appliedPoints, order_id: orderId }),
+        });
+      } catch (pointsErr) {
+        console.warn('Points deduction failed (non-blocking):', pointsErr);
       }
     }
   });
