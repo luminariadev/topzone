@@ -224,7 +224,32 @@ import Footer from '../components/Footer.astro';
       <div id="panel-settings" class="hidden space-y-6">
         <h2 class="text-3xl font-black">⚙️ Settings</h2>
         <div id="settings-content">
-          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading settings...</p></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="border-b-4 border-black bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 font-black text-sm">Email</th>
+                  <th class="px-4 py-3 font-black text-sm">Name</th>
+                  <th class="px-4 py-3 font-black text-sm">Role</th>
+                  <th class="px-4 py-3 font-black text-sm">Status</th>
+                  <th class="px-4 py-3 font-black text-sm">Last Login</th>
+                  <th class="px-4 py-3 font-black text-sm">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+                <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading admin users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="admin-users-pagination" class="flex justify-center gap-2 mt-4"></div>
+        </div>
+
+        <!-- System Health -->
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6 mb-6">
+          <h3 class="text-xl font-black mb-4">System Health</h3>
+          <div id="system-health-content">
+            <div class="text-center py-10"><p class="font-bold text-gray-500">Loading system health...</p></div>
+          </div>
         </div>
       </div>
 
@@ -338,6 +363,8 @@ import Footer from '../components/Footer.astro';
     audit: '/api/admin/audit-log',
     reports: '/api/admin/reports',
     dashboardStats: '/api/admin/dashboard-stats',
+    adminRoles: '/api/admin/admin-roles',
+    systemHealth: '/api/admin/system-health',
   };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
   const DEFAULT_GAMES = [
@@ -623,7 +650,7 @@ import Footer from '../components/Footer.astro';
       if (btn.dataset.tab === 'voucher-analytics') loadVoucherAnalytics();
       if (btn.dataset.tab === 'customers') loadCustomers();
       if (btn.dataset.tab === 'audit-log') loadAuditLogs();
-      if (btn.dataset.tab === 'settings') loadAdminUsers();
+      if (btn.dataset.tab === 'settings') loadAdminSettings();
     });
   });
 
@@ -1261,7 +1288,7 @@ import Footer from '../components/Footer.astro';
     await renderVouchers();
     await loadDashboardStats();
     await loadAuditLogs();
-    await loadAdminUsers();
+    await loadAdminSettings();
 
     // Add search/filter event listeners for games
     const gameSearch = document.getElementById('game-search-input');
