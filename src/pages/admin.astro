@@ -72,133 +72,104 @@ import Footer from '../components/Footer.astro';
 
       <!-- Nav Tabs -->
       <div class="flex flex-wrap gap-2 mb-6 border-b-4 border-black pb-2">
-        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-yellow shadow-[2px_2px_0px_0px_#000]" data-tab="games">&#x1F3AE; Games</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-neon-yellow shadow-[2px_2px_0px_0px_#000]" data-tab="dashboard">&#x1F4CA; Dashboard</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="games">&#x1F3AE; Games</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="gear">&#x1F3B5; Gear</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="orders">&#x1F4E6; Orders</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">&#x1F3B0; Vouchers</button>
-        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="reports">&#x1F4CA; Reports</button>
-        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="voucher-analytics">&#x1F4C8; Voucher Analytics</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="audit-log">&#x1F4DD; Audit Log</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="customers">&#x1F465; Customers</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="settings">&#x2699; Settings</button>
       </div>
 
-      <!-- GAMES -->
-      <div id="panel-games" class="space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-3xl font-black">&#x1F3AE; Games</h2>
-          <div class="flex gap-2">
-            <button id="game-export-csv" class="px-4 py-3 font-black text-sm border-2 border-black bg-blue-400 shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
-            <button id="game-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Game</button>
-          </div>
-        </div>
+      <!-- DASHBOARD -->
+      <div id="panel-dashboard" class="space-y-6">
+        <h2 class="text-3xl font-black">📊 Dashboard</h2>
         <div class="flex flex-wrap gap-3 items-center">
-          <input id="game-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="&#x1F50D; Cari game..." />
-          <select id="game-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
-            <option value="all">Semua Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
+          <label class="text-sm font-black uppercase tracking-wider text-gray-700">Periode:</label>
+          <select id="dashboard-period-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="today">Today</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month" selected>This Month</option>
+            <option value="quarter">This Quarter</option>
+            <option value="year">This Year</option>
           </select>
-          <span class="text-sm font-bold text-gray-500" id="game-count-label"></span>
         </div>
-        <div id="games-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
-        <div id="games-pagination" class="flex justify-center gap-2 mt-4"></div>
-      </div>
-
-      <!-- GEAR -->
-      <div id="panel-gear" class="hidden space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-3xl font-black">&#x1F3B5; Gear</h2>
-          <div class="flex gap-2">
-            <button id="gear-export-csv" class="px-4 py-3 font-black text-sm border-2 border-black bg-blue-400 shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
-            <button id="gear-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Gear</button>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Orders</p>
+            <p class="text-3xl font-black" id="dashboard-total-orders">0</p>
+            <p class="text-sm text-gray-400" id="dashboard-orders-trend"></p>
+          </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Revenue</p>
+            <p class="text-3xl font-black text-neon-pink" id="dashboard-total-revenue">Rp 0</p>
+            <p class="text-sm text-gray-400" id="dashboard-revenue-trend"></p>
+          </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Pending</p>
+            <p class="text-3xl font-black text-yellow-500" id="dashboard-pending-orders">0</p>
+          </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Selesai</p>
+            <p class="text-3xl font-black text-neon-green" id="dashboard-completed-orders">0</p>
           </div>
         </div>
-        <div class="flex flex-wrap gap-3 items-center">
-          <input id="gear-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="&#x1F50D; Cari gear..." />
-          <select id="gear-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
-            <option value="all">Semua Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
-          </select>
-          <span class="text-sm font-bold text-gray-500" id="gear-count-label"></span>
-        </div>
-        <div id="gear-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
-        <div id="gear-pagination" class="flex justify-center gap-2 mt-4"></div>
-      </div>
 
-      <!-- ORDERS -->
-      <div id="panel-orders" class="hidden space-y-6">
-        <h2 class="text-3xl font-black">&#x1F4E6; Orders</h2>
-        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="border-b-4 border-black bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 font-black text-sm">Order ID</th>
-                <th class="px-4 py-3 font-black text-sm">Pembeli</th>
-                <th class="px-4 py-3 font-black text-sm">Item</th>
-                <th class="px-4 py-3 font-black text-sm">Total</th>
-                <th class="px-4 py-3 font-black text-sm">Status</th>
-                <th class="px-4 py-3 font-black text-sm">Tanggal</th>
-                <th class="px-4 py-3 font-black text-sm">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="orders-table-body"></tbody>
-          </table>
-          <div id="orders-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada pesanan.</p></div>
-        </div>
-      </div>
-
-      <!-- VOUCHERS -->
-      <div id="panel-vouchers" class="hidden space-y-6">
-        <div class="flex justify-between items-center">
-          <h2 class="text-3xl font-black">&#x1F3B0; Vouchers</h2>
-          <button id="voucher-add-btn" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">+ Tambah Voucher</button>
-        </div>
-        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
-          <table class="w-full text-left">
-            <thead class="border-b-4 border-black bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 font-black text-sm">Kode</th>
-                <th class="px-4 py-3 font-black text-sm">Diskon</th>
-                <th class="px-4 py-3 font-black text-sm">Min. Belanja</th>
-                <th class="px-4 py-3 font-black text-sm">Digunakan</th>
-                <th class="px-4 py-3 font-black text-sm">Maks</th>
-                <th class="px-4 py-3 font-black text-sm">Status</th>
-                <th class="px-4 py-3 font-black text-sm">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="vouchers-table-body"></tbody>
-          </table>
-          <div id="vouchers-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada voucher.</p></div>
-        </div>
-      </div>
-
-      <!-- REPORTS -->
-      <div id="panel-reports" class="hidden space-y-6">
-        <h2 class="text-3xl font-black">&#x1F4CA; Reports</h2>
-        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
-          <h3 class="text-xl font-black mb-4">Laporan Transaksi</h3>
-          <div class="flex gap-3 mb-4">
-            <button id="export-csv" class="px-5 py-3 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">&#x1F4E5; Export CSV</button>
+        <!-- Additional Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Total Customers</p>
+            <p class="text-3xl font-black" id="dashboard-total-customers">0</p>
           </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Avg. Order Value</p>
+            <p class="text-3xl font-black" id="dashboard-avg-order-value">Rp 0</p>
+          </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Low Stock Items</p>
+            <p class="text-3xl font-black text-red-500" id="dashboard-low-stock">0</p>
+          </div>
+          <div class="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p class="text-xs font-black uppercase tracking-wider text-gray-500">Voucher Usage</p>
+            <p class="text-3xl font-black text-purple-500" id="dashboard-voucher-usage">0</p>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6 mb-6">
+          <h3 class="text-xl font-black mb-4">Recent Orders</h3>
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead class="border-b-4 border-black bg-gray-50">
                 <tr>
                   <th class="px-4 py-3 font-black text-sm">Order ID</th>
-                  <th class="px-4 py-3 font-black text-sm">Pelanggan</th>
-                  <th class="px-4 py-3 font-black text-sm">Item</th>
+                  <th class="px-4 py-3 font-black text-sm">Customer</th>
                   <th class="px-4 py-3 font-black text-sm">Total</th>
                   <th class="px-4 py-3 font-black text-sm">Status</th>
                   <th class="px-4 py-3 font-black text-sm">Tanggal</th>
                 </tr>
               </thead>
-              <tbody id="laporan-table-body"></tbody>
+              <tbody id="dashboard-recent-orders">
+                <tr><td colspan="5" class="text-center py-4 text-gray-500">Loading recent orders...</td></tr>
+              </tbody>
             </table>
-            <div id="laporan-empty" class="text-center py-12 hidden"><p class="text-xl font-black text-gray-400">Belum ada transaksi.</p></div>
           </div>
         </div>
+
+        <!-- Placeholder for charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
+            <h3 class="text-xl font-black mb-4">Daily Revenue</h3>
+            <canvas id="revenueChart" width="400" height="200"></canvas>
+          </div>
+          <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
+            <h3 class="text-xl font-black mb-4">Daily Orders</h3>
+            <canvas id="ordersChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
 
       <!-- VOUCHER ANALYTICS -->
       <div id="panel-voucher-analytics" class="hidden space-y-6">
@@ -213,6 +184,45 @@ import Footer from '../components/Footer.astro';
         <h2 class="text-3xl font-black">👥 Customers</h2>
         <div id="customers-content">
           <div class="text-center py-10"><p class="font-bold text-gray-500">Loading customer data...</p></div>
+        </div>
+      </div>
+
+      <!-- AUDIT LOG -->
+      <div id="panel-audit-log" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">📝 Audit Log</h2>
+        <div class="flex flex-wrap gap-3 items-center mb-4">
+          <input id="audit-log-search" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="🔍 Cari email atau entity ID..." />
+          <select id="audit-log-action" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="">Semua Action</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+            <option value="login">Login</option>
+            <option value="logout">Logout</option>
+          </select>
+          <select id="audit-log-entity" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="">Semua Entity</option>
+            <option value="game">Game</option>
+            <option value="gear">Gear</option>
+            <option value="order">Order</option>
+            <option value="voucher">Voucher</option>
+            <option value="customer">Customer</option>
+            <option value="review">Review</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button id="audit-log-filter-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">🔍 Filter</button>
+        </div>
+        <div id="audit-log-content">
+          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading audit logs...</p></div>
+        </div>
+        <div id="audit-log-pagination" class="flex justify-center gap-2 mt-4"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="panel-settings" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">⚙️ Settings</h2>
+        <div id="settings-content">
+          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading settings...</p></div>
         </div>
       </div>
 
@@ -325,6 +335,7 @@ import Footer from '../components/Footer.astro';
     vouchers: '/api/admin/vouchers',
     audit: '/api/admin/audit-log',
     reports: '/api/admin/reports',
+    dashboardStats: '/api/admin/dashboard-stats',
   };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
   const DEFAULT_GAMES = [
@@ -600,14 +611,17 @@ import Footer from '../components/Footer.astro';
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach((b) => { b.style.background = '#fff'; });
       btn.style.background = '#39FF14';
-      ['games','gear','orders','vouchers','reports','voucher-analytics','customers'].forEach((p) => {
+      ['dashboard', 'games','gear','orders','vouchers','audit-log','customers','settings'].forEach((p) => {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
 
       // Load data for newly opened panels
+      if (btn.dataset.tab === 'dashboard') loadDashboardStats();
       if (btn.dataset.tab === 'voucher-analytics') loadVoucherAnalytics();
       if (btn.dataset.tab === 'customers') loadCustomers();
+      if (btn.dataset.tab === 'audit-log') loadAuditLogs();
+      if (btn.dataset.tab === 'settings') loadAdminUsers();
     });
   });
 
@@ -1152,61 +1166,6 @@ import Footer from '../components/Footer.astro';
   }
 
   // -------------------------------------------------------
-  // LAPORAN
-  // -------------------------------------------------------
-
-  async function renderLaporan() {
-    var orders = await getAllOrders();
-    var totalOrders = orders.length;
-    var totalRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
-    var pending = orders.filter(function(o) { return o.status === 'pending'; }).length;
-    var completed = orders.filter(function(o) { return o.status === 'completed'; }).length;
-    var totalOrders = orders.length;
-    var totalRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
-    var pending = orders.filter(function(o) { return o.status === 'pending'; }).length;
-    var completed = orders.filter(function(o) { return o.status === 'completed'; }).length;
-
-    document.getElementById('laporan-total-orders').textContent = totalOrders;
-    document.getElementById('laporan-total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
-    document.getElementById('laporan-pending').textContent = pending;
-    document.getElementById('laporan-completed').textContent = completed;
-
-    var tbody = document.getElementById('laporan-table-body');
-    var empty = document.getElementById('laporan-empty');
-    if (orders.length === 0) {
-      tbody.innerHTML = '';
-      empty.classList.remove('hidden');
-      return;
-    }
-    empty.classList.add('hidden');
-    tbody.innerHTML = orders.map(function(o) {
-      return '<tr class="border-b-2 border-black/10 hover:bg-gray-50">' +
-        '<td class="px-4 py-3 font-bold text-sm">' + (o.id||'') + '</td>' +
-        '<td class="px-4 py-3 font-bold text-sm">' + (o.name||'') + '</td>' +
-        '<td class="px-4 py-3 text-sm">' + (o.items?o.items.length:0) + ' item</td>' +
-        '<td class="px-4 py-3 font-black text-neon-pink text-sm">' + formatRp(o.total) + '</td>' +
-        '<td class="px-4 py-3">' + statusBadge(o.status) + '</td>' +
-        '<td class="px-4 py-3 text-xs text-gray-500">' + (o.createdAt ? new Date(o.createdAt).toLocaleDateString('id-ID') : '-') + '</td></tr>';
-    }).join('');
-  }
-
-  // EXPORT CSV
-  document.getElementById('export-csv')?.addEventListener('click', async function() {
-    const orders = await getAllOrders();
-    if (orders.length === 0) { alert('Tidak ada data transaksi untuk di-export.'); return; }
-    var csv = '\uFEFFID Order,Pelanggan,Email,Item,Total,Status,Pembayaran,Tanggal\n';
-    orders.forEach(function(o) {
-      csv += (o.id||'') + ',' + (o.customer_name||o.name||'').replace(/,/g,' ') + ',' + (o.customer_email||o.userEmail||'') + ',' + (o.order_items||o.items? (o.order_items||o.items).length:0) + ' item' + ',' + (o.total||0) + ',' + (o.status||'') + ',' + (o.payment_method||o.payment||'') + ',' + (o.created_at||o.createdAt||'') + '\n';
-    });
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    var link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'topzone-laporan-' + new Date().toISOString().slice(0,10) + '.csv';
-    link.click();
-    alert('Laporan berhasil di-download!');
-  });
-
-  // -------------------------------------------------------
   // VOUCHERS CRUD
   // -------------------------------------------------------
 
@@ -1297,8 +1256,10 @@ import Footer from '../components/Footer.astro';
     await renderGames();
     await renderGear();
     await renderOrders();
-    await renderLaporan();
     await renderVouchers();
+    await loadDashboardStats();
+    await loadAuditLogs();
+    await loadAdminUsers();
 
     // Add search/filter event listeners for games
     const gameSearch = document.getElementById('game-search-input');
