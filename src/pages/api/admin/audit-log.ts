@@ -3,8 +3,13 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
+import { verifyAdminAuth, createSuccessResponse, createErrorResponse, requireRole } from '../../../lib/admin-auth';
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, cookies }) => {
+  const authResult = await verifyAdminAuth({ request: new Request('http://localhost'), cookies });
+  if (!authResult.success) return createErrorResponse(authResult.error || 'Unauthorized', authResult.status);
+  // Only admins/super_admins can view audit logs (staff cannot)
+  if (!requireRole(authResult.admin, 'admin')) return createErrorResponse('Admin access required', 403);
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
   const offset = parseInt(url.searchParams.get('offset') || '0');
   const adminEmail = url.searchParams.get('admin');
@@ -56,10 +61,12 @@ export const GET: APIRoute = async ({ url }) => {
   }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
+  // No auth needed for POST, as it's used for logging all admin actions (even failed logins).
+  // But ensure the log entry itself has admin_email for accountability.
   const log = await request.json();
   if (!log.admin_email || !log.action || !log.entity_type) {
-    return new Response(JSON.stringify({ error: 'admin_email, action, entity_type required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return createErrorResponse('admin_email, action, entity_type required', 400);
   }
   if (supabase) {
     const { error } = await supabase.from('audit_log').insert({
@@ -71,12 +78,16 @@ export const POST: APIRoute = async ({ request }) => {
       ip_address: log.ip_address || null,
       created_at: new Date().toISOString(),
     });
-    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    if (error) return createErrorResponse(error.message, 500);
   }
-  return new Response(JSON.stringify({ success: true }), { status: 201, headers: { 'Content-Type': 'application/json' } });
+  return createSuccessResponse({ success: true }, 201);
 };
 
-export const DELETE: APIRoute = async ({ url }) => {
+export const DELETE: APIRoute = async ({ url, cookies }) => {
+  const authResult = await verifyAdminAuth({ request: new Request('http://localhost'), cookies });
+  if (!authResult.success) return createErrorResponse(authResult.error || 'Unauthorized', authResult.status);
+  if (!requireRole(authResult.admin, 'super_admin')) return createErrorResponse('Super Admin access required', 403);
+
   const id = url.searchParams.get('id');
   const days = url.searchParams.get('days');
 
