@@ -7,7 +7,7 @@ export interface AdminUser {
   id: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'super_admin';
+  role: 'admin' | 'super_admin' | 'staff';
   is_active: boolean;
 }
 
