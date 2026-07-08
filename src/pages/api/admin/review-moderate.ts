@@ -1,28 +1,33 @@
 // src/pages/api/admin/review-moderate.ts
+// Admin review moderation API - approve/reject reviews with admin reply
+// Called from admin panel via fetch('/api/admin/review-moderate')
+// Data schema: reviews table with id, status, admin_reply, admin_replied_at, updated_at
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabase';
+import { verifyAdminAuth, createSuccessResponse, createErrorResponse, requireRole } from '../../../lib/admin-auth';
 
-export const POST: APIRoute = async ({ request }) => {
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const { data: adminCheck } = await supabase.from('admins').select('email').eq('email', user.email).single();
-  if (!adminCheck) return new Response(JSON.stringify({ error: 'Admin access required' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+export const POST: APIRoute = async ({ request, cookies }) => {
+  const authResult = await verifyAdminAuth({ request: new Request('http://localhost'), cookies });
+  if (!authResult.success) return createErrorResponse(authResult.error || 'Unauthorized', authResult.status);
+  if (!requireRole(authResult.admin, 'admin')) return createErrorResponse('Admin access required', 403);
+  if (!supabase) return createErrorResponse('Supabase not configured', 503);
 
   try {
     const body = await request.json();
     const { review_id, action, admin_reply } = body;
     if (!review_id || !action) {
-      return new Response(JSON.stringify({ error: 'Missing required fields: review_id, action' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      return createErrorResponse('Missing required fields: review_id, action', 400);
     }
     const status = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'pending';
 
-    const update: Record<string, any> = { status, updated_at: new Date().toISOString() };
+    const update: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
     if (admin_reply) { update.admin_reply = admin_reply; update.admin_replied_at = new Date().toISOString(); }
 
     const { error } = await supabase.from('reviews').update(update).eq('id', review_id);
-    if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    if (error) return createErrorResponse(error.message, 500);
+    return createSuccessResponse({ success: true });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    return createErrorResponse('Internal server error', 500);
   }
 };
