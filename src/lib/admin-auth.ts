@@ -66,10 +66,18 @@ export async function verifyAdminAuth(context: APIContext): Promise<AdminAuthRes
 
 /**
  * Check if admin has required role
+ * - super_admin: full access to everything
+ * - admin: can manage CRUD, orders, customers, vouchers, audit logs
+ * - staff: can only view dashboard, orders, customers (read-only)
  */
-export function requireRole(admin: AdminUser, requiredRole: 'admin' | 'super_admin'): boolean {
-  if (requiredRole === 'super_admin') return admin.role === 'super_admin';
-  return admin.role === 'admin' || admin.role === 'super_admin';
+export function requireRole(admin: AdminUser, requiredRole: 'admin' | 'super_admin' | 'staff'): boolean {
+  if (!admin) return false;
+  // staff role has read-only access
+  if (requiredRole === 'staff') return admin.role === 'staff' || admin.role === 'admin' || admin.role === 'super_admin';
+  // admin role requires admin or super_admin
+  if (requiredRole === 'admin') return admin.role === 'admin' || admin.role === 'super_admin';
+  // super_admin requires super_admin
+  return admin.role === 'super_admin';
 }
 
 /**
