@@ -165,6 +165,7 @@ export async function logAdminAction(
       created_at: new Date().toISOString(),
     });
   } catch (err) {
+    // Silently fail
     console.warn('[audit-log] Failed to log admin action:', err);
   }
 }
