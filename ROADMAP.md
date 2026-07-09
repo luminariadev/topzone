@@ -840,19 +840,15 @@ Hari ke: 17 / ___
 
 | # | Commit | Scope | Selesai? |
 |:-:|--------|-------|:--------:|
-| 1 | feat(admin): add complete admin panel UI with all management panels | admin | ✅ |
-| 2 | feat(admin): add customer export, ban, cleanup, payment config, data backup APIs | admin | ✅ |
+| 1 | feat(admin): add complete admin panel UI with games/gear/orders/vouchers panels | admin | ✅ |
+| 2 | feat(admin): add customer export, ban, audit cleanup, payment config, data backup APIs | admin | ✅ |
 | 3 | feat(admin): add 7 APIs (notifications, 2FA, IP restriction, reports, segments, canned) | admin | ✅ |
-| 4 | feat(db): add admin v2 migration for 2FA, IP restrictions, security & stock history | admin | ✅ |
+| 4 | feat(db): add admin v2 migration (2FA, IP restrictions, security & stock history) | admin | ✅ |
 | 5 | feat(auth): add admin activity logging middleware with IP capture | admin | ✅ |
-| 6 | feat(admin): add admin notification system with badge and real-time count | admin | ✅ |
-| 7 | feat(admin): add login history tracking and admin activity dashboard | admin | ✅ |
-| 8 | feat(admin): add customer groups/segment management and canned responses API | admin | ✅ |
-| 9 | feat(admin): add admin scheduled report configuration and data backup | admin | ✅ |
-| 10 | fix(admin): add review moderation UI, customer detail modal, and email config | admin | ✅ |
+| 6 | docs(roadmap): update progress for 2026-07-10 (6 commits, Phase 4 at 80%) | admin | ✅ |
 
-Total commit hari ini: 10/10 ✅
-Target tercapai? 🟢 Done
+Total commit hari ini: 6/10 ⏳
+Target tercapai? 🟡 Akan ditambah
 ```
 
 ### Grafik Progress (per Fase)
