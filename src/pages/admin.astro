@@ -79,7 +79,9 @@ import Footer from '../components/Footer.astro';
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="gear">&#x1F3B5; Gear</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="orders">&#x1F4E6; Orders</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="vouchers">&#x1F3B0; Vouchers</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="voucher-analytics">&#x1F4CA; Voucher Analytics</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="audit-log">&#x1F4DD; Audit Log</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="reviews">&#x2B50; Reviews</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="customers">&#x1F465; Customers</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="settings">&#x2699; Settings</button>
       </div>
@@ -173,6 +175,107 @@ import Footer from '../components/Footer.astro';
         </div>
       </div>
 
+      <!-- GAMES -->
+      <div id="panel-games" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">🎮 Games</h2>
+        <div class="flex flex-wrap gap-3 items-center mb-4">
+          <input id="game-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="🔍 Cari game..." />
+          <select id="game-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="all">Semua Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+          <span id="game-count-label" class="text-sm font-bold text-gray-500"></span>
+          <button id="game-add-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">+ Tambah Game</button>
+          <button id="game-export-csv" class="px-5 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">📥 CSV</button>
+        </div>
+        <div id="games-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="col-span-full text-center py-12 border-4 border-dashed border-black">
+            <p class="text-xl font-black text-gray-400">Loading games...</p>
+          </div>
+        </div>
+        <div id="games-pagination" class="flex justify-center gap-2 mt-4"></div>
+      </div>
+
+      <!-- GEAR -->
+      <div id="panel-gear" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">🎧 Gear</h2>
+        <div class="flex flex-wrap gap-3 items-center mb-4">
+          <input id="gear-search-input" class="flex-1 min-w-[200px] px-4 py-2 border-3 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000]" placeholder="🔍 Cari gear..." />
+          <select id="gear-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="all">Semua Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+          <span id="gear-count-label" class="text-sm font-bold text-gray-500"></span>
+          <button id="gear-add-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">+ Tambah Gear</button>
+          <button id="gear-export-csv" class="px-5 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">📥 CSV</button>
+        </div>
+        <div id="gear-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="col-span-full text-center py-12 border-4 border-dashed border-black">
+            <p class="text-xl font-black text-gray-400">Loading gear...</p>
+          </div>
+        </div>
+        <div id="gear-pagination" class="flex justify-center gap-2 mt-4"></div>
+      </div>
+
+      <!-- ORDERS -->
+      <div id="panel-orders" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">📦 Orders</h2>
+        <div id="orders-empty" class="hidden text-center py-12 border-4 border-dashed border-black">
+          <p class="text-xl font-black text-gray-400">Belum ada orders.</p>
+        </div>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="border-b-4 border-black bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 font-black text-sm">Order ID</th>
+                <th class="px-4 py-3 font-black text-sm">Customer</th>
+                <th class="px-4 py-3 font-black text-sm">Items</th>
+                <th class="px-4 py-3 font-black text-sm">Total</th>
+                <th class="px-4 py-3 font-black text-sm">Status</th>
+                <th class="px-4 py-3 font-black text-sm">Tanggal</th>
+                <th class="px-4 py-3 font-black text-sm">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading orders...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VOUCHERS -->
+      <div id="panel-vouchers" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">🎰 Vouchers</h2>
+        <div class="flex justify-end mb-4">
+          <button id="voucher-add-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">+ Tambah Voucher</button>
+        </div>
+        <div id="vouchers-empty" class="hidden text-center py-12 border-4 border-dashed border-black">
+          <p class="text-xl font-black text-gray-400">Belum ada voucher.</p>
+        </div>
+        <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="border-b-4 border-black bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 font-black text-sm">Kode</th>
+                <th class="px-4 py-3 font-black text-sm">Diskon</th>
+                <th class="px-4 py-3 font-black text-sm">Min. Belanja</th>
+                <th class="px-4 py-3 font-black text-sm">Used</th>
+                <th class="px-4 py-3 font-black text-sm">Max Uses</th>
+                <th class="px-4 py-3 font-black text-sm">Status</th>
+                <th class="px-4 py-3 font-black text-sm">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="vouchers-table-body">
+              <tr><td colspan="7" class="text-center py-4 text-gray-500">Loading vouchers...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- VOUCHER ANALYTICS -->
       <div id="panel-voucher-analytics" class="hidden space-y-6">
         <h2 class="text-3xl font-black">📈 Voucher Analytics</h2>
@@ -213,6 +316,7 @@ import Footer from '../components/Footer.astro';
             <option value="admin">Admin</option>
           </select>
           <button id="audit-log-filter-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">🔍 Filter</button>
+          <button id="audit-log-export" class="px-5 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">📥 Export</button>
         </div>
         <div id="audit-log-content">
           <div class="text-center py-10"><p class="font-bold text-gray-500">Loading audit logs...</p></div>
@@ -220,39 +324,119 @@ import Footer from '../components/Footer.astro';
         <div id="audit-log-pagination" class="flex justify-center gap-2 mt-4"></div>
       </div>
 
+      <!-- REVIEW MODERATION -->
+      <div id="panel-reviews" class="hidden space-y-6">
+        <h2 class="text-3xl font-black">⭐ Review Moderation</h2>
+        <div class="flex flex-wrap gap-3 items-center mb-4">
+          <select id="review-status-filter" class="px-4 py-2 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="all">Semua</option>
+          </select>
+          <button id="review-refresh-btn" class="px-5 py-2 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">🔄 Refresh</button>
+        </div>
+        <div id="reviews-content">
+          <div class="text-center py-10"><p class="font-bold text-gray-500">Loading reviews...</p></div>
+        </div>
+        <div id="review-pagination" class="flex justify-center gap-2 mt-4"></div>
+      </div>
+
       <!-- SETTINGS -->
       <div id="panel-settings" class="hidden space-y-6">
         <h2 class="text-3xl font-black">⚙️ Settings</h2>
-        <div id="settings-content">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left">
-              <thead class="border-b-4 border-black bg-gray-50">
-                <tr>
-                  <th class="px-4 py-3 font-black text-sm">Email</th>
-                  <th class="px-4 py-3 font-black text-sm">Name</th>
-                  <th class="px-4 py-3 font-black text-sm">Role</th>
-                  <th class="px-4 py-3 font-black text-sm">Status</th>
-                  <th class="px-4 py-3 font-black text-sm">Last Login</th>
-                  <th class="px-4 py-3 font-black text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="admin-users-table-body">
-                <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading admin users...</td></tr>
-              </tbody>
-            </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Admin Users -->
+          <div class="lg:col-span-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
+            <h3 class="text-xl font-black mb-4">👤 Admin Users</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead class="border-b-4 border-black bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-3 font-black text-sm">Email</th>
+                    <th class="px-4 py-3 font-black text-sm">Name</th>
+                    <th class="px-4 py-3 font-black text-sm">Role</th>
+                    <th class="px-4 py-3 font-black text-sm">Status</th>
+                    <th class="px-4 py-3 font-black text-sm">Last Login</th>
+                    <th class="px-4 py-3 font-black text-sm">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body">
+                  <tr><td colspan="6" class="text-center py-4 text-gray-500">Loading admin users...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="admin-users-pagination" class="flex justify-center gap-2 mt-4"></div>
+
+            <!-- Invite Form -->
+            <div class="mt-6 border-t-2 border-black pt-4">
+              <h4 class="font-black text-sm mb-3">👋 Invite New Admin</h4>
+              <div class="flex flex-wrap gap-3">
+                <input id="invite-email" class="flex-1 min-w-[200px] px-3 py-2 border-3 border-black font-bold text-sm" placeholder="email@example.com" />
+                <input id="invite-name" class="flex-1 min-w-[150px] px-3 py-2 border-3 border-black font-bold text-sm" placeholder="Full Name" />
+                <select id="invite-role" class="px-3 py-2 border-3 border-black font-bold text-sm bg-white">
+                  <option value="staff">Staff</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                </select>
+                <button id="invite-admin-btn" class="px-5 py-2 font-black border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none transition-all">Invite</button>
+              </div>
+              <div id="invite-message" class="hidden mt-2 px-4 py-2 font-bold text-sm"></div>
+            </div>
           </div>
-          <div id="admin-users-pagination" class="flex justify-center gap-2 mt-4"></div>
+
+          <!-- Email Config -->
+          <div class="lg:col-span-1 border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6">
+            <h3 class="text-xl font-black mb-4">📧 Email Config</h3>
+            <form id="email-config-form" class="space-y-3">
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">SMTP Host</label><input id="email-smtp-host" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">SMTP Port</label><input id="email-smtp-port" type="number" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">SMTP User</label><input id="email-smtp-user" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">SMTP Pass</label><input id="email-smtp-pass" type="password" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">From Email</label><input id="email-smtp-from" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <div><label class="text-xs font-black uppercase tracking-wider block mb-1">From Name</label><input id="email-smtp-from_name" class="w-full px-3 py-2 border-3 border-black font-bold text-sm" /></div>
+              <button type="submit" class="w-full py-3 font-black bg-neon-green border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">💾 Save Config</button>
+            </form>
+            <button id="email-test-btn" class="w-full mt-2 py-3 font-black bg-yellow-400 border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">✉️ Test Email</button>
+            <div id="email-config-msg" class="mt-2 px-3 py-2 font-bold text-xs"></div>
+          </div>
         </div>
 
         <!-- System Health -->
         <div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-6 mb-6">
-          <h3 class="text-xl font-black mb-4">System Health</h3>
+          <h3 class="text-xl font-black mb-4">🩺 System Health</h3>
           <div id="system-health-content">
             <div class="text-center py-10"><p class="font-bold text-gray-500">Loading system health...</p></div>
           </div>
         </div>
       </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Customer Detail -->
+  <div id="customer-detail-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-black p-6 w-full max-w-3xl shadow-[8px_8px_0px_0px_#000] max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-black">👤 Customer Detail</h3>
+        <button id="customer-detail-close" class="px-4 py-2 font-black border-2 border-black bg-gray-200 hover:bg-black hover:text-white transition-all">✕</button>
+      </div>
+      <div id="customer-detail-content">
+        <div class="text-center py-10"><p class="font-bold text-gray-500">Loading customer...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Review Reply -->
+  <div id="review-reply-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-black p-6 w-full max-w-lg shadow-[8px_8px_0px_0px_#000]">
+      <h3 class="text-2xl font-black mb-4">💬 Reply to Review</h3>
+      <p class="font-bold text-sm text-gray-500 mb-2" id="review-reply-info"></p>
+      <textarea id="review-reply-text" rows="4" class="w-full px-3 py-2 border-3 border-black font-bold text-sm mb-4" placeholder="Tulis balasan admin..."></textarea>
+      <div class="flex gap-3">
+        <button id="review-reply-submit" class="flex-1 py-3 font-black bg-neon-green border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">Kirim Balasan</button>
+        <button id="review-reply-close" class="flex-1 py-3 font-black bg-gray-200 border-2 border-black">Batal</button>
       </div>
     </div>
   </div>
@@ -365,6 +549,7 @@ import Footer from '../components/Footer.astro';
     dashboardStats: '/api/admin/dashboard-stats',
     adminRoles: '/api/admin/admin-roles',
     systemHealth: '/api/admin/system-health',
+    reviews: '/api/admin/reviews',
   };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
   const DEFAULT_GAMES = [
@@ -640,16 +825,21 @@ import Footer from '../components/Footer.astro';
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach((b) => { b.style.background = '#fff'; });
       btn.style.background = '#39FF14';
-      ['dashboard', 'games','gear','orders','vouchers','audit-log','customers','settings'].forEach((p) => {
+      ['dashboard', 'games','gear','orders','vouchers','voucher-analytics','audit-log','customers','reviews','settings'].forEach((p) => {
         document.getElementById('panel-' + p).classList.add('hidden');
       });
       document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
 
       // Load data for newly opened panels
       if (btn.dataset.tab === 'dashboard') loadDashboardStats();
+      if (btn.dataset.tab === 'games') renderGames();
+      if (btn.dataset.tab === 'gear') renderGear();
+      if (btn.dataset.tab === 'orders') renderOrders();
+      if (btn.dataset.tab === 'vouchers') renderVouchers();
       if (btn.dataset.tab === 'voucher-analytics') loadVoucherAnalytics();
       if (btn.dataset.tab === 'customers') loadCustomers();
       if (btn.dataset.tab === 'audit-log') loadAuditLogs();
+      if (btn.dataset.tab === 'reviews') loadReviews();
       if (btn.dataset.tab === 'settings') loadAdminSettings();
     });
   });
@@ -721,6 +911,122 @@ import Footer from '../components/Footer.astro';
   }
 
   // ═══════════════════════════════════════════════════════
+  // DASHBOARD STATS
+  // ═══════════════════════════════════════════════════════
+  let dashboardChartInstance = null;
+
+  async function loadDashboardStats() {
+    const period = document.getElementById('dashboard-period-filter')?.value || 'month';
+    try {
+      const resp = await fetch(API.dashboardStats + '?period=' + period);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+      const s = data.stats;
+
+      // Update stats cards
+      document.getElementById('dashboard-total-orders').textContent = s.totalOrders;
+      document.getElementById('dashboard-total-revenue').textContent = formatRp(s.totalRevenue);
+      document.getElementById('dashboard-pending-orders').textContent = s.pendingOrders;
+      document.getElementById('dashboard-completed-orders').textContent = s.completedOrders;
+      document.getElementById('dashboard-total-customers').textContent = s.totalCustomers;
+      document.getElementById('dashboard-avg-order-value').textContent = formatRp(s.avgOrderValue);
+      document.getElementById('dashboard-low-stock').textContent = s.lowStockCount;
+      document.getElementById('dashboard-voucher-usage').textContent = s.voucherUsageCount || 0;
+
+      // Trend arrows
+      const ordersTrendEl = document.getElementById('dashboard-orders-trend');
+      const revenueTrendEl = document.getElementById('dashboard-revenue-trend');
+      if (ordersTrendEl) {
+        ordersTrendEl.textContent = (s.ordersTrend >= 0 ? '📈 +' : '📉 ') + s.ordersTrend + '% vs prev';
+        ordersTrendEl.className = 'text-sm ' + (s.ordersTrend >= 0 ? 'text-neon-green' : 'text-red-500');
+      }
+      if (revenueTrendEl) {
+        revenueTrendEl.textContent = (s.revenueTrend >= 0 ? '📈 +' : '📉 ') + s.revenueTrend + '% vs prev';
+        revenueTrendEl.className = 'text-sm ' + (s.revenueTrend >= 0 ? 'text-neon-green' : 'text-red-500');
+      }
+
+      // Recent orders
+      const recentTbody = document.getElementById('dashboard-recent-orders');
+      if (s.recentOrders && s.recentOrders.length > 0) {
+        recentTbody.innerHTML = s.recentOrders.map(o => '<tr class="border-b border-gray-200 hover:bg-gray-50">' +
+          '<td class="px-4 py-3 font-bold text-sm">' + (o.id||'') + '</td>' +
+          '<td class="px-4 py-3 font-bold text-sm">' + (o.customer||'') + '</td>' +
+          '<td class="px-4 py-3 font-black text-neon-pink text-sm">' + formatRp(o.total) + '</td>' +
+          '<td class="px-4 py-3">' + statusBadge(o.status) + '</td>' +
+          '<td class="px-4 py-3 text-sm text-gray-500">' + new Date(o.created_at).toLocaleDateString('id-ID') + '</td></tr>').join('');
+      } else {
+        recentTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No orders yet</td></tr>';
+      }
+
+      // Charts
+      if (s.dailyChart && s.dailyChart.length > 0) {
+        renderDashboardCharts(s.dailyChart);
+      }
+
+      // Update header stats too
+      const allOrders = await getAllOrders();
+      document.getElementById('laporan-total-orders').textContent = allOrders.length;
+      document.getElementById('laporan-total-revenue').textContent = formatRp(allOrders.reduce((a,o) => a + (o.total||0), 0));
+      document.getElementById('laporan-pending').textContent = allOrders.filter(o => o.status === 'pending').length;
+      document.getElementById('laporan-completed').textContent = allOrders.filter(o => o.status === 'completed').length;
+    } catch(e) {
+      console.warn('Dashboard stats load failed:', e);
+    }
+  }
+
+  function renderDashboardCharts(chartData) {
+    const labels = chartData.map(d => d.date.slice(5));
+    const revenueData = chartData.map(d => d.revenue);
+    const ordersData = chartData.map(d => d.orders);
+
+    const revenueCtx = document.getElementById('revenueChart');
+    const ordersCtx = document.getElementById('ordersChart');
+    if (!revenueCtx || !ordersCtx) return;
+
+    // Destroy existing chart
+    if (dashboardChartInstance) {
+      dashboardChartInstance.destroy();
+    }
+
+    // Simple inline bar chart using canvas (no Chart.js dependency)
+    function drawBarChart(canvas, data, label, color) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const max = Math.max(...data, 1);
+      const pad = 40, barW = Math.max(2, (w - pad * 2) / data.length - 2);
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, color + '40');
+      data.forEach((v, i) => {
+        const x = pad + i * (barW + 2);
+        const barH = (v / max) * (h - 50);
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, h - 20 - barH, barW, barH);
+        ctx.fillStyle = '#000';
+        ctx.font = '8px monospace';
+        ctx.fillText(i % 5 === 0 ? chartData[i].date.slice(5) : '', x, h - 5);
+      });
+      // Value labels on top of tallest bars
+      data.forEach((v, i) => {
+        const x = pad + i * (barW + 2);
+        const barH = (v / max) * (h - 50);
+        if (v > 0 && (i === 0 || i === data.length - 1 || v === max)) {
+          ctx.fillStyle = '#000';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillText(v >= 1000 ? Math.round(v/1000) + 'k' : v, x, h - 22 - barH);
+        }
+      });
+    }
+
+    drawBarChart(revenueCtx, revenueData, 'Revenue', '#FF007F');
+    drawBarChart(ordersCtx, ordersData, 'Orders', '#39FF14');
+  }
+
+  // Period filter change
+  document.getElementById('dashboard-period-filter')?.addEventListener('change', loadDashboardStats);
+
+  // ═══════════════════════════════════════════════════════
   // CUSTOMERS
   // ═══════════════════════════════════════════════════════
   async function loadCustomers() {
@@ -785,9 +1091,395 @@ import Footer from '../components/Footer.astro';
     }
   }
 
-  window.viewCustomerDetail = function(email) {
-    alert('Customer detail view for: ' + email + '\n(Coming soon in next update)');
+  // ═══════════════════════════════════════════════════════
+  // CUSTOMER DETAIL (Replace alert with real modal)
+  // ═══════════════════════════════════════════════════════
+  window.viewCustomerDetail = async function(email) {
+    const modal = document.getElementById('customer-detail-modal');
+    const content = document.getElementById('customer-detail-content');
+    modal.classList.remove('hidden');
+    content.innerHTML = '<div class="text-center py-10"><p class="font-bold text-gray-500">Loading customer...</p></div>';
+    try {
+      const resp = await fetch('/api/admin/customer-detail?email=' + encodeURIComponent(email));
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+      const c = data.customer;
+
+      const tierColor = { bronze: '#CD7F32', silver: '#C0C0C0', gold: '#FFD700', platinum: '#E5E4E2' };
+
+      content.innerHTML = `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div class="border-2 border-black p-3">
+            <p class="text-xs font-black text-gray-500">Total Orders</p>
+            <p class="text-2xl font-black">${c.totalOrders}</p>
+          </div>
+          <div class="border-2 border-black p-3">
+            <p class="text-xs font-black text-gray-500">Total Spent</p>
+            <p class="text-2xl font-black text-neon-pink">${formatRp(c.totalSpent)}</p>
+          </div>
+          <div class="border-2 border-black p-3">
+            <p class="text-xs font-black text-gray-500">Tier</p>
+            <p class="text-2xl font-black" style="color:${tierColor[c.tier] || '#8B4513'}">${c.tier}</p>
+          </div>
+          <div class="border-2 border-black p-3">
+            <p class="text-xs font-black text-gray-500">Points</p>
+            <p class="text-2xl font-black">${c.points || 0}</p>
+          </div>
+        </div>
+
+        <h4 class="font-black mb-2">Recent Orders (${c.orders.length})</h4>
+        <div class="max-h-40 overflow-y-auto mb-4 border-2 border-black">
+          ${c.orders.length > 0 ? c.orders.map(o => '<div class="flex justify-between px-3 py-2 border-b border-gray-200 text-sm">' +
+            '<span class="font-bold">#' + (o.id||'').slice(0,8) + '</span>' +
+            '<span class="text-neon-pink font-black">' + formatRp(o.total) + '</span>' +
+            statusBadge(o.status) +
+            '<span class="text-gray-500">' + new Date(o.created_at).toLocaleDateString('id-ID') + '</span></div>').join('') :
+            '<p class="text-center py-2 text-gray-500">No orders</p>'}
+        </div>
+
+        <h4 class="font-black mb-2">Reviews (${c.reviews.length})</h4>
+        <div class="max-h-32 overflow-y-auto mb-4 border-2 border-black p-2">
+          ${c.reviews.length > 0 ? c.reviews.map(r => '<div class="border-b border-gray-200 py-1 text-sm"><strong>' + (r.rating||0) + '★</strong> ' + (r.content||'').slice(0,100) + '</div>').join('') :
+            '<p class="text-center py-2 text-gray-500">No reviews</p>'}
+        </div>
+
+        <h4 class="font-black mb-2">Vouchers (${c.vouchers.length})</h4>
+        <div class="max-h-32 overflow-y-auto mb-4 border-2 border-black p-2">
+          ${c.vouchers.length > 0 ? c.vouchers.map(v => '<div class="border-b border-gray-200 py-1 text-sm"><span class="font-black">' + v.vouchers?.code || v.code + '</span> — Used: ' + (v.used_at ? new Date(v.used_at).toLocaleDateString('id-ID') : 'Claimed') + '</div>').join('') :
+            '<p class="text-center py-2 text-gray-500">No vouchers</p>'}
+        </div>
+
+        <h4 class="font-black mb-2">Referrals (${c.referrals.length})</h4>
+        <div class="max-h-24 overflow-y-auto border-2 border-black p-2">
+          ${c.referrals.length > 0 ? c.referrals.map(r => '<div class="border-b border-gray-200 py-1 text-sm"><span>' + (r.referred_email||'-') + '</span> — <span class="font-bold">' + (r.status||'') + '</span></div>').join('') :
+            '<p class="text-center py-2 text-gray-500">No referrals</p>'}
+        </div>
+      `;
+    } catch(e) {
+      content.innerHTML = '<p class="text-red-500 font-bold">Error: ' + e.message + '</p>';
+    }
   };
+
+  document.getElementById('customer-detail-close')?.addEventListener('click', () => {
+    document.getElementById('customer-detail-modal').classList.add('hidden');
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // REVIEW MODERATION
+  // ═══════════════════════════════════════════════════════
+  let reviewFilter = 'pending';
+  let reviewPageNum = 1;
+
+  async function loadReviews() {
+    const content = document.getElementById('reviews-content');
+    try {
+      const resp = await fetch('/api/admin/reviews?status=' + reviewFilter + '&limit=20&offset=' + ((reviewPageNum-1)*20));
+      const data = await resp.json();
+
+      if (!data.reviews || data.reviews.length === 0) {
+        content.innerHTML = '<div class="text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Tidak ada review dengan status ini.</p></div>';
+        return;
+      }
+
+      content.innerHTML = data.reviews.map(r => '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] p-4 mb-4">' +
+        '<div class="flex justify-between items-start mb-2">' +
+        '<div><p class="font-bold text-sm">' + (r.user_email||'Anonymous') + '</p><p class="text-xs text-gray-500">' + new Date(r.created_at).toLocaleDateString('id-ID') + '</p></div>' +
+        '<div class="flex items-center gap-2"><span class="text-xl">' + '★'.repeat(r.rating||0) + '☆'.repeat(5-(r.rating||0)) + '</span>' +
+        '<span class="px-2 py-1 text-xs font-black border-2 border-black ' + (r.status === 'approved' ? 'bg-neon-green' : r.status === 'rejected' ? 'bg-red-400 text-white' : 'bg-yellow-400') + '">' + (r.status||'pending') + '</span></div></div>' +
+        '<p class="text-sm mb-2">' + (r.content||'') + '</p>' +
+        '<div class="flex gap-2">' +
+        (r.status !== 'approved' ? '<button class="review-approve px-3 py-1 text-xs font-black border-2 border-black bg-neon-green hover:shadow-none transition-all" data-id="' + r.id + '">✓ Approve</button>' : '') +
+        (r.status !== 'rejected' ? '<button class="review-reject px-3 py-1 text-xs font-black border-2 border-black bg-red-400 text-white hover:shadow-none transition-all" data-id="' + r.id + '">✕ Reject</button>' : '') +
+        '<button class="review-reply px-3 py-1 text-xs font-black border-2 border-black bg-blue-400 text-white hover:shadow-none transition-all" data-id="' + r.id + '" data-email="' + (r.user_email||'') + '">💬 Reply</button></div>' +
+        (r.admin_reply ? '<div class="mt-2 pl-3 border-l-4 border-black bg-gray-50 p-2"><p class="text-xs font-bold">Admin Reply:</p><p class="text-sm">' + r.admin_reply + '</p></div>' : '') + '</div>').join('');
+
+      // Wire up approve/reject buttons
+      content.querySelectorAll('.review-approve').forEach(b => b.addEventListener('click', async function() {
+        await moderateReview(this.dataset.id, 'approve');
+      }));
+      content.querySelectorAll('.review-reject').forEach(b => b.addEventListener('click', async function() {
+        await moderateReview(this.dataset.id, 'reject');
+      }));
+      content.querySelectorAll('.review-reply').forEach(b => b.addEventListener('click', function() {
+        const modal = document.getElementById('review-reply-modal');
+        document.getElementById('review-reply-info').textContent = 'Review #' + this.dataset.id + ' by ' + this.dataset.email;
+        document.getElementById('review-reply-text').value = '';
+        document.getElementById('review-reply-text').dataset.reviewId = this.dataset.id;
+        modal.classList.remove('hidden');
+      }));
+    } catch(e) {
+      content.innerHTML = '<p class="text-red-500 font-bold">Gagal memuat review: ' + e.message + '</p>';
+    }
+  }
+
+  async function moderateReview(reviewId, action) {
+    const resp = await fetch('/api/admin/review-moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review_id: reviewId, action }),
+    });
+    if (!resp.ok) { const err = await resp.json(); alert(err.error || 'Failed'); return; }
+    await logAudit(action === 'approve' ? 'update' : 'update', 'review', reviewId, { action });
+    await loadReviews();
+  }
+
+  document.getElementById('review-status-filter')?.addEventListener('change', function() {
+    reviewFilter = this.value;
+    reviewPageNum = 1;
+    loadReviews();
+  });
+
+  document.getElementById('review-refresh-btn')?.addEventListener('click', () => { reviewPageNum = 1; loadReviews(); });
+
+  document.getElementById('review-reply-submit')?.addEventListener('click', async function() {
+    const text = document.getElementById('review-reply-text');
+    const reviewId = text.dataset.reviewId;
+    if (!reviewId || !text.value.trim()) return;
+    const resp = await fetch('/api/admin/review-moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review_id: reviewId, action: 'approve', admin_reply: text.value.trim() }),
+    });
+    if (!resp.ok) { const err = await resp.json(); alert(err.error || 'Failed'); return; }
+    document.getElementById('review-reply-modal').classList.add('hidden');
+    await logAudit('update', 'review', reviewId, { action: 'reply', admin_reply: text.value.trim() });
+    await loadReviews();
+  });
+
+  document.getElementById('review-reply-close')?.addEventListener('click', function() {
+    document.getElementById('review-reply-modal').classList.add('hidden');
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // AUDIT LOG
+  // ═══════════════════════════════════════════════════════
+  let auditLogPage = 0;
+  const auditLogLimit = 50;
+
+  async function loadAuditLogs() {
+    const content = document.getElementById('audit-log-content');
+    const pagination = document.getElementById('audit-log-pagination');
+    const search = document.getElementById('audit-log-search')?.value || '';
+    const action = document.getElementById('audit-log-action')?.value || '';
+    const entity = document.getElementById('audit-log-entity')?.value || '';
+
+    try {
+      let url = API.audit + '?limit=' + auditLogLimit + '&offset=' + (auditLogPage * auditLogLimit);
+      if (search) url += '&search=' + encodeURIComponent(search);
+      if (action) url += '&action=' + encodeURIComponent(action);
+      if (entity) url += '&entity_type=' + encodeURIComponent(entity);
+
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+
+      if (!data.logs || data.logs.length === 0) {
+        content.innerHTML = '<div class="text-center py-12 border-4 border-dashed border-black"><p class="text-xl font-black text-gray-400">Tidak ada log.</p></div>';
+        pagination.innerHTML = '';
+        return;
+      }
+
+      content.innerHTML = '<div class="border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000] overflow-x-auto">' +
+        '<table class="w-full text-left"><thead class="border-b-4 border-black bg-gray-50"><tr>' +
+        '<th class="px-4 py-3 font-black text-sm">Time</th>' +
+        '<th class="px-4 py-3 font-black text-sm">Admin</th>' +
+        '<th class="px-4 py-3 font-black text-sm">Action</th>' +
+        '<th class="px-4 py-3 font-black text-sm">Entity</th>' +
+        '<th class="px-4 py-3 font-black text-sm">Entity ID</th>' +
+        '<th class="px-4 py-3 font-black text-sm">Details</th></tr></thead><tbody>' +
+        data.logs.map(l => '<tr class="border-b border-gray-200 hover:bg-gray-50">' +
+          '<td class="px-4 py-3 text-xs font-bold">' + new Date(l.created_at).toLocaleString('id-ID') + '</td>' +
+          '<td class="px-4 py-3 text-sm font-bold">' + (l.admin_email||'') + '</td>' +
+          '<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-black ' + (l.action === 'create' ? 'bg-neon-green' : l.action === 'delete' ? 'bg-red-400 text-white' : 'bg-yellow-400') + '">' + l.action + '</span></td>' +
+          '<td class="px-4 py-3 text-sm">' + (l.entity_type||'') + '</td>' +
+          '<td class="px-4 py-3 text-xs font-mono">' + ((l.entity_id||'').slice(0,12) + '...') + '</td>' +
+          '<td class="px-4 py-3 text-xs text-gray-500">' + (l.details ? JSON.stringify(l.details).slice(0,80) : '-') + '</td></tr>').join('') +
+        '</tbody></table></div>';
+
+      // Pagination
+      const total = data.total || 0;
+      const totalPages = Math.ceil(total / auditLogLimit);
+      if (totalPages > 1) {
+        let phtml = '';
+        if (auditLogPage > 0) phtml += '<button class="log-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-page="' + (auditLogPage-1) + '">Prev</button>';
+        phtml += '<span class="px-4 py-2 font-bold text-sm">' + (auditLogPage+1) + '/' + totalPages + '</span>';
+        if (auditLogPage < totalPages - 1) phtml += '<button class="log-page-btn px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-page="' + (auditLogPage+1) + '">Next</button>';
+        pagination.innerHTML = phtml;
+        pagination.querySelectorAll('.log-page-btn').forEach(b => b.addEventListener('click', function() { auditLogPage = parseInt(this.dataset.page); loadAuditLogs(); }));
+      } else {
+        pagination.innerHTML = '';
+      }
+    } catch(e) {
+      content.innerHTML = '<p class="text-red-500 font-bold">Gagal memuat log: ' + e.message + '</p>';
+    }
+  }
+
+  document.getElementById('audit-log-filter-btn')?.addEventListener('click', function() { auditLogPage = 0; loadAuditLogs(); });
+  document.getElementById('audit-log-export')?.addEventListener('click', async function() {
+    const search = document.getElementById('audit-log-search')?.value || '';
+    const action = document.getElementById('audit-log-action')?.value || '';
+    const entity = document.getElementById('audit-log-entity')?.value || '';
+    let url = API.audit + '?limit=5000';
+    if (search) url += '&search=' + encodeURIComponent(search);
+    if (action) url += '&action=' + encodeURIComponent(action);
+    if (entity) url += '&entity_type=' + encodeURIComponent(entity);
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (!data.logs || data.logs.length === 0) { alert('Tidak ada data untuk diexport.'); return; }
+    let csv = 'Time,Admin,Action,Entity,Entity ID\n';
+    data.logs.forEach(function(l) {
+      csv += new Date(l.created_at).toISOString() + ',' + (l.admin_email||'') + ',' + (l.action||'') + ',' + (l.entity_type||'') + ',' + (l.entity_id||'') + '\n';
+    });
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'topzone-audit-log-' + new Date().toISOString().slice(0,10) + '.csv';
+    link.click();
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // ADMIN SETTINGS
+  // ═══════════════════════════════════════════════════════
+  async function loadAdminSettings() {
+    // Load admin users
+    try {
+      const resp = await fetch(API.adminRoles);
+      const data = await resp.json();
+      const tbody = document.getElementById('admin-users-table-body');
+      if (!data.admins || data.admins.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No admin users found.</td></tr>';
+      } else {
+        tbody.innerHTML = data.admins.map(a => '<tr class="border-b border-gray-200 hover:bg-gray-50">' +
+          '<td class="px-4 py-3 text-sm font-bold">' + a.email + '</td>' +
+          '<td class="px-4 py-3 text-sm">' + (a.full_name || '-') + '</td>' +
+          '<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-black ' +
+            (a.role === 'super_admin' ? 'bg-purple-400' : a.role === 'admin' ? 'bg-neon-green' : 'bg-yellow-400') + '">' + a.role + '</span></td>' +
+          '<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-black ' + (a.is_active ? 'bg-neon-green' : 'bg-red-400 text-white') + '">' + (a.is_active ? 'Active' : 'Inactive') + '</span></td>' +
+          '<td class="px-4 py-3 text-xs text-gray-500">' + (a.last_login ? new Date(a.last_login).toLocaleDateString('id-ID') : '-') + '</td>' +
+          '<td class="px-4 py-3">' + (a.is_active ? '<button class="admin-deactivate px-3 py-1 text-xs font-black border-2 border-black bg-red-400 text-white" data-id="' + a.id + '">Deactivate</button>' :
+            '<button class="admin-activate px-3 py-1 text-xs font-black border-2 border-black bg-neon-green" data-id="' + a.id + '">Activate</button>') + '</td></tr>').join('');
+        tbody.querySelectorAll('.admin-deactivate').forEach(b => b.addEventListener('click', async function() {
+          if (!confirm('Deactivate this admin?')) return;
+          await apiFetch(API.adminRoles, { method: 'DELETE', body: JSON.stringify({ id: this.dataset.id }) });
+          loadAdminSettings();
+        }));
+      }
+    } catch(e) {
+      console.warn('Failed to load admin users:', e);
+    }
+
+    // Load system health
+    try {
+      const healthResp = await fetch(API.systemHealth);
+      const healthData = await healthResp.json();
+      const healthEl = document.getElementById('system-health-content');
+      if (healthData.checks) {
+        healthEl.innerHTML = '<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">' +
+          healthData.checks.map(c => '<div class="border-2 border-black p-3 text-center ' +
+            (c.status === 'healthy' ? 'bg-neon-green/10' : c.status === 'degraded' ? 'bg-yellow-50' : 'bg-red-50') + '">' +
+            '<p class="text-xs font-black uppercase">' + c.name + '</p>' +
+            '<p class="text-lg font-black ' + (c.status === 'healthy' ? 'text-neon-green' : c.status === 'degraded' ? 'text-yellow-500' : 'text-red-500') + '">' +
+            c.status.toUpperCase() + '</p>' +
+            (c.latency ? '<p class="text-xs text-gray-500">' + c.latency + 'ms</p>' : '') +
+            (c.message ? '<p class="text-xs text-gray-500">' + c.message + '</p>' : '') + '</div>').join('') + '</div>' +
+          '<button id="health-refresh-btn" class="px-4 py-2 font-black border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">🔄 Refresh Health</button>';
+        document.getElementById('health-refresh-btn')?.addEventListener('click', loadAdminSettings);
+      }
+    } catch(e) {
+      document.getElementById('system-health-content').innerHTML = '<p class="text-red-500 font-bold">Failed to load health: ' + e.message + '</p>';
+    }
+
+    // Load email config
+    try {
+      const emailResp = await fetch('/api/admin/email-config');
+      const emailData = await emailResp.json();
+      const cfg = emailData.config || {};
+      document.getElementById('email-smtp-host').value = cfg.smtp_host || '';
+      document.getElementById('email-smtp-port').value = cfg.smtp_port || '';
+      document.getElementById('email-smtp-user').value = cfg.smtp_user || '';
+      document.getElementById('email-smtp-pass').value = cfg.smtp_pass || '';
+      document.getElementById('email-smtp-from').value = cfg.smtp_from || '';
+      document.getElementById('email-smtp-from_name').value = cfg.smtp_from_name || '';
+    } catch(e) {
+      console.warn('Failed to load email config:', e);
+    }
+  }
+
+  // Invite admin handler
+  document.getElementById('invite-admin-btn')?.addEventListener('click', async function() {
+    const email = document.getElementById('invite-email').value.trim();
+    const name = document.getElementById('invite-name').value.trim();
+    const role = document.getElementById('invite-role').value;
+    const msg = document.getElementById('invite-message');
+    if (!email) { msg.textContent = 'Email is required'; msg.className = 'mt-2 px-4 py-2 font-bold text-sm bg-red-100 border-2 border-red-500'; msg.classList.remove('hidden'); return; }
+    try {
+      const resp = await fetch(API.adminRoles, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, full_name: name, role }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Failed');
+      msg.textContent = '✅ Admin invited: ' + email;
+      msg.className = 'mt-2 px-4 py-2 font-bold text-sm bg-neon-green/20 border-2 border-neon-green';
+      msg.classList.remove('hidden');
+      document.getElementById('invite-email').value = '';
+      document.getElementById('invite-name').value = '';
+      await loadAdminSettings();
+    } catch(e) {
+      msg.textContent = '❌ ' + e.message;
+      msg.className = 'mt-2 px-4 py-2 font-bold text-sm bg-red-100 border-2 border-red-500';
+      msg.classList.remove('hidden');
+    }
+  });
+
+  // Email config save handler
+  document.getElementById('email-config-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const msg = document.getElementById('email-config-msg');
+    const keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'smtp_from_name'];
+    try {
+      for (const key of keys) {
+        const val = document.getElementById('email-' + key.replace(/_/g, '-')).value;
+        const resp = await fetch('/api/admin/email-config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, value: key === 'smtp_port' ? parseInt(val) || 587 : val }),
+        });
+        if (!resp.ok) { const d = await resp.json(); throw new Error(d.error || 'Failed to save ' + key); }
+      }
+      msg.textContent = '✅ Email config saved successfully';
+      msg.className = 'mt-2 px-3 py-2 font-bold text-xs bg-neon-green/20 border-2 border-neon-green';
+      msg.classList.remove('hidden');
+    } catch(e) {
+      msg.textContent = '❌ ' + e.message;
+      msg.className = 'mt-2 px-3 py-2 font-bold text-xs bg-red-100 border-2 border-red-500';
+      msg.classList.remove('hidden');
+    }
+  });
+
+  document.getElementById('email-test-btn')?.addEventListener('click', async function() {
+    const msg = document.getElementById('email-config-msg');
+    try {
+      const resp = await fetch('/api/admin/email-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test_email: adminUser?.email || 'admin@topzone.id' }),
+      });
+      const data = await resp.json();
+      msg.textContent = '✅ ' + (data.message || 'Test email sent');
+      msg.className = 'mt-2 px-3 py-2 font-bold text-xs bg-neon-green/20 border-2 border-neon-green';
+      msg.classList.remove('hidden');
+    } catch(e) {
+      msg.textContent = '❌ ' + e.message;
+      msg.className = 'mt-2 px-3 py-2 font-bold text-xs bg-red-100 border-2 border-red-500';
+      msg.classList.remove('hidden');
+    }
+  });
+
+  // Game add button
+  document.getElementById('game-add-btn')?.addEventListener('click', function() { openGameModal(-1); });
+  document.getElementById('gear-add-btn')?.addEventListener('click', function() { openGearModal(-1); });
 
   // -------------------------------------------------------
   // HELPERS
