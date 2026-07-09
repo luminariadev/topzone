@@ -129,3 +129,60 @@ export function createSuccessResponse<T>(data: T, status = 200): Response {
     headers: { 'Content-Type': 'application/json' },
   });
 }
+
+/**
+ * Extract client IP from request
+ */
+export function getClientIP(context: APIContext): string | null {
+  const forwarded = context.request.headers.get('X-Forwarded-For');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  const realIP = context.request.headers.get('X-Real-IP');
+  if (realIP) return realIP;
+  return 'unknown';
+}
+
+/**
+ * Log admin action to audit_log table
+ */
+export async function logAdminAction(
+  admin: AdminUser,
+  action: string,
+  entityType: string,
+  entityId: string | null,
+  details: Record<string, unknown> = {},
+  context?: APIContext
+): Promise<void> {
+  if (!supabase) return;
+  try {
+    const ip = context ? getClientIP(context) : null;
+    await supabase.from('audit_log').insert({
+      admin_email: admin.email,
+      action,
+      entity_type: entityType,
+      entity_id: entityId,
+      details,
+      ip_address: ip,
+      created_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.warn('[audit-log] Failed to log admin action:', err);
+  }
+}
+
+/**
+ * Helper to verify auth and log action in one call
+ */
+export async function auditLog(
+  context: APIContext,
+  action: string,
+  entityType: string,
+  entityId: string | null,
+  details: Record<string, unknown> = {}
+): Promise<{ admin: AdminUser } | Response> {
+  const authResult = await verifyAdminAuth(context);
+  if (!authResult.success || !authResult.admin) {
+    return createErrorResponse(authResult.error || 'Unauthorized', authResult.status);
+  }
+  await logAdminAction(authResult.admin, action, entityType, entityId, details, context);
+  return { admin: authResult.admin };
+}
