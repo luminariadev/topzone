@@ -845,10 +845,14 @@ Hari ke: 17 / ___
 | 3 | feat(admin): add 7 APIs (notifications, 2FA, IP restriction, reports, segments, canned) | admin | ✅ |
 | 4 | feat(db): add admin v2 migration (2FA, IP restrictions, security & stock history) | admin | ✅ |
 | 5 | feat(auth): add admin activity logging middleware with IP capture | admin | ✅ |
-| 6 | docs(roadmap): update progress for 2026-07-10 (6 commits, Phase 4 at 80%) | admin | ✅ |
+| 6 | feat(admin): add notification badge with real-time polling in admin header | admin | ✅ |
+| 7 | feat(admin): enhance customers API with search, filter, sort, and pagination | admin | ✅ |
+| 8 | docs: add TSDoc comments to admin-auth utilities | docs | ✅ |
+| 9 | docs(roadmap): update progress for 2026-07-10 | docs | ✅ |
+| 10 | | | |
 
-Total commit hari ini: 6/10 ⏳
-Target tercapai? 🟡 Akan ditambah
+Total commit hari ini: 9/10 ⏳
+Target tercapai? 🟡 Kurang 1
 ```
 
 ### Grafik Progress (per Fase)
