@@ -46,6 +46,7 @@ import Footer from '../components/Footer.astro';
         </div>
         <div class="flex items-center gap-4">
           <span class="text-xs text-gray-400 hidden sm:inline" id="session-timer"></span>
+          <button id="admin-notif-btn" class="relative px-3 py-2 text-sm font-black border-2 border-white text-white hover:bg-white hover:text-black transition-all">🔔 <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black border border-white"></span></button>
           <button id="admin-logout" class="px-4 py-2 text-sm font-black border-2 border-neon-yellow text-neon-yellow hover:bg-neon-yellow hover:text-black transition-all">Logout</button>
         </div>
       </div>
@@ -1971,6 +1972,51 @@ import Footer from '../components/Footer.astro';
 
   document.getElementById('voucher-modal-close')?.addEventListener('click', function() {
     document.getElementById('voucher-modal').classList.add('hidden');
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // NOTIFICATION BADGE
+  // ═══════════════════════════════════════════════════════
+  let notifIntervalId = null;
+
+  async function checkNotifications() {
+    try {
+      const resp = await fetch('/api/admin/order-notifications');
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const badge = document.getElementById('notif-badge');
+      if (data.unread_count > 0) {
+        badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    } catch(e) {
+      // Silently fail
+    }
+  }
+
+  // Check notifications every 30 seconds after login
+  // Start after showDashboard
+  const origShowDashboard = showDashboard;
+  showDashboard = async function() {
+    await origShowDashboard.apply(this, arguments);
+    checkNotifications();
+    if (notifIntervalId) clearInterval(notifIntervalId);
+    notifIntervalId = setInterval(checkNotifications, 30000);
+  };
+
+  document.getElementById('admin-notif-btn')?.addEventListener('click', function() {
+    // Click notification bell to go to orders tab
+    document.querySelectorAll('.admin-tab').forEach(b => b.style.background = '#fff');
+    document.querySelector('[data-tab="orders"]').style.background = '#39FF14';
+    ['dashboard','games','gear','orders','vouchers','voucher-analytics','audit-log','customers','reviews','settings'].forEach(p => {
+      document.getElementById('panel-' + p).classList.add('hidden');
+    });
+    document.getElementById('panel-orders').classList.remove('hidden');
+    renderOrders();
+    // Clear badge
+    document.getElementById('notif-badge').classList.add('hidden');
   });
 
   async function renderAll() {
