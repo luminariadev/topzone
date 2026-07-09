@@ -72,12 +72,42 @@ export async function verifyAdminAuth(context: APIContext): Promise<AdminAuthRes
  */
 export function requireRole(admin: AdminUser, requiredRole: 'admin' | 'super_admin' | 'staff'): boolean {
   if (!admin) return false;
-  // staff role has read-only access
   if (requiredRole === 'staff') return admin.role === 'staff' || admin.role === 'admin' || admin.role === 'super_admin';
-  // admin role requires admin or super_admin
   if (requiredRole === 'admin') return admin.role === 'admin' || admin.role === 'super_admin';
-  // super_admin requires super_admin
   return admin.role === 'super_admin';
+}
+
+// ─── Permission Matrix ───────────────────────────────────────────────────────
+type Permission = 'read' | 'write' | 'delete' | 'export' | 'moderate' | 'admin';
+
+const PERMISSION_MATRIX: Record<string, Record<string, Permission[]>> = {
+  dashboard: { super_admin: ['read'], admin: ['read'], staff: ['read'] },
+  products:  { super_admin: ['read', 'write', 'delete', 'export'], admin: ['read', 'write', 'delete', 'export'], staff: ['read'] },
+  orders:    { super_admin: ['read', 'write', 'export'], admin: ['read', 'write', 'export'], staff: ['read'] },
+  vouchers:  { super_admin: ['read', 'write', 'delete'], admin: ['read', 'write', 'delete'], staff: ['read'] },
+  reviews:   { super_admin: ['read', 'write', 'delete', 'moderate'], admin: ['read', 'write', 'moderate'], staff: ['read'] },
+  customers: { super_admin: ['read', 'write', 'export'], admin: ['read', 'write', 'export'], staff: ['read'] },
+  audit_log: { super_admin: ['read', 'delete'], admin: ['read'], staff: [] },
+  settings:  { super_admin: ['read', 'write', 'admin'], admin: ['read'], staff: [] },
+  email:     { super_admin: ['read', 'write'], admin: [], staff: [] },
+  payment:   { super_admin: ['read', 'write'], admin: [], staff: [] },
+  backup:    { super_admin: ['read', 'write'], admin: [], staff: [] },
+};
+
+export function hasPermission(admin: AdminUser, module: string, permission: Permission): boolean {
+  if (!admin || !admin.is_active) return false;
+  if (admin.role === 'super_admin') return true;
+  const modulePerms = PERMISSION_MATRIX[module];
+  if (!modulePerms) return false;
+  const rolePerms = modulePerms[admin.role] || [];
+  return rolePerms.includes(permission);
+}
+
+export function requirePermission(admin: AdminUser, module: string, permission: Permission): Response | null {
+  if (!hasPermission(admin, module, permission)) {
+    return createErrorResponse(`Insufficient permissions: ${module}:${permission}`, 403);
+  }
+  return null;
 }
 
 /**
