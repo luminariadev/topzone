@@ -48,6 +48,7 @@ export async function fetchGames(): Promise<Game[]> {
       badge: p.badge || 'New', category: p.category, currency: p.currency || 'Diamond',
       description: p.description,
       packages: (pkgMap.get(p.id) || []).sort((a, b) => a.price - b.price),
+      id: p.id,
     }));
   } catch (fetchError) {
     console.error('Supabase fetchGames failed, using fallback data:', fetchError);
@@ -96,6 +97,7 @@ export async function fetchGears(): Promise<Gear[]> {
     return products.map(p => ({
       slug: p.slug, name: p.name, img: p.img, price: p.price, tag: p.tag || 'Gaming',
       category: p.category, description: p.description, specs: specMap.get(p.id) || [],
+      id: p.id,
     }));
   } catch (fetchError) {
     console.error('Supabase fetchGears failed, using fallback data:', fetchError);

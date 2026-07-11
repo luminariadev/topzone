@@ -1,6 +1,7 @@
 // src/data/gears.ts
 import type { GearCategory } from '../types';
 export interface Gear {
+  id: string; // Add id field here
   slug: string;
   name: string;
   img: string;
@@ -13,6 +14,7 @@ export interface Gear {
 
 export const gears: Gear[] = [
   {
+    id: 'b8c8d234-5678-4321-abcd-1234567890ab',
     slug: 'mechanical-keyboard',
     name: 'Mechanical Keyboard',
     img: '/assets/keyboard.png',

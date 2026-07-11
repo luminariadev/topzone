@@ -7,6 +7,7 @@ export interface GamePackage {
 }
 
 export interface Game {
+  id: string; // Add id field here
   slug: string;
   name: string;
   img: string;
@@ -20,6 +21,7 @@ export interface Game {
 
 export const games: Game[] = [
   {
+    id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479', // Example ID
     slug: 'mobile-legends',
     name: 'Mobile Legends',
     img: '/assets/mlbb.png',

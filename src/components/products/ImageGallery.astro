@@ -1,0 +1,117 @@
+---
+interface Props {
+  images: { id: string; image_url: string; alt_text: string; caption?: string; is_primary: boolean; sort_order: number; }[];
+  productName: string;
+}
+
+const { images, productName } = Astro.props;
+
+// Sort images: primary first, then by sort_order, then by URL
+const sortedImages = [...images].sort((a, b) => {
+  if (a.is_primary && !b.is_primary) return -1;
+  if (!a.is_primary && b.is_primary) return 1;
+  return (a.sort_order || 0) - (b.sort_order || 0) || a.image_url.localeCompare(b.image_url);
+});
+
+const primaryImage = sortedImages.find(img => img.is_primary) || sortedImages[0];
+const thumbnails = sortedImages.filter(img => img.image_url !== primaryImage?.image_url);
+
+const defaultAltText = `Image of ${productName}`;
+const defaultThumbnailAltText = `Thumbnail of ${productName}`;
+---
+
+<div class="product-image-gallery flex flex-col items-center">
+  <div class="main-image-container relative bg-neutral-800 rounded-lg overflow-hidden mb-4 shadow-lg w-full max-w-2xl">
+    <img
+      id="main-product-image"
+      src={primaryImage?.image_url}
+      alt={primaryImage?.alt_text || defaultAltText}
+      class="w-full h-96 object-contain cursor-pointer"
+      loading="eager"
+      decoding="async"
+      data-product-name={productName}
+    />
+    {primaryImage?.caption && (
+      <p id="main-image-caption" class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-sm px-2 py-1 w-full text-center">
+        {primaryImage.caption}
+      </p>
+    )}
+  </div>
+
+  <div class="thumbnail-grid grid grid-cols-4 gap-2 w-full max-w-2xl">
+    {sortedImages.map((image, index) => (
+      <button
+        type="button"
+        class={`thumbnail-item block bg-neutral-800 rounded-lg overflow-hidden cursor-pointer
+          focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all duration-200
+          ${image.image_url === primaryImage?.image_url ? 'ring-2 ring-accent-500 scale-95' : 'hover:scale-105'}`}
+        aria-label={`View image ${index + 1} of ${productName}`}
+        data-image-url={image.image_url}
+        data-alt-text={image.alt_text || defaultAltText}
+        data-caption={image.caption || ''}
+        data-is-primary={image.image_url === primaryImage?.image_url}
+      >
+        <img
+          src={image.image_url}
+          alt={image.alt_text || defaultThumbnailAltText}
+          class="w-full h-24 object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      </button>
+    ))}
+  </div>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mainImage = document.getElementById('main-product-image') as HTMLImageElement | null;
+      const mainImageCaption = document.getElementById('main-image-caption') as HTMLParagraphElement | null;
+      const thumbnailGrid = document.querySelector('.thumbnail-grid');
+
+      if (mainImage && thumbnailGrid) {
+        thumbnailGrid.addEventListener('click', (event) => {
+          const targetButton = (event.target as HTMLElement).closest('button');
+          if (targetButton) {
+            const newImageUrl = targetButton.dataset.imageUrl;
+            const newAltText = targetButton.dataset.altText;
+            const newCaption = targetButton.dataset.caption;
+
+            if (newImageUrl) {
+              mainImage.src = newImageUrl;
+              mainImage.alt = newAltText || mainImage.dataset.productName;
+              if (mainImageCaption) {
+                mainImageCaption.textContent = newCaption || '';
+                mainImageCaption.style.display = newCaption ? 'block' : 'none';
+              }
+
+              // Update active thumbnail style
+              thumbnailGrid.querySelectorAll('.thumbnail-item').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-accent-500', 'scale-95');
+                btn.classList.add('hover:scale-105');
+              });
+              targetButton.classList.add('ring-2', 'ring-accent-500', 'scale-95');
+              targetButton.classList.remove('hover:scale-105');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</div>
+
+<style>
+  .product-image-gallery {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .main-image-container {
+    background-color: var(--color-neutral-800);
+  }
+  .thumbnail-item {
+    transition: all 0.2s ease-in-out;
+  }
+  .thumbnail-item:hover, .thumbnail-item:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+</style>

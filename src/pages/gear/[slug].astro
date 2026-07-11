@@ -4,19 +4,41 @@ import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import { fetchGears } from '../../lib/products';
+import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/format';
 import type { Gear } from '../../data/gears';
+import ImageGallery from '../../components/products/ImageGallery.astro';
+import type { ProductImage } from '../../types/product';
 export const prerender = true;
 export async function getStaticPaths() {
   const gears = await fetchGears();
-  return gears.map((gear) => ({
+  const imageResults = await Promise.all(
+    gears.map(async (gear) => {
+      if (!supabase) return [];
+      // First find the product_id from products table by slug
+      const { data: product } = await supabase
+        .from('products')
+        .select('id')
+        .eq('slug', gear.slug)
+        .eq('type', 'gear')
+        .single();
+      if (!product) return [];
+      const { data: images } = await supabase
+        .from('product_images')
+        .select('id, image_url, alt_text, caption, is_primary, sort_order')
+        .eq('product_id', product.id)
+        .order('sort_order', { ascending: true });
+      return (images || []) as ProductImage[];
+    })
+  );
+  return gears.map((gear, index) => ({
     params: { slug: gear.slug },
-    props: { gear },
+    props: { gear, images: imageResults[index] || [] },
   }));
 }
 
-interface Props { gear: Gear; }
-const { gear } = Astro.props;
+interface Props { gear: Gear; images: ProductImage[]; }
+const { gear, images } = Astro.props;
 
 const formatted = formatCurrency(gear.price);
 ---
@@ -30,7 +52,7 @@ const formatted = formatCurrency(gear.price);
 
         <!-- Product Image -->
         <div class="border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
-          <img src={gear.img} alt={gear.name} class="w-full h-80 object-cover" />
+          <ImageGallery images={images} productName={gear.name} />
           <div class="bg-neon-yellow border-t-4 border-black px-4 py-2">
             <span class="font-black text-sm uppercase tracking-wider">{gear.tag}</span>
           </div>

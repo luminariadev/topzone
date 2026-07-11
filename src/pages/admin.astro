@@ -84,6 +84,7 @@ import Footer from '../components/Footer.astro';
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="audit-log">&#x1F4DD; Audit Log</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="reviews">&#x2B50; Reviews</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="customers">&#x1F465; Customers</button>
+        <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="images">&#x1F5BC;&#xFE0F; Images</button>
         <button class="admin-tab px-6 py-3 font-black tracking-wider border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000]" data-tab="settings">&#x2699; Settings</button>
       </div>
 
@@ -343,6 +344,55 @@ import Footer from '../components/Footer.astro';
         <div id="review-pagination" class="flex justify-center gap-2 mt-4"></div>
       </div>
 
+      <!-- IMAGES -->
+      <div id="panel-images" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-3xl font-black">🖼️ Product Images</h2>
+          <button id="upload-image-btn" class="px-6 py-3 font-black uppercase tracking-wider text-sm bg-neon-green text-black border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">Upload Image</button>
+        </div>
+
+        <div class="bg-white border-4 border-black p-5 shadow-[4px_4px_0px_0px_#000]">
+          <div class="flex gap-4 items-end mb-6">
+            <div class="flex-1">
+              <label class="text-sm font-black uppercase tracking-wider text-gray-700 block mb-2">Product Type</label>
+              <select id="image-product-type" class="w-full px-4 py-3 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+                <option value="game">🎮 Games</option>
+                <option value="gear">🎧 Gear</option>
+              </select>
+            </div>
+            <div class="flex-2">
+              <label class="text-sm font-black uppercase tracking-wider text-gray-700 block mb-2">Select Product</label>
+              <select id="image-product-select" class="w-full px-4 py-3 border-3 border-black font-bold text-sm bg-white shadow-[2px_2px_0px_0px_#000]">
+                <option value="">-- Select product --</option>
+              </select>
+            </div>
+            <button id="load-images-btn" class="px-6 py-3 font-black uppercase tracking-wider text-sm bg-black text-white border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all">Load</button>
+          </div>
+
+          <div id="images-upload-area" class="hidden mb-6">
+            <div id="drop-zone" class="border-4 border-dashed border-black p-8 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+              <p class="text-xl font-black mb-2">📸 Drop images here or click to upload</p>
+              <p class="text-sm font-bold text-gray-500">Supports: JPG, PNG, WebP (Max 10MB each)</p>
+              <input type="file" id="image-file-input" multiple accept="image/jpeg,image/png,image/webp" class="hidden" />
+            </div>
+            <div id="upload-preview" class="grid grid-cols-4 gap-4 mt-4"></div>
+          </div>
+        </div>
+
+        <div class="bg-white border-4 border-black p-5 shadow-[4px_4px_0px_0px_#000]">
+          <h3 class="text-xl font-black mb-4">📸 Current Images</h3>
+          <div id="product-images-list" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="text-center py-8 border-4 border-dashed border-black">
+              <p class="font-bold text-gray-400">Select a product to view images</p>
+            </div>
+          </div>
+          <div id="no-images-msg" class="hidden text-center py-8 border-4 border-dashed border-black">
+            <p class="font-bold text-gray-400">No images uploaded for this product yet.</p>
+            <p class="text-sm text-gray-500 mt-2">Click "Upload Image" to add images.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- SETTINGS -->
       <div id="panel-settings" class="hidden space-y-6">
         <h2 class="text-3xl font-black">⚙️ Settings</h2>
@@ -551,6 +601,7 @@ import Footer from '../components/Footer.astro';
     adminRoles: '/api/admin/admin-roles',
     systemHealth: '/api/admin/system-health',
     reviews: '/api/admin/reviews',
+    images: '/api/admin/product-images',
   };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
   const DEFAULT_GAMES = [
@@ -2096,5 +2147,155 @@ import Footer from '../components/Footer.astro';
   document.querySelectorAll('.fixed.inset-0').forEach(function(m) {
     m.addEventListener('click', function(e) { if (e.target === m) m.classList.add('hidden'); });
   });
+
+  // ─── ADMIN IMAGE MANAGEMENT ────────────────────────────────────────
+  const imageState = { productId: '', files: [] };
+  const typeSelect = document.getElementById('image-product-type');
+  const productSelect = document.getElementById('image-product-select');
+  const loadBtn = document.getElementById('load-images-btn');
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('image-file-input');
+  const previewContainer = document.getElementById('upload-preview');
+  const imageList = document.getElementById('product-images-list');
+
+  async function loadImageProducts() {
+    if (!typeSelect || !productSelect) return;
+    const type = typeSelect.value;
+    const endpoint = type === 'game' ? API.games : API.gears;
+    try {
+      const resp = await fetch(endpoint);
+      const data = await resp.json();
+      const items = data.games || data.gears || [];
+      productSelect.innerHTML = '<option value="">-- Select product --</option>';
+      items.forEach(p => {
+        productSelect.innerHTML += `<option value="${p.slug}">${p.name}</option>`;
+      });
+    } catch (e) {
+      productSelect.innerHTML = '<option value="">Error loading products</option>';
+    }
+  }
+
+  async function loadProductImages() {
+    if (!productSelect || !imageList) return;
+    const slug = productSelect.value;
+    if (!slug) { imageList.innerHTML = '<div class="text-center py-8 border-4 border-dashed border-black"><p class="font-bold text-gray-400">Select a product to view images</p></div>'; return; }
+    imageState.productId = slug;
+    imageList.innerHTML = '<div class="text-center py-8"><p class="font-bold">Loading...</p></div>';
+    try {
+      const resp = await fetch(API.images + '?productId=' + encodeURIComponent(slug) + '&type=' + typeSelect.value);
+      const data = await resp.json();
+      const images = data.images || [];
+      if (images.length === 0) {
+        imageList.innerHTML = '<div class="text-center py-8 border-4 border-dashed border-black"><p class="font-bold text-gray-400">No images uploaded yet.</p></div>';
+      } else {
+        imageList.innerHTML = images.map(img => `<div class="bg-white border-4 border-black rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_#000]">
+          <img src="${img.image_url}" alt="${img.alt_text}" class="w-full h-32 object-cover" loading="lazy" />
+          <div class="p-2">
+            <p class="font-black text-xs truncate">${img.alt_text || 'No alt text'}</p>
+            <p class="text-xs text-gray-500">${img.is_primary ? '⭐ Primary' : '•'} #${img.sort_order}</p>
+            <div class="mt-1 flex gap-1">
+              <button class="edit-img-btn flex-1 px-2 py-1 bg-neon-yellow text-black font-black text-xs border-2 border-black" data-id="${img.id}">Edit</button>
+              <button class="del-img-btn flex-1 px-2 py-1 bg-red-400 text-white font-black text-xs border-2 border-black" data-id="${img.id}">Del</button>
+            </div>
+          </div>
+        </div>`).join('');
+        imageList.querySelectorAll('.edit-img-btn').forEach(b => b.addEventListener('click', editImage));
+        imageList.querySelectorAll('.del-img-btn').forEach(b => b.addEventListener('click', deleteImage));
+      }
+    } catch (e) {
+      imageList.innerHTML = `<p class="text-red-500 font-bold">Error: ${e.message}</p>`;
+    }
+  }
+
+  async function editImage(e) {
+    const id = e.currentTarget.dataset.id;
+    const alt = prompt('Alt text (SEO):') || '';
+    const caption = prompt('Caption:') || '';
+    const primary = confirm('Set as primary image?');
+    const order = parseInt(prompt('Sort order:', '0')) || 0;
+    try {
+      const resp = await fetch(API.images, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, alt_text: alt, caption, is_primary: primary, sort_order: order }) });
+      if (!resp.ok) throw new Error((await resp.json()).error);
+      await loadProductImages();
+    } catch (e) { alert('Error: ' + e.message); }
+  }
+
+  async function deleteImage(e) {
+    if (!confirm('Delete this image permanently?')) return;
+    const id = e.currentTarget.dataset.id;
+    try {
+      const resp = await fetch(API.images, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+      if (!resp.ok) throw new Error((await resp.json()).error);
+      await loadProductImages();
+    } catch (e) { alert('Error: ' + e.message); }
+  }
+
+  // Image panel events
+  if (typeSelect) typeSelect.addEventListener('change', loadImageProducts);
+  if (loadBtn) loadBtn.addEventListener('click', loadProductImages);
+  if (dropZone && fileInput) {
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-gray-100'); });
+    dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('bg-gray-100'); });
+    dropZone.addEventListener('drop', async e => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-gray-100');
+      const files = Array.from(e.dataTransfer?.files || []);
+      handleUploadFiles(files);
+    });
+    fileInput.addEventListener('change', e => handleUploadFiles(Array.from(fileInput.files || [])));
+  }
+
+  function handleUploadFiles(files) {
+    if (!previewContainer) return;
+    previewContainer.innerHTML = '';
+    files.forEach((f, i) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        previewContainer.innerHTML += `<div class="bg-gray-100 border-2 border-black p-2 rounded text-center">
+          <img src="${ev.target?.result}" class="w-full h-24 object-cover mb-1" />
+          <p class="text-xs font-bold truncate">${f.name}</p>
+          <p class="text-xs text-gray-500">${Math.round(f.size/1024)}KB</p>
+        </div>`;
+      };
+      reader.readAsDataURL(f);
+    });
+    imageState.files = files;
+    const uploadBtn = document.getElementById('upload-image-btn');
+    if (uploadBtn) uploadBtn.textContent = `Upload ${files.length} image(s)`;
+  }
+
+  const uploadBtn = document.getElementById('upload-image-btn');
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', async function() {
+      if (!imageState.productId) { alert('Select a product first'); return; }
+      if (imageState.files.length === 0) { alert('Select files to upload'); return; }
+      this.disabled = true;
+      this.textContent = 'Uploading...';
+      try {
+        for (let i = 0; i < imageState.files.length; i++) {
+          const fd = new FormData();
+          fd.append('file', imageState.files[i]);
+          fd.append('productId', imageState.productId);
+          fd.append('type', typeSelect?.value || 'gear');
+          fd.append('altText', `Image of product`);
+          fd.append('caption', '');
+          fd.append('isPrimary', String(i === 0));
+          fd.append('sortOrder', String(i * 100));
+          const resp = await fetch(API.images, { method: 'POST', body: fd });
+          if (!resp.ok) throw new Error((await resp.json()).error || 'Upload failed');
+        }
+        alert(`Uploaded ${imageState.files.length} image(s) successfully!`);
+        imageState.files = [];
+        if (previewContainer) previewContainer.innerHTML = '';
+        this.textContent = 'Upload Image';
+        await loadProductImages();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+      this.disabled = false;
+      this.textContent = 'Upload Image';
+    });
+  }
 </script>
 
