@@ -100,6 +100,8 @@ import Footer from '../components/Footer.astro';
             <option value="quarter">This Quarter</option>
             <option value="year">This Year</option>
           </select>
+          <button id="export-report-csv" class="px-4 py-2 font-black text-sm border-2 border-black bg-neon-green shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">📥 Export CSV</button>
+          <button id="export-report-json" class="px-4 py-2 font-black text-sm border-2 border-black bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-none transition-all">📥 Export JSON</button>
         </div>
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -602,6 +604,7 @@ import Footer from '../components/Footer.astro';
     systemHealth: '/api/admin/system-health',
     reviews: '/api/admin/reviews',
     images: '/api/admin/product-images',
+    exportReport: '/api/admin/export-report',
   };
   const SESSION_TIME = 30 * 60 * 1000; // 30 menit
   const DEFAULT_GAMES = [
@@ -1077,6 +1080,17 @@ import Footer from '../components/Footer.astro';
 
   // Period filter change
   document.getElementById('dashboard-period-filter')?.addEventListener('change', loadDashboardStats);
+
+  // Export report handlers
+  document.getElementById('export-report-csv')?.addEventListener('click', async () => {
+    const period = document.getElementById('dashboard-period-filter')?.value || 'month';
+    window.open(API.exportReport + '?period=' + period + '&format=csv', '_blank');
+  });
+
+  document.getElementById('export-report-json')?.addEventListener('click', async () => {
+    const period = document.getElementById('dashboard-period-filter')?.value || 'month';
+    window.open(API.exportReport + '?period=' + period + '&format=json', '_blank');
+  });
 
   // ═══════════════════════════════════════════════════════
   // CUSTOMERS
@@ -2149,6 +2163,27 @@ import Footer from '../components/Footer.astro';
   });
 
   // ─── ADMIN IMAGE MANAGEMENT ────────────────────────────────────────
+  document.querySelectorAll('.admin-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(b => { b.style.background = '#fff'; });
+      btn.style.background = '#39FF14';
+      ['dashboard', 'games', 'gear', 'orders', 'vouchers', 'voucher-analytics', 'audit-log', 'customers', 'reviews', 'images', 'settings'].forEach((p) => {
+        document.getElementById('panel-' + p).classList.add('hidden');
+      });
+      document.getElementById('panel-' + btn.dataset.tab).classList.remove('hidden');
+      if (btn.dataset.tab === 'dashboard') loadDashboardStats();
+      if (btn.dataset.tab === 'games') renderGames();
+      if (btn.dataset.tab === 'gear') renderGear();
+      if (btn.dataset.tab === 'orders') renderOrders();
+      if (btn.dataset.tab === 'vouchers') renderVouchers();
+      if (btn.dataset.tab === 'voucher-analytics') loadVoucherAnalytics();
+      if (btn.dataset.tab === 'customers') loadCustomers();
+      if (btn.dataset.tab === 'audit-log') loadAuditLogs();
+      if (btn.dataset.tab === 'reviews') loadReviews();
+      if (btn.dataset.tab === 'settings') loadAdminSettings();
+      if (btn.dataset.tab === 'images') loadImageProducts();
+    });
+  });
   const imageState = { productId: '', files: [] };
   const typeSelect = document.getElementById('image-product-type');
   const productSelect = document.getElementById('image-product-select');
