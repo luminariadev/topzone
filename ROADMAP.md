@@ -431,8 +431,8 @@ Setiap hari **minimal 10 commit** dengan format:
 | 1 | Optimize LCP: preload hero image | perf | ✅ |
 | 2 | Optimize LCP: convert all images to WebP/AVIF | perf | ☐ |
 | 3 | Optimize CLS: add aspect ratios to all image containers | perf | ☐ |
-| 4 | Optimize INP: defer non-critical JavaScript | perf | ☐ |
-| 5 | Add skeleton loading states for async content | style | ☐ |
+| 4 | Optimize INP: defer non-critical JavaScript | perf | ✅ |
+| 5 | Add skeleton loading states for async content | style | ✅ |
 | 6 | Add `font-display: swap` for Space Grotesk | perf | ✅ |
 | 7 | Add resource hints (preconnect, prefetch) | perf | ✅ |
 | 8 | Lazy load below-fold images & components | perf | ✅ |
@@ -443,9 +443,9 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Configure Service Worker with vite-plugin-pwa | feat | ☐ |
-| 2 | Cache static assets (CSS, JS, fonts) | feat | ☐ |
-| 3 | Cache product pages for offline reading | feat | ☐ |
+| 1 | Configure Service Worker with vite-plugin-pwa | feat | ✅ |
+| 2 | Cache static assets (CSS, JS, fonts) | feat | ✅ |
+| 3 | Cache product pages for offline reading | feat | ✅ |
 | 4 | Add offline indicator UI (banner when offline) | feat | ✅ |
 | 5 | Add install prompt handler ("Add to Home Screen") | feat | ☐ |
 | 6 | Add background sync for pending orders | feat | ☐ |
@@ -878,6 +878,29 @@ Total commit hari ini: 10/10 ✅
 Target tercapai? Hijau ✅
 ```
 
+### Sheet Harian: 2026-07-14
+
+```
+Tanggal: 2026-07-14
+Hari ke: 21 / ___
+
+| # | Commit | Scope | Selesai? |
+|:-:|--------|-------|:--------:|
+| 1 | feat(seo): add meta keywords support to Layout component for category-specific SEO | seo | ✅ |
+| 2 | feat(seo): add SEO keywords to gear catalog page for better category-specific search results | seo | ✅ |
+| 3 | feat(pwa): enable vite-plugin-pwa with service worker, caching and manifest config | pwa | ✅ |
+| 4 | feat(pwa): add lang, screenshots to PWA manifest for enhanced splash screen display | pwa | ✅ |
+| 5 | feat(analytics): add web-vitals library integration for Core Web Vitals RUM | perf | ✅ |
+| 6 | perf(cls): add aspect ratios and explicit dimensions to image containers for CLS optimization | perf | ✅ |
+| 7 | perf(inp): defer non-critical Bootstrap Icons CSS for better INP score | perf | ✅ |
+| 8 | style(skeleton): add reusable Skeleton loading component for async content placeholders | style | ✅ |
+| 9 | style: replace Loading component with reusable Skeleton component for consistency | style | ✅ |
+| 10 | docs(roadmap): update Fase 5.2-5.3 progress & add 2026-07-14 daily log | docs | ✅ |
+
+Total commit hari ini: 10/10 ✅
+Target tercapai? Hijau ✅
+```
+
 ### Grafik Progress (per Fase)
 
 ```
@@ -885,12 +908,12 @@ Fase 1: Infrastructure ███████████████████
 Fase 2: Catalog        ████████████████████  [59/59 ✅ 100%]
 Fase 3: User Features  ████████████████████  [70/70 ✅ 100% - SELESAI]
 Fase 4: Admin Panel    ████████████████████  [43/44 🔄 ~98% - IN PROGRESS]
-Fase 5: SEO & Perf     ████████░░░░░░░░░░░░  [12/50 🔄 ~24% - IN PROGRESS]
+Fase 5: SEO & Perf     ████████████░░░░░░░░  [22/50 🔄 ~44% - IN PROGRESS]
 Fase 6: Testing        ░░░░░░░░░░░░░░░░░░░░  [0/71 ☐ ~0%]
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/103 ☐ ~0%]
 Fase 8: DevOps         ████░░░░░░░░░░░░░░░░  [5/35 🔄 ~14%]
 
-Total: 267/508 commit (~53%)
+Total: 277/508 commit (~55%)
 ```
 
 ---
