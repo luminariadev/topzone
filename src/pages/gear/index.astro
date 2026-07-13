@@ -8,6 +8,7 @@ import { gears } from '../../data/gears';
 import { getUniqueBrands } from '../../utils/filters';
 import { paginate } from '../../utils/helpers';
 import type { Gear } from '../../types';
+import Schema from '../../components/seo/Schema.astro';
 
 // ─── Params ───────────────────────────────────────────────
 const url = Astro.url;
@@ -58,6 +59,15 @@ const sortOptions = [
 ---
 
 <Layout title={'Gear Catalog - TopZone'} description={'All your gaming peripherals in one place.'}>
+  <!-- JSON-LD: BreadcrumbList -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://topzone.id/" },
+      { "@type": "ListItem", position: 2, name: "Gear", item: "https://topzone.id/gear" },
+    ],
+  }} />
   <Navbar />
   <main class="py-16 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
