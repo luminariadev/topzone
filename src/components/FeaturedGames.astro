@@ -1,7 +1,7 @@
 <!-- src/components/FeaturedGames.astro -->
 ---
 import { fetchGames } from '../lib/products';
-import Loading from './Loading.astro';
+import Skeleton from './Skeleton.astro';
 const games = await fetchGames();
 ---
 <section id="games" class="py-20 bg-white text-black border-t-4 border-black dark:bg-[#111] dark:text-gray-200 dark:border-[#27272a]">
