@@ -57,7 +57,7 @@ const canonicalUrl = `https://topzone.id/gear/${gear.slug}`;
     "@type": "Product",
     name: gear.name,
     description: gear.description,
-    image: gear.img ? `https://topzone.id${gear.img}` : undefined,
+    image: images.length > 0 ? images.map(img => `https://topzone.id${img.image_url}`) : (gear.img ? `https://topzone.id${gear.img}` : undefined),
     brand: { "@type": "Brand", name: "TopZone" },
     offers: {
       "@type": "Offer",
