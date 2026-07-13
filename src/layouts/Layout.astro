@@ -10,6 +10,7 @@ export interface Props {
   description?: string;
   image?: string;
   canonical?: string;
+  keywords?: string;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   description = 'TopZone adalah platform top up game dan belanja gear gaming termurah, tercepat, dan terpercaya di Indonesia. Mobile Legends, Valorant, Free Fire dan banyak lagi.',
   image = '/hero_background.png',
   canonical,
+  keywords = 'top up game, beli gear gaming, mobile legends, valorant, free fire, gaming store indonesia, top up diamond',
 } = Astro.props as Props;
 ---
 
@@ -28,6 +30,7 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#39FF14" />
+		<meta name="keywords" content={keywords} />
 
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
