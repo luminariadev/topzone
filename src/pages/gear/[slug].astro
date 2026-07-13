@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/format';
 import type { Gear } from '../../data/gears';
 import ImageGallery from '../../components/products/ImageGallery.astro';
+import Schema from '../../components/seo/Schema.astro';
 import type { ProductImage } from '../../types/product';
 export const prerender = true;
 export async function getStaticPaths() {
@@ -44,6 +45,33 @@ const formatted = formatCurrency(gear.price);
 ---
 
 <Layout>
+  <!-- JSON-LD: Product Schema -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: gear.name,
+    description: gear.description,
+    image: gear.img ? `https://topzone.id${gear.img}` : undefined,
+    brand: { "@type": "Brand", name: "TopZone" },
+    offers: {
+      "@type": "Offer",
+      url: Astro.url.href,
+      priceCurrency: "IDR",
+      price: gear.price,
+      availability: "https://schema.org/InStock",
+    },
+    category: gear.category || "Gaming Gear",
+  }} />
+  <!-- JSON-LD: BreadcrumbList -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://topzone.id/" },
+      { "@type": "ListItem", position: 2, name: "Gear", item: "https://topzone.id/gear" },
+      { "@type": "ListItem", position: 3, name: gear.name, item: Astro.url.href },
+    ],
+  }} />
   <Navbar />
 
   <section class="py-16 bg-white">
