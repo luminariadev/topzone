@@ -1,0 +1,26 @@
+---
+// OfflineIndicator.astro — PWA offline/online banner
+---
+
+<div id="offline-banner" class="hidden fixed top-0 left-0 right-0 z-[100] bg-red-500 text-white text-center py-2 font-black text-sm border-b-4 border-black shadow-md">
+  ⚠️ Kamu sedang offline. Beberapa fitur mungkin tidak tersedia.
+</div>
+
+<script is:inline>
+  (function() {
+    var banner = document.getElementById('offline-banner');
+    if (!banner) return;
+
+    function updateStatus() {
+      if (!navigator.onLine) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+  })();
+</script>
