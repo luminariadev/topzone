@@ -27,7 +27,7 @@ const games = await fetchGames();
           <article class="game-card group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150" data-category={game.category}>
             <a href={`/games/${game.slug}`} class="block">
               <div class="relative">
-                <img src={game.img} alt={game.name} loading="lazy" decoding="async" class="w-full h-52 object-cover border-b-4 border-black" />
+                <img src={game.img} alt={game.name} loading="lazy" decoding="async" class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]" width="400" height="300" />
                 <span class="absolute top-3 left-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333]" style={`background:${game.color};`}>
                   {game.badge}
                 </span>
