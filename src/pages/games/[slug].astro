@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/format';
 import type { Game } from '../../data/games';
 import ImageGallery from '../../components/products/ImageGallery.astro';
+import Schema from '../../components/seo/Schema.astro';
 import type { ProductImage } from '../../types/product';
 export const prerender = true;
 export async function getStaticPaths() {
@@ -42,6 +43,45 @@ const { game, images } = Astro.props;
 ---
 
 <Layout>
+  <!-- JSON-LD: Product Schema -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: game.name,
+    description: game.description,
+    image: game.img ? `https://topzone.id${game.img}` : undefined,
+    brand: { "@type": "Brand", name: "TopZone" },
+    offers: {
+      "@type": "AggregateOffer",
+      url: Astro.url.href,
+      priceCurrency: "IDR",
+      lowPrice: Math.min(...game.packages.map(p => p.price)),
+      highPrice: Math.max(...game.packages.map(p => p.price)),
+      offerCount: game.packages.length,
+      availability: "https://schema.org/InStock",
+    },
+    category: game.category || "Mobile Game",
+  }} />
+  <!-- JSON-LD: BreadcrumbList -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://topzone.id/" },
+      { "@type": "ListItem", position: 2, name: "Games", item: "https://topzone.id/games" },
+      { "@type": "ListItem", position: 3, name: game.name, item: Astro.url.href },
+    ],
+  }} />
+  <!-- JSON-LD: Organization -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "TopZone",
+    url: "https://topzone.id/",
+    logo: "https://topzone.id/favicon.ico",
+    description: "Top-up game dan gear gaming termurah dan tercepat di Indonesia.",
+    contactPoint: { "@type": "ContactPoint", telephone: "+62-xxx-xxxx", contactType: "customer service" },
+  }} />
   <Navbar />
 
   <!-- Hero Banner -->
