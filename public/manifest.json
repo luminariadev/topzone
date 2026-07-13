@@ -22,6 +22,16 @@
     }
   ],
   "categories": ["shopping", "games", "entertainment"],
+  "lang": "id",
+  "screenshots": [
+    {
+      "src": "/hero_background.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "TopZone — Top Up Game & Gear Gaming"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Games",
