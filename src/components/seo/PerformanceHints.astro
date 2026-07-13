@@ -1,0 +1,21 @@
+---
+// src/components/seo/PerformanceHints.astro
+// Preconnects, font loading, and resource hints for Core Web Vitals
+---
+
+<!-- Resource hints for performance -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="preconnect" href="https://images.unsplash.com" />
+
+<!-- Font optimization with display=swap via preload -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" /></noscript>
+
+<!-- Preload hero image for LCP optimization -->
+<link rel="preload" href="/hero_background.png" as="image" type="image/png" fetchpriority="high" />
+
+<!-- DNS prefetch for external resources -->
+<link rel="dns-prefetch" href="https://res.cloudinary.com" />
+<link rel="dns-prefetch" href="https://api.topzone.id" />
