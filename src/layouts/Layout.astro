@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SkipNav from '../components/SkipNav.astro';
 import CustomerSupportChat from '../components/CustomerSupportChat.astro';
+import OfflineIndicator from '../components/OfflineIndicator.astro';
 import PerformanceHints from '../components/seo/PerformanceHints.astro';
 
 export interface Props {
@@ -95,6 +96,7 @@ const {
 			<slot />
 		</main>
 		<CustomerSupportChat />
+		<OfflineIndicator />
 	</body>
 </html>
 
