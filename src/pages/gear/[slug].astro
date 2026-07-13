@@ -42,9 +42,15 @@ interface Props { gear: Gear; images: ProductImage[]; }
 const { gear, images } = Astro.props;
 
 const formatted = formatCurrency(gear.price);
+const canonicalUrl = `https://topzone.id/gear/${gear.slug}`;
 ---
 
-<Layout>
+<Layout
+  title={`${gear.name} - Beli ${gear.name} Termurah | TopZone`}
+  description={`Beli ${gear.name} dengan harga termurah di TopZone. Garansi resmi, pengiriman cepat, ${gear.brand || 'gaming gear'} berkualitas. ${gear.description}`}
+  canonical={canonicalUrl}
+  image={gear.img ? `https://topzone.id${gear.img}` : undefined}
+>
   <!-- JSON-LD: Product Schema -->
   <Schema schema={{
     "@context": "https://schema.org",

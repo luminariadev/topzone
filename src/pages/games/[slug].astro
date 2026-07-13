@@ -40,9 +40,15 @@ export async function getStaticPaths() {
 
 interface Props { game: Game; images: ProductImage[]; }
 const { game, images } = Astro.props;
+const canonicalUrl = `https://topzone.id/games/${game.slug}`;
 ---
 
-<Layout>
+<Layout
+  title={`${game.name} - Top Up ${game.name} Termurah | TopZone`}
+  description={`Top up ${game.name} ${game.currency || 'diamonds'} dengan harga termurah. Proses instan, pembayaran mudah, 100% aman. ${game.description}`}
+  canonical={canonicalUrl}
+  image={game.img ? `https://topzone.id${game.img}` : undefined}
+>
   <!-- JSON-LD: Product Schema -->
   <Schema schema={{
     "@context": "https://schema.org",
