@@ -1,0 +1,282 @@
+---
+// src/components/PWAInstallPrompt.astro
+// PWA Install Prompt Handler - "Add to Home Screen" functionality
+---
+<style>
+  .install-prompt {
+    position: fixed;
+    bottom: 100px;
+    left: 16px;
+    right: 16px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: #000;
+    color: #39FF14;
+    border: 4px solid #39FF14;
+    box-shadow: 0 8px 0 #000;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 9999;
+    transform: translateY(200px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .install-prompt.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .install-prompt.hidden {
+    transform: translateY(200px);
+    opacity: 0;
+  }
+
+  .install-prompt__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .install-prompt__icon {
+    font-size: 32px;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+    60% { transform: translateY(-4px); }
+  }
+
+  .install-prompt__title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .install-prompt__desc {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    color: #e0e0e0;
+  }
+
+  .install-prompt__actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .install-prompt__btn {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 3px solid #000;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .install-prompt__btn--primary {
+    background: #39FF14;
+    color: #000;
+  }
+
+  .install-prompt__btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .install-prompt__btn--primary:active {
+    transform: translateY(0);
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .install-prompt__btn--secondary {
+    background: transparent;
+    color: #39FF14;
+  }
+
+  .install-prompt__btn--secondary:hover {
+    background: rgba(57, 255, 20, 0.1);
+  }
+
+  .install-prompt__close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #39FF14;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .install-prompt__close:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 480px) {
+    .install-prompt {
+      left: 8px;
+      right: 8px;
+      bottom: 80px;
+      padding: 16px;
+    }
+  }
+
+  /* iOS specific styling */
+  .install-prompt.ios {
+    background: #1c1c1e;
+    border-color: #007aff;
+    box-shadow: 0 8px 0 #007aff;
+  }
+
+  .install-prompt.ios .install-prompt__btn--primary {
+    background: #007aff;
+    color: #fff;
+  }
+
+  .install-prompt.ios .install-prompt__icon {
+    color: #007aff;
+  }
+</style>
+
+<div class="install-prompt" id="install-prompt" role="dialog" aria-labelledby="install-prompt-title" aria-describedby="install-prompt-desc">
+  <button class="install-prompt__close" id="install-close" aria-label="Tutup prompt instalasi">&times;</button>
+  <div class="install-prompt__header">
+    <span class="install-prompt__icon" aria-hidden="true">📱</span>
+    <h3 class="install-prompt__title" id="install-prompt-title">Install TopZone</h3>
+  </div>
+  <p class="install-prompt__desc" id="install-prompt-desc">Tambahkan TopZone ke layar utama untuk akses cepat top up game & belanja gear gaming!</p>
+  <div class="install-prompt__actions">
+    <button class="install-prompt__btn install-prompt__btn--primary" id="install-btn">Pasang Sekarang</button>
+    <button class="install-prompt__btn install-prompt__btn--secondary" id="install-dismiss">Nanti Saja</button>
+  </div>
+</div>
+
+<script>
+  let deferredPrompt = null;
+  const installPrompt = document.getElementById('install-prompt');
+  const installBtn = document.getElementById('install-btn');
+  const dismissBtn = document.getElementById('install-dismiss');
+  const closeBtn = document.getElementById('install-close');
+
+  // Detect iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  // Listen for beforeinstallprompt event (Android/Chrome)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+
+    // Show the install prompt after a delay
+    setTimeout(() => {
+      if (installPrompt && !localStorage.getItem('pwa-install-dismissed')) {
+        installPrompt.classList.add('visible');
+      }
+    }, 30000); // Show after 30 seconds
+  });
+
+  // Listen for appinstalled event
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed');
+    // Hide the prompt
+    if (installPrompt) {
+      installPrompt.classList.remove('visible');
+      installPrompt.classList.add('hidden');
+    }
+    // Clear deferredPrompt
+    deferredPrompt = null;
+    // Mark as installed
+    localStorage.setItem('pwa-installed', 'true');
+  });
+
+  // Handle install button click
+  installBtn?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      // Show the native install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to install prompt: ${outcome}`);
+      // Clear the deferredPrompt
+      deferredPrompt = null;
+    } else if (isIOS) {
+      // For iOS, show instructions
+      alert('Untuk menginstal di iOS:\n1. Tap ikon Share (□↑)\n2. Scroll ke bawah\n3. Tap "Add to Home Screen"');
+    }
+    // Hide our custom prompt
+    if (installPrompt) {
+      installPrompt.classList.remove('visible');
+      installPrompt.classList.add('hidden');
+    }
+  });
+
+  // Handle dismiss button
+  dismissBtn?.addEventListener('click', () => {
+    if (installPrompt) {
+      installPrompt.classList.remove('visible');
+      installPrompt.classList.add('hidden');
+    }
+    // Store dismissal for 7 days
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+  });
+
+  // Handle close button
+  closeBtn?.addEventListener('click', () => {
+    if (installPrompt) {
+      installPrompt.classList.remove('visible');
+      installPrompt.classList.add('hidden');
+    }
+    // Store dismissal for 7 days
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+  });
+
+  // Check if previously dismissed (7 days expiry)
+  const dismissed = localStorage.getItem('pwa-install-dismissed');
+  if (dismissed) {
+    const dismissedTime = parseInt(dismissed, 10);
+    const now = Date.now();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    if (now - dismissedTime > sevenDays) {
+      localStorage.removeItem('pwa-install-dismissed');
+    }
+  }
+
+  // Check if already installed
+  const isInstalled = localStorage.getItem('pwa-installed');
+  if (isInstalled) {
+    // Already installed, don't show prompt
+    if (installPrompt) {
+      installPrompt.style.display = 'none';
+    }
+  }
+
+  // iOS specific: add ios class for styling
+  if (isIOS && installPrompt) {
+    installPrompt.classList.add('ios');
+  }
+
+  // Also listen for display mode changes
+  window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+    if (e.matches) {
+      localStorage.setItem('pwa-installed', 'true');
+      if (installPrompt) {
+        installPrompt.style.display = 'none';
+      }
+    }
+  });
+</script>
