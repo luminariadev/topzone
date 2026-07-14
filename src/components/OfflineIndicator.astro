@@ -1,26 +1,66 @@
 ---
-// OfflineIndicator.astro — PWA offline/online banner
+// src/components/OfflineIndicator.astro
+// PWA offline indicator banner - shows when user is offline
 ---
+<style>
+  .offline-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    color: #39FF14;
+    border-top: 4px solid #39FF14;
+    box-shadow: 0 -4px 0 #000;
+    padding: 12px 16px;
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+  }
+  .offline-banner.visible {
+    transform: translateY(0);
+  }
+  .offline-banner .icon {
+    display: inline-block;
+    margin-right: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
 
-<div id="offline-banner" class="hidden fixed top-0 left-0 right-0 z-[100] bg-red-500 text-white text-center py-2 font-black text-sm border-b-4 border-black shadow-md">
-  ⚠️ Kamu sedang offline. Beberapa fitur mungkin tidak tersedia.
+<div class="offline-banner" id="offline-banner" role="status" aria-live="polite">
+  <span class="icon" aria-hidden="true">📡</span>
+  <span>Mode offline aktif - Beberapa fitur mungkin tidak tersedia</span>
 </div>
 
-<script is:inline>
-  (function() {
-    var banner = document.getElementById('offline-banner');
-    if (!banner) return;
+<script>
+  const banner = document.getElementById('offline-banner');
 
-    function updateStatus() {
-      if (!navigator.onLine) {
-        banner.classList.remove('hidden');
-      } else {
-        banner.classList.add('hidden');
-      }
+  function updateOnlineStatus() {
+    if (navigator.onLine) {
+      banner.classList.remove('visible');
+    } else {
+      banner.classList.add('visible');
     }
+  }
 
-    window.addEventListener('online', updateStatus);
-    window.addEventListener('offline', updateStatus);
-    updateStatus();
-  })();
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  // Initial check
+  updateOnlineStatus();
+
+  // Also listen for service worker registration
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(() => {
+      updateOnlineStatus();
+    });
+  }
 </script>
