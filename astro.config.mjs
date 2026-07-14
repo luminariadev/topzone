@@ -25,10 +25,68 @@ export default defineConfig({
           background_color: '#000000',
           display: 'standalone',
           start_url: '/',
+          orientation: 'portrait-primary',
+          lang: 'id',
           icons: [
             { src: '/favicon.svg', sizes: '192x192', type: 'image/svg+xml' },
             { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml' },
+            { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable any' },
+            { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable any' },
           ],
+          screenshots: [
+            {
+              src: '/screenshots/home-wide.png',
+              sizes: '1920x1080',
+              type: 'image/png',
+              form_factor: 'wide',
+              label: 'TopZone Home - Top Up Game & Gear Gaming'
+            },
+            {
+              src: '/screenshots/games-catalog.png',
+              sizes: '1080x1920',
+              type: 'image/png',
+              form_factor: 'narrow',
+              label: 'Games Catalog - Mobile Legends, Valorant, Free Fire'
+            },
+            {
+              src: '/screenshots/gear-catalog.png',
+              sizes: '1080x1920',
+              type: 'image/png',
+              form_factor: 'narrow',
+              label: 'Gear Catalog - Keyboard, Mouse, Headset'
+            },
+          ],
+          shortcuts: [
+            {
+              name: 'Games',
+              short_name: 'Games',
+              description: 'Browse game top-ups',
+              url: '/#games',
+              icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }]
+            },
+            {
+              name: 'Gear',
+              short_name: 'Gear',
+              description: 'Browse gaming gear',
+              url: '/#gear',
+              icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }]
+            },
+            {
+              name: 'Cart',
+              short_name: 'Cart',
+              description: 'View shopping cart',
+              url: '/cart',
+              icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }]
+            },
+            {
+              name: 'Profile',
+              short_name: 'Profile',
+              description: 'View profile & orders',
+              url: '/profile',
+              icons: [{ src: '/pwa-192x192.png', sizes: '192x192' }]
+            }
+          ],
+          categories: ['shopping', 'games', 'entertainment'],
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
