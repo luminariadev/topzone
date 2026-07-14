@@ -219,7 +219,7 @@ import Footer from '../components/Footer.astro';
     if (itemsEl) {
       itemsEl.innerHTML = items.map((item) => `
         <div class="flex items-center gap-4">
-          <img src="${item.img}" alt="${item.name}" class="w-14 h-14 object-cover border-2 border-black flex-shrink-0" />
+          <img src="${item.img}" alt="${item.name}" loading="lazy" class="w-14 h-14 object-cover border-2 border-black flex-shrink-0" />
           <div class="flex-1 min-w-0">
             <p class="font-black leading-tight">${item.name}</p>
             <p class="text-xs font-bold text-gray-500">Qty: ${item.qty}</p>
