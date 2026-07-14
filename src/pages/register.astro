@@ -37,9 +37,9 @@ import Footer from '../components/Footer.astro';
               class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-[1px_1px_0px_0px_#000] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white" />
           </div>
 
-          <div id="error-msg" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm"></div>
-          <div id="success-msg" class="hidden bg-neon-green text-black font-black px-4 py-3 border-2 border-black text-sm"></div>
-          <div id="voucher-info" class="hidden bg-neon-yellow text-black font-black px-4 py-3 border-2 border-black text-sm mt-2 text-center">
+          <div id="error-msg" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm" role="alert" aria-live="assertive"></div>
+          <div id="success-msg" class="hidden bg-neon-green text-black font-black px-4 py-3 border-2 border-black text-sm" role="status" aria-live="polite"></div>
+          <div id="voucher-info" class="hidden bg-neon-yellow text-black font-black px-4 py-3 border-2 border-black text-sm mt-2 text-center" role="status" aria-live="polite">
             🎉 Selamat! Kamu dapat voucher <span id="voucher-code-display" class="bg-black text-white px-2 py-1 text-lg"></span>
             <div class="text-xs mt-1">Diskon 10%! Gunakan di halaman checkout.</div>
           </div>
