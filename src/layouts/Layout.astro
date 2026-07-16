@@ -50,6 +50,10 @@ const {
 		<!-- Canonical -->
 		{canonical && <link rel="canonical" href={canonical} />}
 
+		<!-- hreflang for multi-language SEO (id = Indonesian default) -->
+		<link rel="alternate" href={canonical || Astro.url.href} hreflang="id" />
+		<link rel="alternate" href={canonical || Astro.url.href} hreflang="x-default" />
+
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<link rel="manifest" href="/manifest.json" />
