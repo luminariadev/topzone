@@ -263,6 +263,17 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
     </div>
   </section>
 
+  <!-- Related Navigation / Internal Linking -->
+  <section class="py-10 bg-gray-100 border-t-4 border-black">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-black mb-4">Temukan Game Lainnya</h2>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="/#games" class="px-6 py-3 font-black border-2 border-black bg-neon-yellow shadow-[3px_3px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_#000] transition-all">Semua Game</a>
+        <a href="/gear" class="px-6 py-3 font-black border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_#000] transition-all">Belanja Gear</a>
+      </div>
+    </div>
+  </section>
+
   <Footer />
 <script>
   const productSlug = window.location.pathname.split('/').pop();
