@@ -10,6 +10,9 @@ export default defineConfig({
   site: 'https://topzone.vercel.app',
   output: 'server',
   adapter: vercel(),
+  image: {
+    service: { entrypoint: 'astro/assets/services/sharp' },
+  },
   integrations: [sitemap()],
   vite: {
     plugins: [
