@@ -13,6 +13,7 @@ export interface Props {
   image?: string;
   canonical?: string;
   keywords?: string;
+  robots?: string;
 }
 
 const {
@@ -21,6 +22,7 @@ const {
   image = '/hero_background.png',
   canonical,
   keywords = 'top up game, beli gear gaming, mobile legends, valorant, free fire, gaming store indonesia, top up diamond',
+  robots,
 } = Astro.props as Props;
 ---
 
@@ -33,6 +35,7 @@ const {
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#39FF14" />
 		<meta name="keywords" content={keywords} />
+		{robots && <meta name="robots" content={robots} />}
 
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
