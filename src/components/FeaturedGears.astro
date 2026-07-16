@@ -61,7 +61,7 @@ const categories = [
                 <div class="relative">
                   <img
                     src={gear.img}
-                    alt={gear.name}
+                    alt={`${gear.name} - ${gear.brand || 'Gaming Gear'} ${gear.tag || ''}`}
                     loading="lazy"
                     decoding="async"
                     class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]"
