@@ -279,6 +279,7 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
   const productSlug = window.location.pathname.split('/').pop();
   const STORAGE_REVIEWS = 'topzone_reviews';
 
+  // Try to fetch from API first, fall back to localStorage
   function getReviews() {
     try { return JSON.parse(localStorage.getItem(STORAGE_REVIEWS) || '[]'); } catch { return []; }
   }
@@ -324,10 +325,9 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
     for (var i = 5; i >= 1; i--) {
       var count = avg.distribution[i] || 0;
       var pct = avg.count > 0 ? (count / avg.count * 100) : 0;
-      barsEl.innerHTML += '<div class=\"flex items-center gap-2 text-sm\"><span class=\"w-4 font-bold\">' + i + '</span><div class=\"flex-1 h-3 bg-gray-200 border border-black\"><div class=\"h-full bg-neon-yellow\" style=\"width:' + pct + '%\"></div></div><span class=\"w-8 text-right text-xs font-bold\">' + count + '</span></div>';
+      barsEl.innerHTML += '<div class="flex items-center gap-2 text-sm"><span class="w-4 font-bold">' + i + '</span><div class="flex-1 h-3 bg-gray-200 border border-black"><div class="h-full bg-neon-yellow" style="width:' + pct + '%"></div></div><span class="w-8 text-right text-xs font-bold">' + count + '</span></div>';
     }
 
-    // Sort controls
     var sortEl = document.getElementById('review-sort');
     if (sortEl) {
       sortEl.value = reviewSort;
@@ -343,21 +343,54 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
     }
     empty.classList.add('hidden');
     list.innerHTML = sortReviews(revs, reviewSort).map(function(r) {
-      return '<div class=\"border-4 border-black bg-white p-5 shadow-[2px_2px_0px_0px_#000]\">' +
-        '<div class=\"flex justify-between items-start mb-2\">' +
-          '<div><span class=\"font-black\">' + (r.userName || 'Anonymous') + '</span>' +
-          ' <span class=\"text-yellow-500\">' + renderStars(r.rating) + '</span>' +
-          (r.verifiedPurchase ? '<span class=\"ml-2 px-2 py-1 text-xs font-black bg-blue-400 text-white border-2 border-black\">✓ Verified</span>' : '') +
+      return '<div class="border-4 border-black bg-white p-5 shadow-[2px_2px_0px_0px_#000]">' +
+        '<div class="flex justify-between items-start mb-2">' +
+          '<div><span class="font-black">' + (r.userName || 'Anonymous') + '</span>' +
+          ' <span class="text-yellow-500">' + renderStars(r.rating) + '</span>' +
+          (r.verifiedPurchase ? '<span class="ml-2 px-2 py-1 text-xs font-black bg-blue-400 text-white border-2 border-black">✓ Verified</span>' : '') +
           '</div>' +
-          '<span class=\"text-xs text-gray-400 font-bold\">' + new Date(r.createdAt).toLocaleDateString('id-ID') + '</span>' +
+          '<span class="text-xs text-gray-400 font-bold">' + new Date(r.createdAt).toLocaleDateString('id-ID') + '</span>' +
         '</div>' +
-        '<p class=\"font-medium text-gray-700\">' + (r.comment || '') + '</p>' +
-        '<div class=\"flex items-center gap-3 mt-3 pt-3 border-t border-gray-200\">' +
-          '<span class=\"text-xs font-bold text-gray-500\">Apakah ulasan ini membantu?</span>' +
-          '<button class=\"helpful-btn text-sm font-bold px-3 py-1 border-2 border-black bg-white hover:bg-neon-green transition-colors\" data-id=\"' + r.id + '\" data-type=\"up\">👍 ' + (r.helpful || 0) + '</button>' +
-          '<button class=\"helpful-btn text-sm font-bold px-3 py-1 border-2 border-black bg-white hover:bg-red-400 transition-colors\" data-id=\"' + r.id + '\" data-type=\"down\">👎 ' + (r.unhelpful || 0) + '</button>' +
+        '<p class="font-medium text-gray-700">' + (r.comment || '') + '</p>' +
+        '<div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-200">' +
+          '<span class="text-xs font-bold text-gray-500">Apakah ulasan ini membantu?</span>' +
+          '<button class="helpful-btn text-sm font-bold px-3 py-1 border-2 border-black bg-white hover:bg-neon-green transition-colors" data-id="' + r.id + '" data-type="up">👍 ' + (r.helpful || 0) + '</button>' +
+          '<button class="helpful-btn text-sm font-bold px-3 py-1 border-2 border-black bg-white hover:bg-red-400 transition-colors" data-id="' + r.id + '" data-type="down">👎 ' + (r.unhelpful || 0) + '</button>' +
         '</div></div>';
     }).join('');
+  }
+
+  // Fetch reviews from API with localStorage fallback
+  function fetchReviewsFromAPI() {
+    fetch('/api/reviews?slug=' + encodeURIComponent(productSlug) + '&type=game&sort=' + reviewSort)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.reviews && data.reviews.length > 0) {
+          // Merge with localStorage reviews
+          var local = getReviews();
+          var apiIds = data.reviews.map(function(r) { return r.id; });
+          var filtered = local.filter(function(r) { return r.productSlug !== productSlug; });
+          var mapped = data.reviews.map(function(r) {
+            return {
+              id: r.id,
+              productSlug: r.product_slug,
+              rating: r.rating,
+              comment: r.content || r.title,
+              userName: r.user_name || 'User',
+              userEmail: r.user_email || '',
+              verifiedPurchase: true,
+              createdAt: r.created_at,
+              helpful: r.helpful_votes || 0,
+            };
+          });
+          localStorage.setItem(STORAGE_REVIEWS, JSON.stringify([...filtered, ...mapped]));
+        }
+        renderReviews();
+      })
+      .catch(function() {
+        // API failed, just use local data
+        renderReviews();
+      });
   }
 
   // Check if current user can review (logged in + purchased)
@@ -367,7 +400,6 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
       if (!userData || !userData.isLoggedIn) return { can: false, reason: 'login' };
 
       var email = userData.email.replace(/[^a-zA-Z0-9]/g, '_');
-      // Check user's orders
       var ordersKey = 'topzone_orders_' + email;
       var orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
       var hasPurchased = orders.some(function(o) {
@@ -375,7 +407,6 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
       });
 
       if (!hasPurchased) {
-        // Also check anonymous key
         var anonOrders = JSON.parse(localStorage.getItem('topzone_orders') || '[]');
         hasPurchased = anonOrders.some(function(o) {
           return o.items && o.items.some(function(i) { return i.type === 'game'; });
@@ -411,7 +442,7 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
     });
   });
 
-  // Submit review
+  // Submit review — try API first, fall back to localStorage
   document.getElementById('submit-review').addEventListener('click', function() {
     var status = document.getElementById('review-status');
     if (selectedRating === 0) {
@@ -428,31 +459,47 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
       return;
     }
 
-    var revs = getReviews();
-    var userData = JSON.parse(localStorage.getItem('topzone_current_user') || '{}');
-    var isVerified = check.can && check.reason === 'ok';
-    revs.push({
-      id: Date.now().toString(36),
-      productSlug: productSlug,
-      rating: selectedRating,
-      comment: comment,
-      userName: userData.full_name || userData.email?.split('@')[0] || 'User',
-      userEmail: userData.email || '',
-      verifiedPurchase: isVerified,
-      createdAt: new Date().toISOString(),
+    // Try API
+    fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_slug: productSlug, product_type: 'game', rating: selectedRating, content: comment }),
+    }).then(function(res) {
+      if (res.ok) {
+        status.className = 'mt-2 text-sm font-bold text-black bg-neon-green px-3 py-2 border-2 border-black';
+        status.textContent = '✅ Ulasan berhasil dikirim!';
+        status.classList.remove('hidden');
+        document.getElementById('review-text').value = '';
+        fetchReviewsFromAPI();
+        return;
+      }
+      throw new Error('API failed');
+    }).catch(function() {
+      // Fallback to localStorage
+      var revs = getReviews();
+      var userData = JSON.parse(localStorage.getItem('topzone_current_user') || '{}');
+      revs.push({
+        id: Date.now().toString(36),
+        productSlug: productSlug,
+        rating: selectedRating,
+        comment: comment,
+        userName: userData.full_name || userData.email?.split('@')[0] || 'User',
+        userEmail: userData.email || '',
+        verifiedPurchase: check.can && check.reason === 'ok',
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem(STORAGE_REVIEWS, JSON.stringify(revs));
+      status.className = 'mt-2 text-sm font-bold text-black bg-neon-green px-3 py-2 border-2 border-black';
+      status.textContent = '✅ Ulasan berhasil dikirim (offline mode)!';
+      status.classList.remove('hidden');
+      document.getElementById('review-text').value = '';
+      renderReviews();
     });
-    localStorage.setItem(STORAGE_REVIEWS, JSON.stringify(revs));
-
-    status.className = 'mt-2 text-sm font-bold text-black bg-neon-green px-3 py-2 border-2 border-black';
-    status.textContent = '✅ Ulasan berhasil dikirim!';
-    status.classList.remove('hidden');
-    document.getElementById('review-text').value = '';
-    renderReviews();
   });
 
   // Helpful vote buttons
   document.addEventListener('click', function(e) {
-    var target = e.target as HTMLElement;
+    var target = e.target;
     if (!target.classList.contains('helpful-btn')) return;
 
     var reviewId = target.dataset.id;
@@ -468,8 +515,18 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
 
     localStorage.setItem(STORAGE_REVIEWS, JSON.stringify(revs));
     renderReviews();
+
+    // Also hit API if possible
+    fetch('/api/reviews/helpful', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review_id: reviewId, vote_type: voteType }),
+    }).catch(function() { /* silent fallback */ });
   });
 
+  // Try API first, fall back to localStorage
+  fetchReviewsFromAPI();
+  // Also render local reviews immediately for speed
   renderReviews();
 
   // ═══════════════════════════════════════════════════════
