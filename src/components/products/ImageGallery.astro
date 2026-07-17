@@ -50,6 +50,8 @@ const defaultThumbnailAltText = `Thumbnail of ${productName}`;
         data-alt-text={image.alt_text || defaultAltText}
         data-caption={image.caption || ''}
         data-is-primary={image.image_url === primaryImage?.image_url}
+        role="tab"
+        aria-selected={image.image_url === primaryImage?.image_url ? "true" : "false"}
       >
         <img
           src={image.image_url}
