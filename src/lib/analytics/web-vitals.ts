@@ -1,4 +1,3 @@
----
 // src/lib/analytics/web-vitals.ts
 // Core Web Vitals Real-User Monitoring (RUM)
 // Uses web-vitals library to track LCP, CLS, INP, FCP, TTFB
