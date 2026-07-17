@@ -3,7 +3,7 @@
 import Button from './Button.astro';
 ---
 
-<section id="hero" class="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+<section id="hero" aria-labelledby="hero-heading" class="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
   <!-- Background image with overlay -->
   <div class="absolute inset-0">
     <img
@@ -29,7 +29,7 @@ import Button from './Button.astro';
       🎮 #1 Gaming Store Indonesia
     </div>
 
-    <h1 class="text-5xl sm:text-6xl md:text-8xl font-black uppercase leading-none tracking-tighter mb-6">
+    <h1 id="hero-heading" class="text-5xl sm:text-6xl md:text-8xl font-black uppercase leading-none tracking-tighter mb-6">
       <span class="block text-white">TOP UP &</span>
       <span class="block" style="color:#39FF14; -webkit-text-stroke: 2px #000;">GEAR UP</span>
     </h1>
