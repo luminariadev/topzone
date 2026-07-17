@@ -46,3 +46,6 @@ build-raw.txt
 
 # Notes
 note.txt
+
+# Vercel build output (generated on deploy)
+.vercel/
