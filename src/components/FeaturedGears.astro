@@ -19,45 +19,56 @@ const categories = [
   { key: 'speaker', label: '🔊 Speaker' },
   { key: 'streaming', label: '📡 Streaming' },
 ];
+
+const totalGears = allGears.length;
+const gearCountLabel = `${totalGears} produk gear tersedia`;
 ---
 
-<section id="gear" class="py-20 bg-neon-yellow text-black border-t-4 border-black dark:bg-[#111] dark:text-gray-200 dark:border-[#27272a]">
+<section id="gear" aria-labelledby="gear-heading" class="py-20 bg-neon-yellow text-black border-t-4 border-black dark:bg-[#111] dark:text-gray-200 dark:border-[#27272a]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
-      <h2 class="text-5xl font-black uppercase tracking-tighter mb-3">
+    <header class="text-center mb-12">
+      <h2 id="gear-heading" class="text-5xl font-black uppercase tracking-tighter mb-3">
         Featured <span class="bg-black text-neon-yellow px-2">Gear</span>
       </h2>
       <p class="text-black/70 dark:text-gray-400 font-bold text-lg">Premium peripherals for your setup.</p>
-    </div>
+      {totalGears > 0 && <p class="sr-only">{gearCountLabel}</p>}
+    </header>
 
     {allGears.length === 0 ? (
       <Loading text="Memuat gear..." />
     ) : (
       <>
         <!-- Category filter tabs -->
-        <div class="flex flex-wrap justify-center gap-3 mb-10">
-          {categories.map(cat => (
-            <button
-              data-gear-filter={cat.key}
-              class={`gear-tab px-5 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all ${
-                cat.key === 'all'
-                  ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
-                  : 'bg-white hover:bg-neon-pink hover:text-white'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
+        <nav aria-label="Filter gear berdasarkan kategori">
+          <div class="flex flex-wrap justify-center gap-3 mb-10" role="tablist" aria-label="Kategori gear gaming">
+            {categories.map((cat, idx) => (
+              <button
+                role="tab"
+                aria-selected={idx === 0 ? "true" : "false"}
+                aria-controls="gear-grid-panel"
+                data-gear-filter={cat.key}
+                class={`gear-tab px-5 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all ${
+                  cat.key === 'all'
+                    ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
+                    : 'bg-white hover:bg-neon-pink hover:text-white'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </nav>
 
         <!-- Product grid -->
-        <div id="gear-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="gear-grid-panel" role="tabpanel" aria-labelledby="gear-heading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-live="polite" aria-atomic="false">
           {allGears.map((gear) => (
             <article
               data-gear-category={gear.category}
               class="group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150"
+              role="article"
+              aria-label={`${gear.name} - ${gear.brand || 'Gaming Gear'} - ${formatCurrency(gear.price)}`}
             >
-              <a href={`/gear/${gear.slug}`} class="block">
+              <a href={`/gear/${gear.slug}`} class="block" aria-label={`Lihat detail ${gear.name} - ${formatCurrency(gear.price)}`}>
                 <div class="relative">
                   <img
                     src={gear.img}
