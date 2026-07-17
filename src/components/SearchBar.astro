@@ -14,7 +14,7 @@
       autocomplete="off"
       aria-label="Cari produk"
     />
-    <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] z-50 max-h-96 overflow-y-auto"></div>
+    <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] z-50 max-h-96 overflow-y-auto" role="listbox" aria-label="Hasil pencarian" aria-live="polite"></div>
   </div>
 </div>
 
@@ -44,7 +44,7 @@
     ).slice(0, 6);
 
     if (matches.length === 0) {
-      results.innerHTML = '<div class="px-4 py-3 text-gray-500 text-sm font-medium">Tidak ditemukan</div>';
+      results.innerHTML = '<div role="option" aria-selected="false" class="px-4 py-3 text-gray-500 text-sm font-medium">Tidak ditemukan</div>';
       results.classList.remove('hidden');
       return;
     }
