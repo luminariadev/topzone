@@ -6,6 +6,8 @@ export interface AppUser {
   full_name?: string;
   avatar_url?: string;
   isLoggedIn: boolean;
+  /** User ID from Supabase Auth (set after real auth) */
+  id?: string;
 }
 
 const AUTH_KEY = 'topzone_current_user';
@@ -29,6 +31,10 @@ if (isBrowser()) {
   user.set(loadUser());
 }
 
+/**
+ * Update specific fields of the current user without logging them out.
+ * Merges updates into existing user data in both localStorage and store.
+ */
 export function updateLocalUser(updates: Partial<AppUser>) {
   if (!isBrowser()) return;
   const current = loadUser();
@@ -39,6 +45,9 @@ export function updateLocalUser(updates: Partial<AppUser>) {
   user.set(u);
 }
 
+/**
+ * Alias for updateLocalUser — merges partial data into existing user.
+ */
 export function mergeLocalUser(data: Partial<AppUser>) {
   if (!isBrowser()) return;
   const current = loadUser();
@@ -49,6 +58,9 @@ export function mergeLocalUser(data: Partial<AppUser>) {
   user.set(u);
 }
 
+/**
+ * Set or clear the current user. Passing null logs the user out.
+ */
 export function setUser(u: AppUser | null) {
   if (!isBrowser()) return;
   if (u) {
@@ -59,6 +71,9 @@ export function setUser(u: AppUser | null) {
   }
 }
 
+/**
+ * Convenience method to quickly set a local-only user (for demo / fallback auth).
+ */
 export function setLocalUser(email: string, fullName?: string) {
   if (!isBrowser()) return;
   const u: AppUser = {
@@ -70,19 +85,37 @@ export function setLocalUser(email: string, fullName?: string) {
   user.set(u);
 }
 
+/**
+ * Log the user out: clear localStorage and reset store to null.
+ */
 export function logoutUser() {
   if (!isBrowser()) return;
   localStorage.removeItem(AUTH_KEY);
   user.set(null);
 }
 
+/**
+ * Get the localStorage key prefix for storing this user's orders.
+ * Includes a hashed email to scope keys per user.
+ */
 export function getOrdersKey(): string {
   const u = user.get();
   if (u && u.isLoggedIn) return 'topzone_orders_' + u.email.replace(/[^a-zA-Z0-9]/g, '_');
   return 'topzone_orders';
 }
 
+/**
+ * Get the current user's email, or null if not logged in.
+ */
 export function getCurrentEmail(): string | null {
   const u = user.get();
   return u && u.isLoggedIn ? u.email : null;
+}
+
+/**
+ * Check if user is authenticated (logged in).
+ */
+export function isLoggedIn(): boolean {
+  const u = user.get();
+  return u?.isLoggedIn === true;
 }
