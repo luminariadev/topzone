@@ -84,6 +84,21 @@ export function getUniqueBrands<T extends Product>(items: T[]): string[] {
   return Array.from(brands).sort();
 }
 
+/**
+ * Average rating for filtering by review score (internal use only)
+ */
+type FilterMeta = { avgRating?: number };
+
+export function filterByRating<T extends Product>(items: T[], minRating: number): T[] {
+  if (minRating <= 0 || minRating > 5) return items;
+  return items.filter(item => {
+    // Items without rating data are included (considered "unrated")
+    const avg = (item as T & FilterMeta).avgRating;
+    if (avg === undefined || avg === null) return true;
+    return avg >= minRating;
+  });
+}
+
 export function applyProductFilters<T extends Product & { status?: string | null; brand?: string }>(
   items: T[],
   filters: ProductFilters
