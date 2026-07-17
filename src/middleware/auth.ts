@@ -5,6 +5,30 @@ import type { APIContext } from 'astro';
 const ADMIN_ROUTES: ReadonlyArray<string> = ['/admin'];
 const PROTECTED_ROUTES: ReadonlyArray<string> = ['/checkout', '/profile', '/orders', '/order-detail'];
 
+/**
+ * Get the authentication token from the request cookie.
+ * Parses the raw cookie header to find 'sb-auth-token'.
+ */
+export function getAuthToken(context: APIContext): string | null {
+  const cookies = context.request.headers.get('cookie') || '';
+  const match = cookies.match(/sb-auth-token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/**
+ * Check if a path matches protected user routes.
+ */
+export function isProtectedRoute(path: string): boolean {
+  return PROTECTED_ROUTES.some((route) => path.startsWith(route));
+}
+
+/**
+ * Check if a path matches admin-only routes.
+ */
+export function isAdminRoute(path: string): boolean {
+  return ADMIN_ROUTES.some((route) => path.startsWith(route));
+}
+
 export function onRequest(context: APIContext, next: () => Promise<Response>) {
   const url = new URL(context.request.url);
   const path = url.pathname;
@@ -37,18 +61,4 @@ export function onRequest(context: APIContext, next: () => Promise<Response>) {
   }
 
   return next();
-}
-
-export function isProtectedRoute(path: string): boolean {
-  return PROTECTED_ROUTES.some((route) => path.startsWith(route));
-}
-
-export function isAdminRoute(path: string): boolean {
-  return ADMIN_ROUTES.some((route) => path.startsWith(route));
-}
-
-export function getAuthToken(context: APIContext): string | null {
-  const cookies = context.request.headers.get('cookie') || '';
-  const match = cookies.match(/sb-auth-token=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
 }
