@@ -4,9 +4,11 @@
   "description": "Platform top up game dan belanja gear gaming termurah, tercepat, dan terpercaya di Indonesia. Mobile Legends, Valorant, Free Fire dan banyak lagi.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0A0A0A",
   "theme_color": "#39FF14",
   "orientation": "portrait-primary",
+  "edge_side_panel": { "preferred_width": 400 },
+  "launch_handler": { "client_mode": "focus-existing" },
   "icons": [
     {
       "src": "/pwa-192x192.png",
