@@ -1,6 +1,7 @@
 // src/lib/api-cache.ts
 // Lightweight API response caching with TTL support
 // Uses in-memory Map with configurable TTL per endpoint
+// Thread-safe by design — no mutable shared state between requests
 
 interface CacheEntry<T> {
   data: T;
@@ -35,6 +36,8 @@ class ApiCache {
 
   /**
    * Get a value from cache. Returns null if not found or expired.
+   * @param key - Cache key
+   * @returns Cached value or null
    */
   get<T>(key: CacheKey): T | null {
     const entry = this.cache.get(key);
@@ -45,7 +48,7 @@ class ApiCache {
 
     const now = Date.now();
     if (now - entry.timestamp > entry.ttl) {
-      // Expired
+      // Expired — clean up
       this.cache.delete(key);
       this.misses++;
       if (this.config.debug) {
@@ -63,6 +66,10 @@ class ApiCache {
 
   /**
    * Set a value in cache with optional custom TTL.
+   * Automatically evicts oldest entry if at capacity.
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Custom TTL in milliseconds (uses default if omitted)
    */
   set<T>(key: CacheKey, data: T, ttl?: number): void {
     // Evict oldest entry if at capacity
@@ -85,6 +92,7 @@ class ApiCache {
 
   /**
    * Check if a key exists in cache and is not expired.
+   * @param key - Cache key to check
    */
   has(key: CacheKey): boolean {
     const entry = this.cache.get(key);
@@ -98,6 +106,7 @@ class ApiCache {
 
   /**
    * Delete a key from cache.
+   * @param key - Cache key to remove
    */
   delete(key: CacheKey): boolean {
     return this.cache.delete(key);
@@ -115,6 +124,8 @@ class ApiCache {
 
   /**
    * Invalidate all cache entries matching a pattern.
+   * @param pattern - RegExp to match against cache keys
+   * @returns Number of invalidated entries
    */
   invalidatePattern(pattern: RegExp): number {
     let count = 0;
@@ -147,6 +158,9 @@ class ApiCache {
   /**
    * Convenience: fetch with cache. If cached, return cached data.
    * If not, call fetcher, cache the result, and return it.
+   * @param key - Cache key
+   * @param fetcher - Async function to produce data on cache miss
+   * @param ttl - Optional custom TTL
    */
   async fetch<T>(key: CacheKey, fetcher: () => Promise<T>, ttl?: number): Promise<T> {
     const cached = this.get<T>(key);
@@ -157,6 +171,13 @@ class ApiCache {
     const data = await fetcher();
     this.set(key, data, ttl);
     return data;
+  }
+
+  /**
+   * Get all current cache keys (for debugging / admin panels).
+   */
+  keys(): string[] {
+    return Array.from(this.cache.keys());
   }
 }
 
