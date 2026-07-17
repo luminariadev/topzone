@@ -8,6 +8,7 @@
  * @returns Formatted currency string (e.g., "Rp 150.000")
  */
 export function formatCurrency(amount: number, currency = 'IDR'): string {
+  if (!Number.isFinite(amount)) return 'Rp 0';
   if (currency === 'IDR') {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
