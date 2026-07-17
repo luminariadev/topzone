@@ -6,8 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  lint-and-typecheck:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,5 +25,39 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci
+      - run: npx astro check || true  # Type check (non-blocking)
       - run: npm test
-      - run: npm run build --if-present
+
+  build-and-perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Bundle Analysis
+        run: node scripts/bundle-analyze.js
+        continue-on-error: true
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.14.x
+          lhci autorun --collect.staticDistDir=./dist --collect.url=https://topzone.vercel.app --assert.presets=lighthouse:recommended --upload.target=temporary-public-storage || echo "Lighthouse CI non-blocking"
+        continue-on-error: true
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    needs: [lint-and-typecheck]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-comment: true
+          vercel-args: '--prebuilt'
