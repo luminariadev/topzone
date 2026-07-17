@@ -93,6 +93,9 @@ export function getStarArray(rating: number, maxRating = 5): ('full' | 'half' | 
  * @param target - Target object
  * @param sources - Source object(s)
  * @returns Merged object
+ * @example
+ * const merged = deepMerge({ a: 1, b: { c: 2 } }, { b: { d: 3 } });
+ * // Result: { a: 1, b: { c: 2, d: 3 } }
  */
 export function deepMerge<T extends Record<string, unknown>, S extends Partial<T>>(target: T, ...sources: S[]): T {
   for (const source of sources) {
