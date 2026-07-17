@@ -37,7 +37,7 @@ async function generateSplash({ file, width, height, label }) {
     <rect width="100%" height="100%" fill="${splashColor}"/>
     <rect x="${width * 0.15}" y="${height * 0.38}" width="${width * 0.7}" height="${height * 0.08}" fill="${textColor}"/>
     <text x="${width / 2}" y="${height * 0.43}" font-family="Arial Black, sans-serif" font-size="${fontSize}" font-weight="900" fill="${textColor}" text-anchor="middle" dominant-baseline="middle" letter-spacing="8">${brandText}</text>
-    <text x="${width / 2}" y="${height * 0.55}" font-family="Arial, sans-serif" font-size="${Math.round(fontSize * 0.35)}" font-weight="600" fill="#ffffff" text-anchor="middle" opacity="0.6">Top Up Game & Gear</text>
+    <text x="${width / 2}" y="${height * 0.55}" font-family="Arial, sans-serif" font-size="${Math.round(fontSize * 0.35)}" font-weight="600" fill="#ffffff" text-anchor="middle" opacity="0.6">Top Up Game and Gear</text>
   </svg>`;
 
   const outputPath = join(outputDir, file);
@@ -62,7 +62,7 @@ async function main() {
         <rect width="100%" height="100%" fill="${splashColor}"/>
         <rect x="${splash.width * 0.15}" y="${splash.height * 0.38}" width="${splash.width * 0.7}" height="${splash.height * 0.08}" fill="${textColor}"/>
         <text x="${splash.width / 2}" y="${splash.height * 0.43}" font-family="Arial Black, sans-serif" font-size="${fontSize}" font-weight="900" fill="${textColor}" text-anchor="middle" dominant-baseline="middle" letter-spacing="8">${brandText}</text>
-        <text x="${splash.width / 2}" y="${splash.height * 0.55}" font-family="Arial, sans-serif" font-size="${Math.round(fontSize * 0.35)}" font-weight="600" fill="#ffffff" text-anchor="middle" opacity="0.6">Top Up Game & Gear</text>
+        <text x="${splash.width / 2}" y="${splash.height * 0.55}" font-family="Arial, sans-serif" font-size="${Math.round(fontSize * 0.35)}" font-weight="600" fill="#ffffff" text-anchor="middle" opacity="0.6">Top Up Game and Gear</text>
       </svg>`;
 
       await mkdirSync(outputDir, { recursive: true });
