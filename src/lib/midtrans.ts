@@ -1,14 +1,23 @@
 // src/lib/midtrans.ts
 // Midtrans Snap integration utilities
+// Supports both Sandbox and Production environments automatically
 
 const MIDTRANS_CLIENT_KEY = import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || '';
+const IS_SANDBOX = import.meta.env.PUBLIC_MIDTRANS_SANDBOX === 'true';
+
+/** Get the appropriate Snap script URL based on environment */
+function getSnapScriptUrl(): string {
+  return IS_SANDBOX
+    ? 'https://app.sandbox.midtrans.com/snap/snap.js'
+    : 'https://app.midtrans.com/snap/snap.js';
+}
 
 export function loadSnapScript(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === 'undefined') return reject(new Error('Not browser'));
     if ((window as any).snap) return resolve();
     const script = document.createElement('script');
-    script.src = 'https://app.midtrans.com/snap/snap.js';
+    script.src = getSnapScriptUrl();
     script.setAttribute('data-client-key', MIDTRANS_CLIENT_KEY);
     script.async = true;
     script.onload = () => resolve();
@@ -36,4 +45,13 @@ export function openSnapPayment(token: string, callbacks: { onSuccess?: () => vo
     onPending: () => callbacks.onPending?.(),
     onError: () => callbacks.onError?.(),
   });
+}
+
+/**
+ * Midtrans Snap window type declaration
+ */
+interface SnapWindow extends Window {
+  snap?: {
+    pay: (token: string, callbacks: { onSuccess: () => void; onPending: () => void; onError: () => void }) => void;
+  };
 }
