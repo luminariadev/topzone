@@ -947,6 +947,30 @@ Total commit hari ini: 10/10 ✅
 Target tercapai? Hijau ✅
 ```
 
+### Sheet Harian: 2026-07-17
+
+```
+Tanggal: 2026-07-17
+Hari ke: 24 / ___
+
+| # | Commit | Scope | Selesai? |
+|:-:|--------|-------|:--------:|
+| 1 | feat(a11y): add semantic HTML, ARIA roles, labels and landmark elements to FeaturedGames | a11y | ✅ |
+| 2 | feat(a11y): add semantic HTML structure, ARIA tab roles and landmark to FeaturedGears | a11y | ✅ |
+| 3 | feat(pwa): add color-scheme meta tag and msapplication-TileColor for PWA theming | pwa | ✅ |
+| 4 | feat(pwa): add edge_side_panel, launch_handler and dark background_color to manifest | pwa | ✅ |
+| 5 | fix(html): remove duplicate id attribute in games-grid-panel div | fix | ✅ |
+| 6 | feat(a11y): add aria-label and semantic navigation landmarks to Navbar | a11y | ✅ |
+| 7 | feat(a11y): add aria-labelledby heading reference to hero section landmark | a11y | ✅ |
+| 8 | feat(a11y): add ARIA tab roles and aria-selected to product gallery thumbnails | a11y | ✅ |
+| 9 | feat(a11y): add ARIA listbox role and live region to search results dropdown | a11y | ✅ |
+| 10 | feat(a11y): add aria-label landmark to footer for better screen reader navigation | a11y | ✅ |
+| 11 | docs(roadmap): update 2026-07-17 daily log with 11 a11y & PWA commits | docs | ✅ |
+
+Total commit hari ini: 11/10 ✅
+Target tercapai? Hijau ✅
+```
+
 ### Grafik Progress (per Fase)
 
 ```
@@ -954,12 +978,12 @@ Fase 1: Infrastructure ███████████████████
 Fase 2: Catalog        ████████████████████  [59/59 ✅ 100%]
 Fase 3: User Features  ████████████████████  [70/70 ✅ 100% - SELESAI]
 Fase 4: Admin Panel    ████████████████████  [43/44 🔄 ~98% - IN PROGRESS]
-Fase 5: SEO & Perf     ████████████████░░░░  [38/50 🔄 ~76% - IN PROGRESS]
+Fase 5: SEO & Perf     ██████████████████░░  [47/50 🔄 ~94% - IN PROGRESS]
 Fase 6: Testing        ░░░░░░░░░░░░░░░░░░░░  [0/71 ☐ ~0%]
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/103 ☐ ~0%]
-Fase 8: DevOps         ████░░░░░░░░░░░░░░░░  [5/35 🔄 ~14%]
+Fase 8: DevOps         ██████░░░░░░░░░░░░░░  [5/35 🔄 ~14%]
 
-Total: 291/508 commit (~57%)
+Total: 300/508 commit (~59%)
 ```
 
 ---
@@ -975,6 +999,6 @@ Total: 291/508 commit (~57%)
 
 ---
 
-*Last Updated: 2026-07-15*
+*Last Updated: 2026-07-17*
 *Author: Claude Code AI Assistant*
 *TopZone Project v0.0.1*
