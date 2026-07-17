@@ -14,7 +14,7 @@ import SearchBar from './SearchBar.astro';
     </a>
 
     <!-- Desktop Nav -->
-    <nav class="hidden md:flex items-center gap-6">
+    <nav class="hidden md:flex items-center gap-6" aria-label="Navigasi utama">
       <a href="/#hero" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Home</a>
       <a href="/#games" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Games</a>
       <a href="/#gear" class="font-bold text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Gear</a>
@@ -42,7 +42,7 @@ import SearchBar from './SearchBar.astro';
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white dark:bg-[#111] dark:border-[#27272a] text-black dark:text-gray-200">
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white dark:bg-[#111] dark:border-[#27272a] text-black dark:text-gray-200" role="navigation" aria-label="Menu mobile">
     <nav class="flex flex-col p-4 gap-3">
       <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Home</a>
       <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Games</a>
