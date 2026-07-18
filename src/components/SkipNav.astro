@@ -1,19 +1,36 @@
----
-/**
- * Skip Navigation Component
- * Allows keyboard users to skip directly to main content.
- * Visible on focus only, neubrutalism styled.
- */
-interface Props {
-  targetId?: string;
-}
-
-const { targetId = 'main-content' } = Astro.props;
----
+// src/components/SkipNav.astro
+// Skip navigation component: appears on keyboard focus for screen reader users
 
 <a
-  href={`#${targetId}`}
-  class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9999] focus:px-6 focus:py-3 focus:bg-black focus:text-neon-green focus:font-black focus:text-sm focus:uppercase focus:tracking-wider focus:border-4 focus:border-neon-green focus:shadow-[4px_4px_0px_0px_#39FF14] focus:outline-none"
+  href="#main-content"
+  id="skip-nav"
+  class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999]
+         px-6 py-3 border-4 border-black bg-neon-yellow text-black
+         font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_#000]"
+  aria-label="Lompat ke konten utama"
 >
-  Lompat ke konten utama
+  ⬇ Lompat ke konten utama
 </a>
+
+<script>
+  // Ensure skip link works with Astro's view transitions
+  function initSkipNav() {
+    const skipLink = document.getElementById('skip-nav');
+    if (!skipLink) return;
+
+    skipLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const main = document.getElementById('main-content');
+      if (main) {
+        main.setAttribute('tabindex', '-1');
+        main.focus();
+        // Remove tabindex after focus to avoid breaking DOM semantics
+        setTimeout(() => main.removeAttribute('tabindex'), 100);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSkipNav);
+  initSkipNav();
+</script>
