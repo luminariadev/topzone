@@ -1,123 +1,149 @@
-<div class="border-4 border-black p-6 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">
-  <h2 class="text-2xl font-black mb-6 text-black dark:text-white">🤝 Program Referral</h2>
+// src/components/ReferralDashboard.astro
+// Referral dashboard component shown in user profile
 
-  <div id="referral-loading" class="text-center py-10">
-    <p class="font-bold text-gray-500">Memuat data referral...</p>
+---
+import { getOrCreateReferralCode } from '../lib/referral';
+// In SSR, we'd fetch stats from supabase; here we use client-side data binding
+---
+
+<section id="referral-section" class="p-6 border-4 border-black dark:border-gray-600 bg-white dark:bg-[#111]" aria-labelledby="referral-heading">
+  <h3 id="referral-heading" class="text-2xl font-black uppercase tracking-tighter mb-4">
+    🤝 <span class="bg-neon-yellow px-2 border-2 border-black dark:border-gray-600">Referral</span> Program
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="p-4 border-4 border-black dark:border-gray-600 bg-black dark:bg-gray-800 text-white text-center">
+      <div class="text-3xl font-black" id="referral-total">0</div>
+      <div class="text-xs font-bold uppercase tracking-wider text-gray-400 mt-1">Total Referral</div>
+    </div>
+    <div class="p-4 border-4 border-black dark:border-gray-600 bg-neon-green dark:bg-gray-800 text-black dark:text-white text-center">
+      <div class="text-3xl font-black" id="referral-completed">0</div>
+      <div class="text-xs font-bold uppercase tracking-wider mt-1">Berhasil</div>
+    </div>
+    <div class="p-4 border-4 border-black dark:border-gray-600 bg-neon-pink dark:bg-gray-800 text-white text-center">
+      <div class="text-3xl font-black" id="referral-earnings">0</div>
+      <div class="text-xs font-bold uppercase tracking-wider mt-1">Points Didapat</div>
+    </div>
   </div>
 
-  <div id="referral-content" class="hidden">
-    <div class="mb-6">
-      <p class="text-sm font-black uppercase tracking-wider mb-2 text-black dark:text-white">Kode Referralmu</p>
-      <div class="flex items-center gap-2">
-        <input type="text" id="referral-code-display" readonly class="flex-1 px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] bg-gray-100 dark:bg-gray-700 dark:text-white" />
-        <button id="copy-referral-code" class="px-4 py-3 font-black uppercase border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">Salin</button>
-      </div>
-      <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-2">Bagikan kode ini ke temanmu dan dapatkan bonus!</p>
+  <div class="mb-6">
+    <label for="referral-link-input" class="block font-black text-sm uppercase tracking-wider mb-2 dark:text-gray-200">
+      Link Referral Kamu
+    </label>
+    <div class="flex gap-2">
+      <input
+        id="referral-link-input"
+        type="text"
+        class="flex-1 px-4 py-3 border-4 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-sm font-medium cursor-pointer font-mono"
+        readonly
+        value="Memuat..."
+        aria-label="Link referral kamu"
+      />
+      <button
+        id="copy-referral-btn"
+        class="px-5 py-3 border-4 border-black dark:border-gray-600 bg-black dark:bg-gray-700 text-white font-black text-sm hover:bg-neon-green hover:text-black transition-all"
+        aria-label="Salin link referral"
+      >
+        Salin
+      </button>
     </div>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+      Bagikan link ini ke teman-temanmu. Setiap teman yang daftar dan melakukan transaksi, kamu dapet <strong>500 points</strong>!
+    </p>
+  </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <div class="border-2 border-black p-4 bg-gray-50 dark:bg-gray-700 shadow-[2px_2px_0px_0px_#000] text-center">
-        <p class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-300">Total Referral</p>
-        <p class="text-2xl font-black text-black dark:text-white" id="total-referrals">0</p>
-      </div>
-      <div class="border-2 border-black p-4 bg-gray-50 dark:bg-gray-700 shadow-[2px_2px_0px_0px_#000] text-center">
-        <p class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-300">Referral Selesai</p>
-        <p class="text-2xl font-black text-neon-green" id="completed-referrals">0</p>
-      </div>
-      <div class="border-2 border-black p-4 bg-gray-50 dark:bg-gray-700 shadow-[2px_2px_0px_0px_#000] text-center">
-        <p class="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-300">Total Hadiah</p>
-        <p class="text-2xl font-black text-neon-pink" id="total-reward">Rp 0</p>
-      </div>
-    </div>
-
-    <button id="regenerate-referral-code" class="px-6 py-3 font-black uppercase border-2 border-black bg-red-400 text-white shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-      Regenerate Code
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <button
+      id="share-whatsapp-btn"
+      class="w-full py-3 border-4 border-black dark:border-gray-600 bg-green-500 text-white font-black text-center hover:bg-green-600 transition-all"
+    >
+      📱 Bagikan ke WhatsApp
     </button>
-    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-2">Hanya lakukan ini jika kodemu bocor atau butuh kode baru.</p>
+    <button
+      id="share-telegram-btn"
+      class="w-full py-3 border-4 border-black dark:border-gray-600 bg-blue-500 text-white font-black text-center hover:bg-blue-600 transition-all"
+    >
+      ✈️ Bagikan ke Telegram
+    </button>
   </div>
-</div>
+
+  <div id="referral-list" class="mt-6 hidden" aria-live="polite">
+    <h4 class="font-black text-sm uppercase tracking-wider mb-3 dark:text-gray-200">Riwayat Referral</h4>
+    <div class="space-y-2" id="referral-items">
+      <!-- Populated by client script -->
+      <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada referral.</p>
+    </div>
+  </div>
+</section>
 
 <script>
-  import { user } from '../stores/auth';
-
-  const referralLoading = document.getElementById('referral-loading');
-  const referralContent = document.getElementById('referral-content');
-  const referralCodeDisplay = document.getElementById('referral-code-display');
-  const totalReferrals = document.getElementById('total-referrals');
-  const completedReferrals = document.getElementById('completed-referrals');
-  const totalReward = document.getElementById('total-reward');
-  const copyReferralCodeBtn = document.getElementById('copy-referral-code');
-  const regenerateReferralCodeBtn = document.getElementById('regenerate-referral-code');
-
-  function formatRp(n) {
-    return 'Rp ' + Number(n).toLocaleString('id-ID');
-  }
-
-  async function fetchReferralData() {
-    const currentUser = user.get();
-    if (!currentUser || !currentUser.isLoggedIn) {
-      referralLoading.textContent = 'Login diperlukan untuk melihat data referral.';
-      return;
-    }
-
+  async function initReferralDashboard() {
     try {
-      const response = await fetch('/api/auth/referral-code');
-      const data = await response.json();
+      // Get user info from localStorage
+      const userJson = localStorage.getItem('topzone_current_user');
+      if (!userJson) return;
+      const user = JSON.parse(userJson);
+      const email = user.email;
+      const emailKey = email.replace(/[^a-zA-Z0-9]/g, '_');
 
-      if (response.ok) {
-        referralCodeDisplay.value = data.code;
-        totalReferrals.textContent = data.total_referrals;
-        completedReferrals.textContent = data.completed_referrals;
-        totalReward.textContent = formatRp(data.total_reward);
-        referralContent?.classList.remove('hidden');
-      } else {
-        throw new Error(data.error || 'Failed to fetch referral data');
+      // Load referral code from localStorage (set during registration)
+      const code = localStorage.getItem('topzone_referral_code_' + emailKey);
+      const input = document.getElementById('referral-link-input');
+      if (input && code) {
+        const baseUrl = window.location.origin;
+        input.value = `${baseUrl}/register?ref=${code}`;
       }
-    } catch (error) {
-      console.error('Error fetching referral data:', error);
-      referralLoading.textContent = 'Gagal memuat data referral: ' + error.message;
-    } finally {
-      referralLoading?.classList.add('hidden');
-    }
-  }
 
-  copyReferralCodeBtn?.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(referralCodeDisplay.value);
-      alert('Kode referral disalin!');
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-      alert('Gagal menyalin kode.');
-    }
-  });
+      // Load stats from localStorage (updated on page load)
+      const statsStr = localStorage.getItem('topzone_referral_stats_' + emailKey);
+      if (statsStr) {
+        const stats = JSON.parse(statsStr);
+        const totalEl = document.getElementById('referral-total');
+        const completedEl = document.getElementById('referral-completed');
+        const earningsEl = document.getElementById('referral-earnings');
+        if (totalEl) totalEl.textContent = String(stats.totalReferrals || 0);
+        if (completedEl) completedEl.textContent = String(stats.completedReferrals || 0);
+        if (earningsEl) earningsEl.textContent = String(stats.totalRewards || 0);
+      }
 
-  regenerateReferralCodeBtn?.addEventListener('click', async () => {
-    if (!confirm('Apakah kamu yakin ingin me-regenerate kode referral? Kode lama akan tidak berlaku.')) {
-      return;
-    }
-    regenerateReferralCodeBtn.disabled = true;
-    regenerateReferralCodeBtn.textContent = 'Regenerating...';
-    try {
-      const response = await fetch('/api/auth/referral-code', {
-        method: 'POST',
+      // Copy button
+      const copyBtn = document.getElementById('copy-referral-btn');
+      copyBtn?.addEventListener('click', async () => {
+        if (!input) return;
+        try {
+          await navigator.clipboard.writeText(input.value);
+          copyBtn.textContent = 'Tersalin! ✓';
+          setTimeout(() => {
+            copyBtn.textContent = 'Salin';
+          }, 2000);
+        } catch {
+          // Fallback
+          input.select();
+          document.execCommand('copy');
+          copyBtn.textContent = 'Tersalin! ✓';
+          setTimeout(() => {
+            copyBtn.textContent = 'Salin';
+          }, 2000);
+        }
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        alert('Kode referral berhasil di-regenerate!');
-        fetchReferralData(); // Reload data
-      } else {
-        throw new Error(data.error || 'Failed to regenerate referral code');
-      }
-    } catch (error) {
-      console.error('Error regenerating referral code:', error);
-      alert('Gagal me-regenerate kode referral: ' + error.message);
-    } finally {
-      regenerateReferralCodeBtn.disabled = false;
-      regenerateReferralCodeBtn.textContent = 'Regenerate Code';
+      // Share buttons
+      const whatsappBtn = document.getElementById('share-whatsapp-btn');
+      const telegramBtn = document.getElementById('share-telegram-btn');
+      const shareText = encodeURIComponent('🎮 Yuk top up game di TopZone! Dapatkan diskon dan promo spesial. Daftar pake linkku: ');
+
+      whatsappBtn?.addEventListener('click', () => {
+        window.open(`https://wa.me/?text=${shareText}${encodeURIComponent(input?.value || '')}`, '_blank');
+      });
+
+      telegramBtn?.addEventListener('click', () => {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(input?.value || '')}&text=${shareText}`, '_blank');
+      });
+    } catch (e) {
+      console.warn('[ReferralDashboard] Error:', e);
     }
-  });
+  }
 
-  user.subscribe(fetchReferralData);
-  fetchReferralData();
+  document.addEventListener('astro:page-load', initReferralDashboard);
+  initReferralDashboard();
 </script>
