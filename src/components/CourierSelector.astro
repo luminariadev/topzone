@@ -1,0 +1,183 @@
+// src/components/CourierSelector.astro
+// Courier selection component for checkout — supports JNE, J&T, Sicepat, GoSend
+
+interface Courier {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  estimatedDays: string;
+  service: string;
+  basePrice?: number;
+  price?: number;
+}
+
+const couriers: Courier[] = [
+  {
+    id: 'jne',
+    name: 'JNE',
+    logo: '🚚',
+    description: 'Jalur Nugraha Ekakurir — layanan ekspres paling populer di Indonesia',
+    estimatedDays: '2-4 hari',
+    service: 'REG / YES',
+  },
+  {
+    id: 'jnt',
+    name: 'J&T Express',
+    logo: '📦',
+    description: 'Layanan cepat dengan jangkauan luas dan harga kompetitif',
+    estimatedDays: '2-5 hari',
+    service: 'Standar',
+  },
+  {
+    id: 'sicepat',
+    name: 'SiCepat',
+    logo: '⚡',
+    description: 'Pengiriman cepat dengan tracking real-time dan CS responsif',
+    estimatedDays: '1-3 hari',
+    service: 'SI CEPAT / GOKIL',
+  },
+  {
+    id: 'gosend',
+    name: 'GoSend',
+    logo: '🛵',
+    description: 'Pengiriman instan atau same-day untuk area Jabodetabek',
+    estimatedDays: '1-2 jam',
+    service: 'Instant / Same-Day',
+  },
+];
+
+const defaultCourier = 'jne';
+---
+
+<div id="courier-section" class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-black uppercase tracking-wide" id="courier-heading">Pilih Jasa Pengiriman</h3>
+    <a href="#shipping-address" class="text-sm font-bold text-neon-pink hover:underline">← Ubah Alamat</a>
+  </div>
+
+  <fieldset>
+    <legend class="sr-only">Pilih jasa pengiriman</legend>
+    <div class="space-y-3" role="radiogroup" aria-labelledby="courier-heading" id="courier-options">
+      {couriers.map((courier, idx) => (
+        <label
+          class:list={[
+            'flex items-center gap-4 p-4 border-4 cursor-pointer transition-all select-none',
+            idx === 0
+              ? 'border-black dark:border-gray-600 bg-neon-yellow dark:bg-gray-800'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-[#18181b] hover:border-black dark:hover:border-gray-400'
+          ]}
+          data-courier-id={courier.id}
+        >
+          <input
+            type="radio"
+            name="courier"
+            value={courier.id}
+            id={`courier-${courier.id}`}
+            class:list={['sr-only', courier.id === defaultCourier ? 'checked:' : '']}
+            checked={courier.id === defaultCourier}
+            aria-describedby={`courier-desc-${courier.id}`}
+          />
+          <span class="text-3xl" role="img" aria-hidden="true">{courier.logo}</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="font-black text-lg">{courier.name}</span>
+              <span class="text-xs font-bold px-2 py-0.5 bg-black text-white dark:bg-gray-600">{courier.service}</span>
+            </div>
+            <p id={`courier-desc-${courier.id}`} class="text-sm text-gray-600 dark:text-gray-400 mt-0.5 truncate">
+              {courier.description}
+            </p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <div class="font-black text-lg">{courier.estimatedDays}</div>
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400">Estimasi tiba</div>
+          </div>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <!-- Shipping cost display -->
+  <div id="shipping-cost-display" class="hidden p-4 border-4 border-black dark:border-gray-600 bg-gray-50 dark:bg-[#1a1a1a]">
+    <div class="flex items-center justify-between">
+      <span class="font-bold text-gray-600 dark:text-gray-400">Biaya Pengiriman</span>
+      <span id="shipping-cost-value" class="font-black text-xl" aria-live="polite">Rp 0</span>
+    </div>
+    <p id="shipping-cost-note" class="text-xs text-gray-500 mt-1">Biaya dihitung berdasarkan berat dan tujuan</p>
+  </div>
+</div>
+
+<script>
+  function initCourierSelector() {
+    const labels = document.querySelectorAll('[data-courier-id]');
+    const costDisplay = document.getElementById('shipping-cost-display');
+    const costValue = document.getElementById('shipping-cost-value');
+    const costNote = document.getElementById('shipping-cost-note');
+
+    // Set of predefined shipping costs (in real app this comes from API)
+    const COURIER_COSTS: Record<string, number> = {
+      gosend: 25000,
+      sicepat: 18000,
+      jnt: 15000,
+      jne: 12000,
+    };
+
+    function updateActiveLabel() {
+      labels.forEach(label => {
+        const input = label.querySelector('input[type="radio"]') as HTMLInputElement;
+        if (input?.checked) {
+          label.classList.remove('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-[#18181b]');
+          label.classList.add('border-black', 'dark:border-gray-400', 'bg-neon-yellow', 'dark:bg-gray-800');
+        } else {
+          label.classList.add('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-[#18181b]');
+          label.classList.remove('border-black', 'dark:border-gray-400', 'bg-neon-yellow', 'dark:bg-gray-800');
+        }
+      });
+    }
+
+    function updateCost(courierId: string) {
+      if (!costDisplay || !costValue) return;
+      const cost = COURIER_COSTS[courierId] || 0;
+      costDisplay.classList.remove('hidden');
+      costValue.textContent = `Rp ${cost.toLocaleString('id-ID')}`;
+      
+      // Dispatch event for checkout to pick up
+      window.dispatchEvent(new CustomEvent('courier-selected', {
+        detail: { courierId, cost }
+      }));
+
+      if (costNote) {
+        costNote.textContent = courierId === 'gosend'
+          ? 'Pengiriman instan — biasanya tiba dalam 1-2 jam'
+          : 'Biaya dihitung berdasarkan berat dan tujuan';
+      }
+    }
+
+    labels.forEach(label => {
+      const input = label.querySelector('input[type="radio"]') as HTMLInputElement;
+      const courierId = label.getAttribute('data-courier-id') || '';
+
+      label.addEventListener('click', () => {
+        if (input) {
+          input.checked = true;
+          updateActiveLabel();
+          updateCost(courierId);
+        }
+      });
+
+      input?.addEventListener('change', () => {
+        updateActiveLabel();
+        updateCost(courierId);
+      });
+    });
+
+    // Initialize
+    const checkedInput = document.querySelector('input[name="courier"]:checked') as HTMLInputElement;
+    const initialCourier = checkedInput?.value || 'jne';
+    updateActiveLabel();
+    updateCost(initialCourier);
+  }
+
+  document.addEventListener('astro:page-load', initCourierSelector);
+  initCourierSelector();
+</script>
