@@ -1,0 +1,184 @@
+// src/components/ShippingAddressForm.astro
+// Shipping address selection and management for checkout flow
+
+export interface ShippingAddress {
+  id?: string;
+  label: string;
+  recipientName: string;
+  phone: string;
+  province: string;
+  city: string;
+  district: string;
+  postalCode: string;
+  fullAddress: string;
+  isDefault?: boolean;
+}
+
+interface Props {
+  addresses?: ShippingAddress[];
+  selectedId?: string;
+}
+
+const { addresses = [], selectedId } = Astro.props;
+
+// Sample addresses (in real app fetched from Supabase)
+const defaultAddresses: ShippingAddress[] = [
+  {
+    id: 'addr-1',
+    label: 'Rumah',
+    recipientName: 'Ahmad Rizki',
+    phone: '081234567890',
+    province: 'DKI Jakarta',
+    city: 'Jakarta Selatan',
+    district: 'Kebayoran Baru',
+    postalCode: '12110',
+    fullAddress: 'Jl. Sudirman No. 123, RT 001/RW 002, Kelurahan Senayan',
+    isDefault: true,
+  },
+  {
+    id: 'addr-2',
+    label: 'Kantor',
+    recipientName: 'Ahmad Rizki',
+    phone: '081234567890',
+    province: 'DKI Jakarta',
+    city: 'Jakarta Pusat',
+    district: 'Tanah Abang',
+    postalCode: '10220',
+    fullAddress: 'Gedung Mandiri Lt. 15, Jl. Jend. Sudirman Kav. 54-55',
+    isDefault: false,
+  },
+];
+
+const allAddresses = addresses.length > 0 ? addresses : defaultAddresses;
+const activeAddress = allAddresses.find(a => a.id === selectedId) || allAddresses.find(a => a.isDefault) || allAddresses[0];
+
+const provinces = ['DKI Jakarta', 'Jawa Barat', 'Jawa Timur', 'Jawa Tengah', 'Banten', 'Sumatera Utara', 'Sumatera Selatan', 'Lampung', 'Bali', 'Kalimantan'];
+const citiesByProvince: Record<string, string[]> = {
+  'DKI Jakarta': ['Jakarta Selatan', 'Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat', 'Jakarta Timur'],
+  'Jawa Barat': ['Bandung', 'Bekasi', 'Depok', 'Tangerang', 'Bogor'],
+  'Jawa Timur': ['Surabaya', 'Malang', 'Sidoarjo', 'Gresik', 'Kediri'],
+  'Jawa Tengah': ['Semarang', 'Solo', 'Yogyakarta', 'Magelang', 'Salatiga'],
+  'Banten': ['Tangerang', 'Tangerang Selatan', 'Serang', 'Cilegon'],
+};
+---
+
+<section class="space-y-4" id="shipping-address-section" aria-labelledby="shipping-heading">
+  <h3 id="shipping-heading" class="text-lg font-black uppercase tracking-wide">Alamat Pengiriman</h3>
+
+  <!-- Saved addresses -->
+  {allAddresses.length > 0 && (
+    <div class="space-y-3" id="saved-addresses">
+      <p class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Alamat Tersimpan</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Pilih alamat pengiriman">
+        {allAddresses.map((addr, idx) => (
+          <label
+            class:list={[
+              'flex gap-3 p-4 border-4 cursor-pointer transition-all select-none',
+              addr.id === activeAddress?.id
+                ? 'border-black dark:border-gray-400 bg-neon-yellow dark:bg-gray-800'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-[#18181b] hover:border-black dark:hover:border-gray-400'
+            ]}
+            data-addr-id={addr.id}
+          >
+            <input
+              type="radio"
+              name="saved-address"
+              value={addr.id}
+              class="sr-only"
+              checked={addr.id === activeAddress?.id}
+              aria-label={`${addr.label}: ${addr.recipientName}, ${addr.fullAddress}`}
+            />
+            <div class="flex-shrink-0">
+              <span class="inline-flex items-center justify-center w-8 h-8 border-2 border-black dark:border-gray-400 bg-black dark:bg-gray-700 text-white font-black text-sm">
+                {addr.label === 'Rumah' ? '🏠' : addr.label === 'Kantor' ? '🏢' : '📍'}
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-black text-sm">{addr.recipientName}</span>
+                {addr.isDefault && (
+                  <span class="text-xs font-bold px-1.5 py-0.5 bg-black text-white dark:bg-gray-600">UTAMA</span>
+                )}
+              </div>
+              <p class="text-xs text-gray-600 dark:text-gray-400">{addr.phone}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5 truncate">{addr.fullAddress}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-500">{addr.city}, {addr.postalCode}</p>
+            </div>
+          </label>
+        ))}
+      </div>
+
+      <!-- "Add new address" button -->
+      <button
+        type="button"
+        id="add-new-address-btn"
+        class="w-full py-3 border-4 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 font-bold text-sm hover:border-black dark:hover:border-gray-400 hover:text-black dark:hover:text-white transition-all"
+        aria-haspopup="dialog"
+      >
+        + Tambah Alamat Baru
+      </button>
+    </div>
+  )}
+
+  <!-- Selected address detail display -->
+  {activeAddress && (
+    <div
+      id="selected-address-detail"
+      class="hidden p-4 border-4 border-black dark:border-gray-600 bg-gray-50 dark:bg-[#1a1a1a]"
+      aria-live="polite"
+    >
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">{activeAddress.label === 'Rumah' ? '🏠' : '📍'}</span>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <p class="font-black">{activeAddress.recipientName} · {activeAddress.phone}</p>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{activeAddress.fullAddress}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-500">
+            {activeAddress.district}, {activeAddress.city}, {activeAddress.province} {activeAddress.postalCode}
+          </p>
+        </div>
+      </div>
+    </div>
+  )}
+</section>
+
+<script>
+  function initShippingAddress() {
+    const addressLabels = document.querySelectorAll('[data-addr-id]');
+    const addressDetail = document.getElementById('selected-address-detail');
+    const addBtn = document.getElementById('add-new-address-btn');
+
+    function updateActive() {
+      addressLabels.forEach(label => {
+        const input = label.querySelector('input[type="radio"]') as HTMLInputElement;
+        if (input?.checked) {
+          label.classList.remove('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-[#18181b]');
+          label.classList.add('border-black', 'dark:border-gray-400', 'bg-neon-yellow', 'dark:bg-gray-800');
+        } else {
+          label.classList.add('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-[#18181b]');
+          label.classList.remove('border-black', 'dark:border-gray-400', 'bg-neon-yellow', 'dark:bg-gray-800');
+        }
+      });
+    }
+
+    addressLabels.forEach(label => {
+      const input = label.querySelector('input[type="radio"]') as HTMLInputElement;
+      label.addEventListener('click', () => {
+        if (input) {
+          input.checked = true;
+          updateActive();
+        }
+      });
+    });
+
+    addBtn?.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('open-address-form'));
+    });
+
+    updateActive();
+  }
+
+  document.addEventListener('astro:page-load', initShippingAddress);
+  initShippingAddress();
+</script>
