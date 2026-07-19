@@ -3,6 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import TierUpgradeBanner from '../components/TierUpgradeBanner.astro';
 import AvatarUpload from '../components/AvatarUpload.astro';
 import ShippingAddressManager from '../components/ShippingAddressManager.astro';
 import PhoneVerification from '../components/PhoneVerification.astro';
@@ -20,8 +21,9 @@ import ReferralDashboard from '../components/ReferralDashboard.astro';
 
 <Layout>
   <Navbar />
+    <TierUpgradeBanner />
 
-  <!-- Login Gate -->
+    <!-- Login Gate -->
   <div id="login-gate" class="hidden min-h-screen flex items-center justify-center bg-neon-pink dark:bg-gray-900 py-16 px-4">
     <div class="w-full max-w-md border-4 border-black bg-white dark:bg-gray-800 p-8 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#FF007F] text-center">
       <div class="text-6xl mb-4">🔒</div>
