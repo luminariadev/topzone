@@ -1,0 +1,47 @@
+---
+<!-- src/components/Breadcrumbs.astro -->
+<!-- Breadcrumb navigation with JSON-LD structured data -->
+interface Props {
+  items: { label: string; href?: string }[];
+  separator?: string;
+}
+
+const { items, separator = '›' } = Astro.props;
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://topzone.id';
+---
+
+<nav class="breadcrumbs mb-4" aria-label="Breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+  <ol class="flex items-center gap-2 text-sm font-bold text-gray-500" role="list">
+    {items.map((item, index) => (
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="flex items-center gap-2">
+        {index > 0 && <span class="text-gray-400" aria-hidden="true">{separator}</span>}
+        <meta itemprop="position" content={index + 1} />
+        {item.href ? (
+          <a
+            itemprop="item"
+            href={item.href}
+            class="hover:text-neon-green transition-colors"
+          >
+            <span itemprop="name">{item.label}</span>
+            <meta itemprop="url" content={new URL(item.href, siteUrl).href} />
+          </a>
+        ) : (
+          <span itemprop="name" aria-current="page" class="text-neon-green">{item.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    max-width: 1200px;
+    margin: 0 auto 1rem;
+    padding: 0 1rem;
+  }
+  @media (max-width: 640px) {
+    .breadcrumbs {
+      padding: 0 0.5rem;
+    }
+  }
+</style>
