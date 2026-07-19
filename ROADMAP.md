@@ -494,21 +494,21 @@ Setiap hari **minimal 10 commit** dengan format:
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Test auth store: login, logout, user state | test | ☐ |
-| 2 | Test auth store: localStorage persistence | test | ☐ |
-| 3 | Test cart store: add item (new + existing) | test | ☐ |
-| 4 | Test cart store: remove item, update qty, clear | test | ☐ |
-| 5 | Test cart store: cartCount & cartTotal computed | test | ☐ |
-| 6 | Test wishlist store: add, remove, toggle | test | ☐ |
-| 7 | Test theme store: toggle, persist, apply | test | ☐ |
-| 8 | Expand format.test.ts: more currency formats | test | ☐ |
-| 9 | Expand format.test.ts: edge cases | test | ☐ |
-| 10 | Expand helpers.test.ts: sanitizeHtml | test | ☐ |
-| 11 | Expand helpers.test.ts: deepMerge | test | ☐ |
-| 12 | Test filters.ts: all filter combinations | test | ☐ |
-| 13 | Test products.ts: fetch with mock Supabase | test | ☐ |
-| 14 | Test voucher validation logic | test | ☐ |
-| 15 | Test payment & discount calculations | test | ☐ |
+|| 1 | Test auth store: login, logout, user state | test | ✅ |
+|| 2 | Test auth store: localStorage persistence | test | ✅ |
+|| 3 | Test cart store: add item (new + existing) | test | ✅ |
+|| 4 | Test cart store: remove item, update qty, clear | test | ✅ |
+|| 5 | Test cart store: cartCount & cartTotal computed | test | ✅ |
+|| 6 | Test wishlist store: add, remove, toggle | test | ☐ |
+|| 7 | Test theme store: toggle, persist, apply | test | ☐ |
+|| 8 | Expand format.test.ts: more currency formats | test | ✅ |
+|| 9 | Expand format.test.ts: edge cases | test | ✅ |
+|| 10 | Expand helpers.test.ts: sanitizeHtml | test | ✅ |
+|| 11 | Expand helpers.test.ts: deepMerge | test | ✅ |
+|| 12 | Test filters.ts: all filter combinations | test | ✅ |
+|| 13 | Test products.ts: fetch with mock Supabase | test | ☐ |
+|| 14 | Test voucher validation logic | test | ☐ |
+|| 15 | Test payment & discount calculations | test | ☐ |
 
 ### ☐ 6.2 Component Tests (10 commit)
 
@@ -1076,7 +1076,28 @@ Hari ke: 28 / ___
 
 Total commit hari ini: 12/10 ✅
 Target tercapai? Hijau ✅
+```
 Catatan: Seluruh 10 item Security Testing (6.5) SELESAI. XSS patterns diperkuat dengan add <link> tag blocking.
+```
+
+### Sheet Harian: 2026-07-22
+
+```
+Tanggal: 2026-07-22
+Hari ke: 29 / ___
+
+|| # | Commit | Scope | Selesai? |
+||:-:|--------|-------|:--------:|
+|| 1 | test(unit): add auth store test suite (login, logout, persist, orders key, email) | unit | ✅ |
+|| 2 | test(unit): add cart store test suite (add, remove, qty, clear, total, stock check) | unit | ✅ |
+|| 3 | test(unit): add format test suite (currency, NaN/Infinity guard, date, relative time) | unit | ✅ |
+|| 4 | test(unit): add helpers test suite (slugify, truncate, orderId, deepMerge, sanitizeHtml) | unit | ✅ |
+|| 5 | test(unit): add validation test suite (email, phone, order form, password strength) | unit | ✅ |
+|| 6 | test(unit): add filters test suite (price range, category, brand, search, sort, rating) | unit | ✅ |
+
+Total commit hari ini: 6/10 ⚠️ (hari ke-2 sisa tugas cron + fitur lanjutan)
+Target tercapai? Kuning ⚠️
+Catatan: 6 test files (321 tests passing) ditambahkan. Unit Tests 6.1 — 10/15 selesai. Sisa malam di-handle oleh cron 01:00.
 ```
 
 ---
@@ -1089,11 +1110,11 @@ Fase 2: Catalog        ███████████████████
 Fase 3: User Features  █████████░░░░░░░░░░░░  [158/192 🔄 ~82%]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
-Fase 6: Testing        ██████░░░░░░░░░░░░░░░  [12/77 🔄 ~16%] ← Security 10/10 selesai!
+Fase 6: Testing        ████████░░░░░░░░░░░░░░  [18/77 🔄 ~23%] ← Unit tests 10/15, Security 10/10
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/110 ☐ ~0%]
 Fase 8: DevOps         ██████████░░░░░░░░░░░  [108/135 🔄 ~80%]
 
-Total: 433/669 commit (~64.7%)
+Total: 439/669 commit (~65.6%)
 ```
 
 ---
@@ -1109,6 +1130,5 @@ Total: 433/669 commit (~64.7%)
 
 ---
 
-*Last Updated: 2026-07-21 01:47*
-*Author: Claude Code AI Assistant*
+*Last Updated: 2026-07-22 02:15*
 *TopZone Project v0.0.1*
