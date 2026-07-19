@@ -99,8 +99,11 @@ export function sanitizeInput(input: string): string {
 }
 
 /**
- * Check if a string is a valid Indonesian postal code.
+ * Validate a postal code (Indonesian format: 5 digits, starts 1-9).
+ * @param code - Postal code string
+ * @returns true if the postal code is valid
  */
 export function isValidPostalCode(code: string): boolean {
+  if (!code || typeof code !== 'string') return false;
   return /^[1-9]\d{4}$/.test(code.trim());
 }
