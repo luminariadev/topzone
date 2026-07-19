@@ -323,7 +323,7 @@ import Footer from '../components/Footer.astro';
   setTimeout(loadShippingAddresses, 200);
 
   // ═══════════════════════════════════════════════════════
-  // POINTS SYSTEM
+  // POINTS SYSTEM — integrate with spend-points API
   // ═══════════════════════════════════════════════════════
   var availablePoints = 0;
   var appliedPoints = 0;
@@ -336,12 +336,10 @@ import Footer from '../components/Footer.astro';
         availablePoints = data.total_points || 0;
         document.getElementById('points-available').textContent = availablePoints.toLocaleString('id-ID') + ' pts';
       }
-    } catch(e) {
-      console.warn('Failed to fetch points:', e);
-    }
+    } catch(e) { console.warn('Failed to fetch points:', e); }
   }
 
-  document.getElementById('apply-points')?.addEventListener('click', function() {
+  document.getElementById('apply-points')?.addEventListener('click', async function() {
     var input = document.getElementById('points-use');
     var points = parseInt(input.value) || 0;
     var msg = document.getElementById('points-msg');
@@ -360,18 +358,42 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
+    // Call API to spend points
+    try {
+      var resp = await fetch('/api/user/spend-points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ points, action: 'reserve' })
+      });
+      var result = await resp.json();
+      if (!resp.ok) {
+        msg.textContent = '❌ ' + (result.error || 'Gagal menggunakan poin');
+        msg.className = 'mt-2 text-xs font-bold text-red-500';
+        msg.classList.remove('hidden');
+        return;
+      }
+    } catch(e) {
+      msg.textContent = '❌ Gagal terhubung ke server. Coba lagi.';
+      msg.className = 'mt-2 text-xs font-bold text-red-500';
+      msg.classList.remove('hidden');
+      return;
+    }
+
     appliedPoints = points;
-    msg.textContent = '✅ ' + points.toLocaleString('id-ID') + ' poin digunakan untuk diskon: Rp ' + (points * 1000).toLocaleString('id-ID');
+    msg.textContent = '✅ ' + points.toLocaleString('id-ID') + ' poin digunakan: Rp ' + (points * 1000).toLocaleString('id-ID');
     msg.className = 'mt-2 text-xs font-bold text-neon-green';
     msg.classList.remove('hidden');
     input.value = points;
+    updateTotalWithPoints();
+  });
 
+  function updateTotalWithPoints() {
     var subtotalEl = document.getElementById('checkout-subtotal');
     var totalEl = document.getElementById('checkout-total');
     var subtotalText = subtotalEl.textContent.replace(/[^0-9]/g, '');
     var subtotal = parseInt(subtotalText) || 0;
-    totalEl.textContent = formatRp(subtotal - (points * 1000));
-  });
+    totalEl.textContent = formatRp(subtotal - (appliedPoints * 1000));
+  }
 
   fetchAvailablePoints();
 
