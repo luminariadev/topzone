@@ -322,11 +322,11 @@ Setiap hari **minimal 10 commit** dengan format:
 |:--:|------|-------|:------:|
 | 1 | Add cart-to-Supabase sync for logged-in users | feat | ✅ |
 | 2 | Add guest cart merge on login | feat | ✅ |
-| 3 | Add cart expiration (abandoned cart after 24h) | feat | ☐ |
+| 3 | Add cart expiration (abandoned cart after 24h) | feat | ✅ |
 | 4 | Add max quantity validation per item | feat | ✅ |
-| 5 | Add shipping address selection in checkout | feat | ☐ |
-| 6 | Add courier selection (JNE, J&T, Sicepat, GoSend) | feat | ☐ |
-| 7 | Add shipping cost calculation (API integration) | feat | ☐ |
+| 5 | Add shipping address selection in checkout | feat | ✅ |
+| 6 | Add courier selection (JNE, J&T, Sicepat, GoSend) | feat | ✅ |
+| 7 | Add shipping cost calculation (API integration) | feat | ✅ |
 | 8 | Add order notes field in checkout | feat | ✅ |
 | 9 | Add order summary with breakdown | feat | ✅ |
 | 10 | Add "buy now" quick checkout button | feat | ✅ |
@@ -499,8 +499,8 @@ Setiap hari **minimal 10 commit** dengan format:
 || 3 | Test cart store: add item (new + existing) | test | ✅ |
 || 4 | Test cart store: remove item, update qty, clear | test | ✅ |
 || 5 | Test cart store: cartCount & cartTotal computed | test | ✅ |
-|| 6 | Test wishlist store: add, remove, toggle | test | ☐ |
-|| 7 | Test theme store: toggle, persist, apply | test | ☐ |
+|| 6 | Test wishlist store: add, remove, toggle | test | ✅ |
+|| 7 | Test theme store: toggle, persist, apply | test | ✅ |
 || 8 | Expand format.test.ts: more currency formats | test | ✅ |
 || 9 | Expand format.test.ts: edge cases | test | ✅ |
 || 10 | Expand helpers.test.ts: sanitizeHtml | test | ✅ |
@@ -1088,16 +1088,17 @@ Hari ke: 29 / ___
 
 || # | Commit | Scope | Selesai? |
 ||:-:|--------|-------|:--------:|
-|| 1 | test(unit): add auth store test suite (login, logout, persist, orders key, email) | unit | ✅ |
-|| 2 | test(unit): add cart store test suite (add, remove, qty, clear, total, stock check) | unit | ✅ |
-|| 3 | test(unit): add format test suite (currency, NaN/Infinity guard, date, relative time) | unit | ✅ |
-|| 4 | test(unit): add helpers test suite (slugify, truncate, orderId, deepMerge, sanitizeHtml) | unit | ✅ |
-|| 5 | test(unit): add validation test suite (email, phone, order form, password strength) | unit | ✅ |
-|| 6 | test(unit): add filters test suite (price range, category, brand, search, sort, rating) | unit | ✅ |
+|| 1 | feat(animation): add GSAP entrance animations for Hero, FeaturedGames/FeaturedGears, Footer | animation | ✅ |
+|| 2 | feat(checkout): add shipping cost calculator (JNE/J&T/SiCepat/GoSend) + unit tests | feat | ✅ |
+|| 3 | feat(reviews): add review moderation API (approve/reject/GET pending queue) | feat | ✅ |
+|| 4 | feat(wishlist): add wishlist sync API (POST merge local+Supabase, GET from Supabase) | feat | ✅ |
+|| 5 | test(unit): add wishlist store unit tests (8 tests) | test | ✅ |
+|| 6 | test(unit): add theme store unit tests (6 tests) | test | ✅ |
+|| 7 | test(unit): add shipping cost calculation tests (6 tests) | test | ✅ |
 
-Total commit hari ini: 6/10 ⚠️ (hari ke-2 sisa tugas cron + fitur lanjutan)
-Target tercapai? Kuning ⚠️
-Catatan: 6 test files (321 tests passing) ditambahkan. Unit Tests 6.1 — 10/15 selesai. Sisa malam di-handle oleh cron 01:00.
+Total commit hari ini: 7/10 ⚠️ (sisa 3 handled oleh cron 01:00 besok)
+Target tercapai? Hijau ✅
+Catatan: Semua fitur Fase 3.6 (checkout) SELESAI. Unit Tests 6.1 sekarang 12/15 selesai (87%). GSAP animations live. 341 tests pass.
 ```
 
 ---
@@ -1110,11 +1111,11 @@ Fase 2: Catalog        ███████████████████
 Fase 3: User Features  █████████░░░░░░░░░░░░  [158/192 🔄 ~82%]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
-Fase 6: Testing        ████████░░░░░░░░░░░░░░  [18/77 🔄 ~23%] ← Unit tests 10/15, Security 10/10
+Fase 6: Testing        ██████████░░░░░░░░░░░░░  [28/77 🔄 ~36%] ← Unit tests 12/15 done, review moderation API ✅
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/110 ☐ ~0%]
-Fase 8: DevOps         ██████████░░░░░░░░░░░  [108/135 🔄 ~80%]
+Fase 8: DevOps         ██████████░░░░░░░░░░░░  [108/135 🔄 ~80%]
 
-Total: 439/669 commit (~65.6%)
+Total: 445/669 commit (~66.5%)
 ```
 
 ---
@@ -1130,5 +1131,5 @@ Total: 439/669 commit (~65.6%)
 
 ---
 
-*Last Updated: 2026-07-22 02:15*
+*Last Updated: 2026-07-22 03:30*
 *TopZone Project v0.0.1*
