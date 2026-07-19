@@ -30,6 +30,9 @@ export function formatCurrency(amount: number, currency = 'IDR'): string {
  * @param date - Date object, ISO string, or timestamp
  * @param options - Intl.DateTimeFormatOptions (optional)
  * @returns Formatted date string (e.g., "20 Juni 2024")
+ * @example
+ * formatDate('2024-06-20') // "20 Juni 2024"
+ * formatDate(new Date(), { month: 'short' }) // "20 Jun 2024"
  */
 export function formatDate(
   date: Date | string | number,
