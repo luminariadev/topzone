@@ -12,7 +12,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-*.log
 
 # environment variables
 .env
@@ -25,7 +24,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-node_modules
 
 # VSCode
 .vscode/settings.json
@@ -37,12 +35,9 @@ node_modules
 public/icons/
 
 # Build debug/output logs
-build-debug.txt
-build-final.txt
-build-full.txt
-build-log.txt
-build-output.txt build-err2.log build-err3.log build-out3.log
-build-raw.txt
+build-*.txt
+build-err*.log
+build-out*.log
 
 # Notes
 note.txt
