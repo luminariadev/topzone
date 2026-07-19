@@ -286,7 +286,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 11 | Implement referral tracking & reward | feat | ✅ |
 | 12 | Add referral dashboard in profile | feat | ✅ |
 
-### ☐ 3.4 Voucher & Promo System (10 commit)
+### ✅ 3.4 Voucher & Promo System (10/10 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
@@ -316,7 +316,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 9 | Add social share buttons (WhatsApp, Twitter, Telegram) | feat | ✅ |
 | 10 | Add review analytics (avg rating, distribution) | feat | ✅ |
 
-### ☐ 3.6 Checkout & Cart Enhancement (12 commit)
+### ✅ 3.6 Checkout & Cart Enhancement (12/12 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
