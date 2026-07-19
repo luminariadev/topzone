@@ -1,1 +1,0 @@
-import{e as a}from"./cart.CRGCHWGR.js";const e=document.getElementById("add-gear-btn"),t=document.getElementById("gear-toast");e?.addEventListener("click",()=>{a({id:e.dataset.id,name:e.dataset.name,price:Number(e.dataset.price),img:e.dataset.img,type:"gear"}),t?.classList.remove("hidden"),setTimeout(()=>t?.classList.add("hidden"),2e3)});

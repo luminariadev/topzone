@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 import Button from '../components/Button.astro';
 ---
 
-<Layout>
+<Layout title="Keranjang Belanja - TopZone" description="Periksa item di keranjang belanja kamu sebelum checkout. Top up game dan beli gear gaming di TopZone." canonical="https://topzone.id/cart" robots="noindex, nofollow">
   <Navbar />
 
   <section class="py-16 min-h-screen bg-white dark:bg-gray-900">
@@ -71,7 +71,7 @@ import Button from '../components/Button.astro';
     if (listEl) {
       listEl.innerHTML = items.map((item) => `
         <div class="flex items-center gap-4 border-4 border-black p-4 bg-white dark:bg-gray-800 shadow-[4px_4px_0px_0px_#000]">
-          <img src="${item.img}" alt="${item.name}" class="w-20 h-20 object-cover border-2 border-black flex-shrink-0" />
+          <img src="${item.img}" alt="${item.name}" loading="lazy" class="w-20 h-20 object-cover border-2 border-black flex-shrink-0" />
           <div class="flex-1 min-w-0">
             <h3 class="font-black text-lg leading-tight mb-1 text-black dark:text-white">${item.name}</h3>
             <p class="font-bold text-neon-pink text-lg">${formatRp(item.price)}</p>
@@ -104,3 +104,4 @@ import Button from '../components/Button.astro';
 
   cartItems.subscribe(renderCart);
 </script>
+

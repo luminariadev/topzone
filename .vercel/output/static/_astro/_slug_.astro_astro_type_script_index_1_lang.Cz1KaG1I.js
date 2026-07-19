@@ -1,1 +1,0 @@
-import{e as a}from"./cart.CRGCHWGR.js";const d=document.querySelectorAll(".package-btn"),t=document.getElementById("add-toast");d.forEach(e=>{e.addEventListener("click",()=>{a({id:e.dataset.id,name:e.dataset.name,price:Number(e.dataset.price),img:e.dataset.img,type:"game"}),t?.classList.remove("hidden"),setTimeout(()=>t?.classList.add("hidden"),2e3)})});

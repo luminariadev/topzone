@@ -8,6 +8,7 @@ import { gears } from '../../data/gears';
 import { getUniqueBrands } from '../../utils/filters';
 import { paginate } from '../../utils/helpers';
 import type { Gear } from '../../types';
+import Schema from '../../components/seo/Schema.astro';
 
 // ─── Params ───────────────────────────────────────────────
 const url = Astro.url;
@@ -57,7 +58,16 @@ const sortOptions = [
 ];
 ---
 
-<Layout title={'Gear Catalog - TopZone'} description={'All your gaming peripherals in one place.'}>
+<Layout title={'Gear Catalog - TopZone'} description={'All your gaming peripherals in one place.'} keywords={'gaming gear, gaming keyboard, gaming mouse, gaming headset, gaming chair, gaming monitor, gaming controller, gaming accessories indonesia'}>
+  <!-- JSON-LD: BreadcrumbList -->
+  <Schema schema={{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://topzone.id/" },
+      { "@type": "ListItem", position: 2, name: "Gear", item: "https://topzone.id/gear" },
+    ],
+  }} />
   <Navbar />
   <main class="py-16 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +128,7 @@ const sortOptions = [
           {paginatedProducts.map((gear: Gear) => (
             <a href={`/gear/${gear.slug}`} class="group block border-4 border-black bg-white dark:bg-gray-800 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#FF007F] transition-all">
               <div class="aspect-[4/3] overflow-hidden border-b-2 border-black">
-                <img src={gear.img} alt={gear.name} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img src={gear.img} alt={gear.name} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async" />
               </div>
               <div class="p-5">
                 <span class="inline-block px-2 py-1 text-xs font-black uppercase tracking-widest mb-2 bg-black text-neon-green">{gear.tag}</span>

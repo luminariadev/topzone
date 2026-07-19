@@ -27,6 +27,8 @@ import Button from '../components/Button.astro';
               name="email"
               required
               placeholder="you@example.com"
+              aria-describedby="error-msg"
+              aria-invalid="false"
               class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-[1px_1px_0px_0px_#000] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"
             />
           </div>
@@ -40,12 +42,14 @@ import Button from '../components/Button.astro';
               required
               minlength="6"
               placeholder="Min 6 karakter"
+              aria-describedby="error-msg"
+              aria-invalid="false"
               class="w-full px-4 py-3 border-3 border-black font-bold text-lg shadow-[3px_3px_0px_0px_#000] focus:shadow-[1px_1px_0px_0px_#000] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all dark:bg-gray-700 dark:text-white"
             />
           </div>
 
-          <div id="error-msg" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm"></div>
-          <div id="unverified-msg" class="hidden bg-yellow-500 text-white font-black px-4 py-3 border-2 border-black text-sm text-center">
+          <div id="error-msg" class="hidden bg-red-500 text-white font-black px-4 py-3 border-2 border-black text-sm" role="alert" aria-live="assertive"></div>
+          <div id="unverified-msg" class="hidden bg-yellow-500 text-white font-black px-4 py-3 border-2 border-black text-sm text-center" role="status" aria-live="polite">
             Email belum diverifikasi! Cek inbox/spam.
             <button id="resend-verify-btn" class="ml-2 underline hover:text-neon-pink transition-colors">Kirim ulang</button>
           </div>
@@ -82,6 +86,10 @@ import Button from '../components/Button.astro';
           </button>
         </div>
 
+        <div class="mt-4 text-center">
+          <a href="/auth/forgot-password" class="text-sm font-bold text-neon-pink hover:underline transition-colors">Lupa password?</a>
+        </div>
+
         <div class="mt-6 text-center">
           <p class="font-bold text-gray-600 dark:text-gray-300">
             Belum punya akun?
@@ -105,6 +113,7 @@ import Button from '../components/Button.astro';
 <script>
   import { setLocalUser, setUser } from '../stores/auth';
   import { supabase, signInWithPassword, onAuthStateChange, supabaseQuery } from '../lib/supabase';
+  import { mergeCartOnLogin } from '../stores/cart';
 
   // --- OAuth Login Buttons ---
   async function loginOAuth(provider: 'google' | 'discord') {
@@ -181,6 +190,9 @@ import Button from '../components/Button.astro';
     if (!supabase) {
       setLocalUser(email, data.user?.user_metadata?.full_name);
     }
+
+    // Merge guest cart with server-side cart after login
+    await mergeCartOnLogin();
 
     var redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
     window.location.href = redirectUrl;
