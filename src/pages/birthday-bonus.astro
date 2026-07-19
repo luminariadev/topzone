@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Birthday Bonus - TopZone" description="Klaim bonus ulang tahun kamu!" canonical="https://topzone.id/birthday-bonus" robots="noindex, nofollow">
+  <Navbar />
+
+  <section class="py-16 min-h-screen bg-white dark:bg-gray-900" aria-label="Birthday Bonus">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-5xl font-black mb-2">🎂 Birthday <span style="color:#39FF14; -webkit-text-stroke:1px #000;">Bonus</span></h1>
+      <p class="text-gray-500 font-medium mb-10">Klaim bonus poin spesial di hari ulang tahunmu!</p>
+
+      <div id="bday-login" class="hidden text-center py-24 border-4 border-dashed border-black">
+        <div class="text-6xl mb-4">🔒</div>
+        <p class="text-2xl font-black mb-2">Login Diperlukan</p>
+        <a href="/login?redirect=/birthday-bonus" class="inline-block px-8 py-3 font-black uppercase border-2 border-black bg-neon-green shadow-[3px_3px_0px_0px_#000]">Masuk Sekarang</a>
+      </div>
+
+      <div id="bday-content" class="hidden">
+        <div class="border-4 border-black p-8 bg-neon-yellow shadow-[6px_6px_0px_0px_#000] text-center">
+          <div class="text-8xl mb-6">🎂</div>
+          <h2 class="text-3xl font-black mb-4">Happy Birthday!</h2>
+          <p class="text-lg font-bold mb-6" id="bday-message">Masukkan tanggal lahir kamu untuk klaim bonus.</p>
+
+          <div class="max-w-xs mx-auto">
+            <label class="block text-sm font-black uppercase tracking-wider mb-2">Tanggal Lahir</label>
+            <input type="date" id="bday-date" class="w-full px-4 py-3 border-3 border-black font-bold shadow-[3px_3px_0px_0px_#000] focus:shadow-none transition-all outline-none" />
+            <button id="bday-claim" class="mt-4 w-full py-4 font-black uppercase tracking-wider text-lg bg-black text-neon-green border-4 border-black shadow-[4px_4px_0px_0px_#39FF14] hover:-translate-y-1 transition-all">
+              🎉 Klaim Birthday Bonus!
+            </button>
+          </div>
+
+          <div id="bday-status" class="hidden mt-6 px-4 py-3 border-2 border-black font-black text-sm"></div>
+          <div id="bday-result" class="hidden mt-4 p-4 bg-neon-green border-2 border-black font-black">
+            ✅ Kamu dapat <span id="bday-points">0</span> bonus points! 🎉
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<script>
+  const loginEl = document.getElementById('bday-login');
+  const contentEl = document.getElementById('bday-content');
+  const claimBtn = document.getElementById('bday-claim');
+  const statusEl = document.getElementById('bday-status');
+  const resultEl = document.getElementById('bday-result');
+  const pointsEl = document.getElementById('bday-points');
+
+  async function init() {
+    try {
+      const resp = await fetch('/api/user/points');
+      if (resp.status === 401) {
+        loginEl?.classList.remove('hidden');
+        return;
+      }
+      contentEl?.classList.remove('hidden');
+    } catch (_) {
+      loginEl?.classList.remove('hidden');
+    }
+  }
+
+  claimBtn?.addEventListener('click', async () => {
+    const date = document.getElementById('bday-date').value;
+    if (!date) {
+      statusEl.textContent = '❌ Pilih tanggal lahir dulu!';
+      statusEl.className = 'mt-6 px-4 py-3 border-2 border-black font-black text-sm bg-red-400 text-white';
+      statusEl.classList.remove('hidden');
+      return;
+    }
+
+    claimBtn.disabled = true;
+    claimBtn.textContent = 'Mengklaim...';
+
+    try {
+      const resp = await fetch('/api/user/claim-birthday', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ birth_date: date }),
+      });
+      const data = await resp.json();
+
+      if (resp.ok && data.success) {
+        resultEl?.classList.remove('hidden');
+        if (pointsEl) pointsEl.textContent = data.points_awarded || data.points || 100;
+        statusEl.classList.add('hidden');
+      } else {
+        statusEl.textContent = '❌ ' + (data.error || 'Gagal klaim bonus.');
+        statusEl.className = 'mt-6 px-4 py-3 border-2 border-black font-black text-sm bg-red-400 text-white';
+        statusEl.classList.remove('hidden');
+      }
+    } catch (_) {
+      statusEl.textContent = '❌ Gagal terhubung ke server.';
+      statusEl.className = 'mt-6 px-4 py-3 border-2 border-black font-black text-sm bg-red-400 text-white';
+      statusEl.classList.remove('hidden');
+    } finally {
+      claimBtn.disabled = false;
+      claimBtn.textContent = '🎉 Klaim Birthday Bonus!';
+    }
+  });
+
+  init();
+</script>
