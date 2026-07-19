@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import ReviewPhotoUpload from '../../components/ReviewPhotoUpload.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { fetchGears } from '../../lib/products';
 import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/format';
@@ -94,13 +95,21 @@ const canonicalUrl = `https://topzone.id/gear/${gear.slug}`;
       { "@type": "ListItem", position: 3, name: gear.name, item: Astro.url.href },
     ],
   }} />
-  <Navbar />
+    <Navbar />
 
-  <section class="py-16 bg-white">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <!-- Breadcrumb Navigation -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      <Breadcrumbs items={[
+        { label: 'Home', href: '/' },
+        { label: 'Gear', href: '/gear' },
+        { label: gear.name },
+      ]} />
+    </div>
 
-        <!-- Product Image -->
+    <!-- Hero + Gallery Section -->
+    <section class="py-16 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <div class="border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
           <ImageGallery images={images} productName={gear.name} />
           <div class="bg-neon-yellow border-t-4 border-black px-4 py-2">

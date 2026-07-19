@@ -5,6 +5,7 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import Button from '../../components/Button.astro';
 import ReviewPhotoUpload from '../../components/ReviewPhotoUpload.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { fetchGames } from '../../lib/products';
 import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/format';
@@ -105,6 +106,15 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
     contactPoint: { "@type": "ContactPoint", telephone: "+62-xxx-xxxx", contactType: "customer service" },
   }} />
   <Navbar />
+
+  <!-- Breadcrumb Navigation -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+    <Breadcrumbs items={[
+      { label: 'Home', href: '/' },
+      { label: 'Games', href: '/games' },
+      { label: game.name },
+    ]} />
+  </div>
 
   <!-- Hero Banner -->
   <section class="relative h-64 md:h-80 flex items-end bg-black overflow-hidden border-b-4 border-black">
