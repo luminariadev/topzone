@@ -280,26 +280,26 @@ Setiap hari **minimal 10 commit** dengan format:
 | 5 | Create loyalty tier enum & table | feat | ☐ |
 | 6 | Implement tier logic (Bronze → Silver → Gold → Platinum) | feat | ✅ |
 | 7 | Display tier benefits & progress | feat | ✅ |
-| 8 | Add tier upgrade notification | feat | ☐ |
-| 9 | Add birthday bonus points (auto) | feat | ☐ |
-| 10 | Create referral code per user | feat | ☐ |
-| 11 | Implement referral tracking & reward | feat | ☐ |
-| 12 | Add referral dashboard in profile | feat | ☐ |
+| 8 | Add tier upgrade notification | feat | ✅ |
+| 9 | Add birthday bonus points (auto) | feat | ✅ |
+| 10 | Create referral code per user | feat | ✅ |
+| 11 | Implement referral tracking & reward | feat | ✅ |
+| 12 | Add referral dashboard in profile | feat | ✅ |
 
 ### ☐ 3.4 Voucher & Promo System (10 commit)
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
 | 1 | Create vouchers table migration | feat | ✅ |
-| 2 | Move voucher storage from localStorage to Supabase | feat | ☐ |
+| 2 | Move voucher storage from localStorage to Supabase | feat | ✅ |
 | 3 | Add voucher validation on server-side | feat | ✅ |
 | 4 | Add voucher usage constraints (max uses, expiry) | feat | ✅ |
 | 5 | Create admin voucher management UI | feat | ✅ |
 | 6 | Add promo banner system (homepage + admin config) | feat | ✅ |
 | 7 | Implement flash sale pricing (time-based) | feat | ✅ |
 | 8 | Add minimum purchase requirement for vouchers | feat | ✅ |
-| 9 | Add user-specific vouchers (targeted promos) | feat | ☐ |
-| 10 | Add voucher usage analytics (admin reports) | feat | ☐ |
+| 9 | Add user-specific vouchers (targeted promos) | feat | ✅ |
+| 10 | Add voucher usage analytics (admin reports) | feat | ✅ |
 
 ### ✅ 3.5 Reviews & Social (10 commit) ✅ DONE
 
@@ -1109,19 +1109,19 @@ Hari ke: 30 / ___
 
 ||| # | Commit | Scope | Selesai? |
 |||:-:|--------|-------|:--------:|
-||| 1 | feat(auth): add forgot-password page with email reset integration | feat | ✅ |
-||| 2 | feat(user): add voucher page and referral dashboard page | feat | ✅ |
-||| 3 | feat(review): add photo upload to review form (games + gear detail pages) | feat | ✅ |
-||| 4 | feat(profile): add loyalty & points panel (tier progress, upgrade banner, points history) | feat | ✅ |
-||| 5 | feat(checkout): integrate points spending via spend-points API | feat | ✅ |
-||| 6 | feat(user): add birthday bonus claim page with /api/user/claim-birthday | feat | ✅ |
-||| 7 | feat(checkout): integrate voucher validation via API + load from Supabase | feat | ✅ |
-||| 8 | fix(a11y): add WCAG accessibility — aria-labels, fieldset/legend, autocomplete, role=alert | feat | ✅ |
-||| 9 | docs(roadmap): update progress to 67.6% + mark Phase 3 completions | docs | ✅ |
+||| 1 | feat(user): add referral-code API (GET code+stats, POST regenerate) | feat | ✅ |
+||| 2 | feat(user): add referral-tracking API (GET history, POST process referral) | feat | ✅ |
+||| 3 | fix(referral): fix endpoints — referrals page now calls /api/user/ (was /api/auth/) | fix | ✅ |
+||| 4 | feat(admin): add voucher-assign API (POST assign voucher to users by email/ID) | feat | ✅ |
+||| 5 | feat(admin): add voucher assign modal UI in admin panel | feat | ✅ |
+||| 6 | feat(profile): add TierUpgradeBanner component (animated progress, dismissible) | feat | ✅ |
+||| 7 | feat(profile): inject TierUpgradeBanner into profile page | feat | ✅ |
+||| 8 | feat(cron): add check-birthdays cron endpoint (auto award bonus) | feat | ✅ |
+||| 9 | docs(roadmap): update progress to 68.8% + mark Fase 3 completions | docs | ✅ |
 
 Total commit hari ini: 9/10 ⚠️
 Target tercapai? Hijau ✅
-Catatan: 9 Fase 3 frontend integration commits. Photo upload live on games+gear details, points+tier on profile, voucher+points+accessibility on checkout, birthday bonus page. 478/707 (~67.6%). Sisa Fase 3: ~34 item.
+Catatan: Fase 3 referrals ✅, voucher-assign ✅, tier notification ✅, birthday auto cron ✅. 497/722 (~68.8%).
 ```
 
 ---
@@ -1131,7 +1131,7 @@ Catatan: 9 Fase 3 frontend integration commits. Photo upload live on games+gear 
 ```
 Fase 1: Infrastructure ████████████████████  [77/77 ✅ 100% - SELESAI]
 Fase 2: Catalog        ████████████████████  [69/69 ✅ 100% - SELESAI]
-Fase 3: User Features  ████████████░░░░░░░░  [167/192 🔄 ~87%]
+Fase 3: User Features  ███████████████░░░░░░░  [186/192 🔄 ~97%]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
 Fase 6: Testing        ██████████░░░░░░░░░░░░░  [28/77 🔄 ~36%] ← Unit tests 12/15 done, review moderation API ✅
