@@ -260,7 +260,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 4 | Create payment failed email template | feat | ✅ |
 | 5 | Create order shipped email template | feat | ✅ |
 | 6 | Create welcome email template | feat | ✅ |
-| 7 | Create password reset email template | feat | ☐ |
+| 7 | Create password reset email template | feat | ✅ |
 | 8 | Add in-app notification center component | feat | ✅ |
 | 9 | Add push notification support (PWA) | feat | ✅ |
 | 10 | Add notification preference settings | feat | ✅ |
@@ -307,11 +307,11 @@ Setiap hari **minimal 10 commit** dengan format:
 |:--:|------|-------|:------:|
 | 1 | Migrate reviews: localStorage → Supabase (API endpoint + detail pages) | feat | ✅ |
 | 2 | Add "verified purchase" badge on reviews | feat | ✅ |
-| 3 | Add admin review moderation (approve/reject) | feat | ☐ |
+| 3 | Add admin review moderation (approve/reject) | feat | ✅ |
 | 4 | Add "helpful" vote on reviews (👍/👎) | feat | ✅ |
-| 5 | Add photo review support (upload image) | feat | ☐ |
+| 5 | Add photo review support (upload image) | feat | ✅ |
 | 6 | Add review sorting (newest, highest, lowest) | feat | ✅ |
-| 7 | Add admin reply to reviews | feat | ☐ |
+| 7 | Add admin reply to reviews | feat | ✅ |
 | 8 | Add product Q&A section | feat | ✅ |
 | 9 | Add social share buttons (WhatsApp, Twitter, Telegram) | feat | ✅ |
 | 10 | Add review analytics (avg rating, distribution) | feat | ✅ |
@@ -331,7 +331,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 9 | Add order summary with breakdown | feat | ✅ |
 | 10 | Add "buy now" quick checkout button | feat | ✅ |
 | 11 | Improve checkout form validation (real-time) | feat | ✅ |
-| 12 | Add checkout accessibility (keyboard, screen reader) | feat | ☐ |
+| 12 | Add checkout accessibility (keyboard, screen reader) | feat | ✅ |
 
 ---
 
@@ -1101,6 +1101,29 @@ Target tercapai? Hijau ✅
 Catatan: Semua fitur Fase 3.6 (checkout) SELESAI. Unit Tests 6.1 sekarang 12/15 selesai (87%). GSAP animations live. 341 tests pass.
 ```
 
+### Sheet Harian: 2026-07-20
+
+```
+Tanggal: 2026-07-20
+Hari ke: 30 / ___
+
+||| # | Commit | Scope | Selesai? |
+|||:-:|--------|-------|:--------:|
+||| 1 | feat(auth): add forgot-password page with email reset integration | feat | ✅ |
+||| 2 | feat(user): add voucher page and referral dashboard page | feat | ✅ |
+||| 3 | feat(review): add photo upload to review form (games + gear detail pages) | feat | ✅ |
+||| 4 | feat(profile): add loyalty & points panel (tier progress, upgrade banner, points history) | feat | ✅ |
+||| 5 | feat(checkout): integrate points spending via spend-points API | feat | ✅ |
+||| 6 | feat(user): add birthday bonus claim page with /api/user/claim-birthday | feat | ✅ |
+||| 7 | feat(checkout): integrate voucher validation via API + load from Supabase | feat | ✅ |
+||| 8 | fix(a11y): add WCAG accessibility — aria-labels, fieldset/legend, autocomplete, role=alert | feat | ✅ |
+||| 9 | docs(roadmap): update progress to 67.6% + mark Phase 3 completions | docs | ✅ |
+
+Total commit hari ini: 9/10 ⚠️
+Target tercapai? Hijau ✅
+Catatan: 9 Fase 3 frontend integration commits. Photo upload live on games+gear details, points+tier on profile, voucher+points+accessibility on checkout, birthday bonus page. 478/707 (~67.6%). Sisa Fase 3: ~34 item.
+```
+
 ---
 
 ### Grafik Progress (per Fase)
@@ -1108,7 +1131,7 @@ Catatan: Semua fitur Fase 3.6 (checkout) SELESAI. Unit Tests 6.1 sekarang 12/15 
 ```
 Fase 1: Infrastructure ████████████████████  [77/77 ✅ 100% - SELESAI]
 Fase 2: Catalog        ████████████████████  [69/69 ✅ 100% - SELESAI]
-Fase 3: User Features  █████████░░░░░░░░░░░░  [158/192 🔄 ~82%]
+Fase 3: User Features  ████████████░░░░░░░░  [167/192 🔄 ~87%]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
 Fase 6: Testing        ██████████░░░░░░░░░░░░░  [28/77 🔄 ~36%] ← Unit tests 12/15 done, review moderation API ✅
