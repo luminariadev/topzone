@@ -398,26 +398,30 @@ import Footer from '../components/Footer.astro';
   fetchAvailablePoints();
 
   // ═══════════════════════════════════════════════════════
-  // VOUCHER SYSTEM
+  // VOUCHER SYSTEM — integrated with Supabase via /api/user/vouchers
   // ═══════════════════════════════════════════════════════
   var appliedDiscount = 0;
   var appliedCode = '';
+  var userVouchers = [];
 
-  function checkSavedVoucher() {
+  async function loadUserVouchers() {
     try {
-      var v = JSON.parse(localStorage.getItem('topzone_voucher'));
-      if (v && !v.used) {
-        document.getElementById('voucher-saved').textContent = '🎟 Voucher ' + v.code + ' tersedia! Diskon ' + v.discount + '% (klik Pakai untuk menggunakannya)';
-        document.getElementById('voucher-saved').classList.remove('hidden');
-        document.getElementById('voucher-input').value = v.code;
+      var resp = await fetch('/api/user/vouchers');
+      if (resp.ok) {
+        var data = await resp.json();
+        userVouchers = data.vouchers || [];
+        if (userVouchers.length > 0) {
+          var savedEl = document.getElementById('voucher-saved');
+          savedEl.textContent = '🎟 Kamu punya ' + userVouchers.length + ' voucher! Masukkan kode di atas.';
+          savedEl.className = 'mt-2 px-3 py-2 text-sm font-black border-2 border-black bg-neon-green text-black';
+          savedEl.classList.remove('hidden');
+        }
       }
-    } catch(e) {
-      console.warn('Failed to parse saved voucher:', e);
-    }
+    } catch(e) { console.warn('Failed to load vouchers:', e); }
   }
-  checkSavedVoucher();
+  loadUserVouchers();
 
-  document.getElementById('apply-voucher').addEventListener('click', function() {
+  document.getElementById('apply-voucher').addEventListener('click', async function() {
     var code = document.getElementById('voucher-input').value.trim().toUpperCase();
     var statusEl = document.getElementById('voucher-status');
     var savedEl = document.getElementById('voucher-saved');
@@ -429,24 +433,33 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    // Check if code matches saved voucher
+    // Validate via API
     try {
-      var v = JSON.parse(localStorage.getItem('topzone_voucher'));
-      if (v && v.code === code && !v.used) {
-        appliedDiscount = v.discount || 10;
+      var resp = await fetch('/api/checkout/validate-voucher', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code })
+      });
+      var result = await resp.json();
+
+      if (resp.ok && result.valid) {
+        appliedDiscount = result.discount || result.discount_percent || 10;
         appliedCode = code;
         statusEl.className = 'mt-2 px-3 py-2 text-sm font-black border-2 border-black bg-neon-green text-black';
-        statusEl.textContent = '✅ Voucher dipakai! Diskon ' + appliedDiscount + '%';
+        statusEl.textContent = '✅ Voucher ' + code + ' dipakai! Diskon ' + appliedDiscount + '%';
         statusEl.classList.remove('hidden');
         savedEl.classList.add('hidden');
         updateTotalWithDiscount();
-        return;
+      } else {
+        statusEl.className = 'mt-2 px-3 py-2 text-sm font-black border-2 border-black bg-red-400 text-white';
+        statusEl.textContent = '❌ ' + (result.error || 'Kode voucher tidak valid!');
+        statusEl.classList.remove('hidden');
       }
-    } catch(e) {}
-
-    statusEl.className = 'mt-2 px-3 py-2 text-sm font-black border-2 border-black bg-red-400 text-white';
-    statusEl.textContent = 'Kode voucher tidak valid atau sudah digunakan!';
-    statusEl.classList.remove('hidden');
+    } catch(e) {
+      statusEl.className = 'mt-2 px-3 py-2 text-sm font-black border-2 border-black bg-red-400 text-white';
+      statusEl.textContent = '❌ Gagal validasi voucher. Coba lagi.';
+      statusEl.classList.remove('hidden');
+    }
   });
 
   function updateTotalWithDiscount() {
