@@ -28,6 +28,7 @@ class ApiCache {
   private config: CacheConfig;
   private hits = 0;
   private misses = 0;
+  private evictions = 0;
 
   constructor(config: Partial<CacheConfig> = {}) {
     this.cache = new Map();
@@ -77,6 +78,7 @@ class ApiCache {
       const oldestKey = this.cache.keys().next().value;
       if (oldestKey) {
         this.cache.delete(oldestKey);
+        this.evictions++;
         if (this.config.debug) {
           console.log(`[Cache] EVICT: ${oldestKey} (cache full)`);
         }
@@ -144,7 +146,7 @@ class ApiCache {
   /**
    * Get cache statistics.
    */
-  stats(): { size: number; hits: number; misses: number; hitRate: string; maxEntries: number } {
+  stats(): { size: number; hits: number; misses: number; hitRate: string; maxEntries: number; evictions: number } {
     const total = this.hits + this.misses;
     return {
       size: this.cache.size,
@@ -152,6 +154,7 @@ class ApiCache {
       misses: this.misses,
       hitRate: total > 0 ? `${((this.hits / total) * 100).toFixed(1)}%` : '0%',
       maxEntries: this.config.maxEntries,
+      evictions: this.evictions,
     };
   }
 
