@@ -47,6 +47,7 @@ export function applyThemeToDocument(t: Theme) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
   root.classList.toggle('dark', t === 'dark');
+  root.style.colorScheme = t;
 }
 
 /** Listen for system colour scheme changes and update if user hasn't set a preference */
