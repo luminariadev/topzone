@@ -30,7 +30,7 @@ const games = await fetchGames();
     ) : (
       <div id="games-grid-panel" role="tabpanel" aria-labelledby="games-heading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-live="polite" aria-atomic="false">
         {games.map((game) => (
-          <article class="game-card group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150" data-category={game.category} role="article" aria-label={`${game.name} - Top Up ${game.currency || 'Game'}`}>
+          <article data-card-animate class="game-card group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150" data-category={game.category} role="article" aria-label={`${game.name} - Top Up ${game.currency || 'Game'}`}>
                       <a href={`/games/${game.slug}`} class="block" aria-label={`Lihat detail ${game.name} - Top up ${game.currency}`}>
               <div class="relative">
                 <img src={game.img} alt={`${game.name} - Top Up ${game.currency || 'Game'} di TopZone`} loading="lazy" decoding="async" class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]" width="400" height="300" />
