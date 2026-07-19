@@ -269,15 +269,15 @@ Setiap hari **minimal 10 commit** dengan format:
 | 13 | Add notification badge in navbar | feat | ✅ |
 | 14 | Test email delivery in staging | test | ☐ |
 
-### ☐ 3.3 Points, Loyalty & Rewards (12 commit)
+### ✅ 3.3 Points, Loyalty & Rewards (12 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Create points table in Supabase | feat | ☐ |
+| 1 | Create points table in Supabase | feat | ✅ |
 | 2 | Implement points earning (1pt/Rp1000) | feat | ✅ |
-| 3 | Implement points spending in checkout | feat | ☐ |
+| 3 | Implement points spending in checkout | feat | ✅ |
 | 4 | Add points history page in profile | feat | ✅ |
-| 5 | Create loyalty tier enum & table | feat | ☐ |
+| 5 | Create loyalty tier enum & table | feat | ✅ |
 | 6 | Implement tier logic (Bronze → Silver → Gold → Platinum) | feat | ✅ |
 | 7 | Display tier benefits & progress | feat | ✅ |
 | 8 | Add tier upgrade notification | feat | ✅ |
@@ -1131,14 +1131,14 @@ Catatan: Fase 3 referrals ✅, voucher-assign ✅, tier notification ✅, birthd
 ```
 Fase 1: Infrastructure ████████████████████  [77/77 ✅ 100% - SELESAI]
 Fase 2: Catalog        ████████████████████  [69/69 ✅ 100% - SELESAI]
-Fase 3: User Features  ████████████████░░░░░░  [189/192 🔄 ~98%]
+Fase 3: User Features  ████████████████████  [192/192 ✅ 100% - SELESAI]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
 Fase 6: Testing        ████████████░░░░░░░░░░░░  [33/77 🔄 ~43%] ← Unit tests 15/15 done ✅, Component tests 2/10 done
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/110 ☐ ~0%]
 Fase 8: DevOps         ██████████░░░░░░░░░░░░  [108/135 🔄 ~80%]
 
-Total: 500/720 commit (~69.4%)
+Total: 503/720 commit (~69.9%)
 ```
 
 ---
