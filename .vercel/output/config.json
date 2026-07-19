@@ -28,7 +28,63 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/admin/admin-2fa/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/admin-me/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/admin-roles/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/admin/audit-log/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/audit-log-cleanup/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/canned-responses/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/customer-ban/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/customer-detail/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/customer-export/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/customer-groups/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/customers/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/dashboard-stats/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/data-backup/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/email-config/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/export-report/?$",
 			"dest": "_render"
 		},
 		{
@@ -40,7 +96,31 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/admin/image-cleanup/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/ip-restriction/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/login-history/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/order-notifications/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/admin/orders/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/payment-config/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/product-images/?$",
 			"dest": "_render"
 		},
 		{
@@ -48,7 +128,31 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/admin/review-moderate/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/reviews/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/scheduled-report/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/site-config/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/system-health/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/admin/validate-session/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/voucher-analytics/?$",
 			"dest": "_render"
 		},
 		{
@@ -69,6 +173,18 @@
 		},
 		{
 			"src": "^/api/auth/me/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/auth/referral-code/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/auth/referral-complete/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/auth/referral-track/?$",
 			"dest": "_render"
 		},
 		{
@@ -96,11 +212,75 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/checkout/validate-voucher/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/checkout/?$",
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/email/logs/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/email/send/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/health/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/review-photos/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/reviews/helpful/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/reviews/reply/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/reviews/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/reviews-moderation/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/upload/review-image/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/addresses/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/claim-birthday/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/points/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/spend-points/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/tier-status/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/vouchers/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/voucher-analytics/?$",
 			"dest": "_render"
 		},
 		{
@@ -133,6 +313,10 @@
 		},
 		{
 			"src": "^/gear/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/guide/?$",
 			"dest": "_render"
 		},
 		{
