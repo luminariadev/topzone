@@ -70,24 +70,23 @@ import Footer from '../components/Footer.astro';
 
   async function loadReferral() {
     try {
-      // Get referral code
-      const codeResp = await fetch('/api/auth/referral-code');
+      // Get referral code via correct endpoint
+      const codeResp = await fetch('/api/user/referral-code');
       if (codeResp.status === 401) {
         loginRequired?.classList.remove('hidden');
         return;
       }
       const codeData = await codeResp.json();
-      const code = codeData.code || 'ERROR';
-      codeEl.textContent = code;
-      linkEl.textContent = window.location.origin + '/register?ref=' + code;
+      codeEl.textContent = codeData.code || codeData.error || 'ERROR';
+      linkEl.textContent = codeData.share_link || (window.location.origin + '/register?ref=' + codeData.code);
 
-      // Get referral stats
-      const trackResp = await fetch('/api/auth/referral-track');
+      // Get referral stats + history via correct endpoint
+      const trackResp = await fetch('/api/user/referral-tracking');
       const trackData = await trackResp.json();
       const refs = trackData.referrals || [];
 
-      totalEl.textContent = refs.length;
-      pendingEl.textContent = refs.filter(r => r.status === 'pending').length;
+      totalEl.textContent = codeData.stats?.total_referrals || refs.length;
+      pendingEl.textContent = codeData.stats?.pending_referrals || refs.filter(r => r.status === 'pending').length;
       earnedEl.textContent = refs.reduce((sum, r) => sum + (r.reward_points || 0), 0);
 
       if (refs.length > 0) {
