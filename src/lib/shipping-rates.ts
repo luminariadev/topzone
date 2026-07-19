@@ -46,7 +46,7 @@ export const COURIERS = [
     name: 'SiCepat',
     services: [
       { id: 'sicepat-regular', name: 'Regular', description: 'Regular (2-3 hari)', days: '2-3 hari' },
-      { id: 'sicepat-halal', name: 'Halu', description: 'Same Day (1 hari)', days: '1 hari' },
+      { id: 'sicepat-halu', name: 'Halu', description: 'Same Day (1 hari)', days: '1 hari' },
       { id: 'sicepat-bias', name: 'BESOK', description: 'Next Day (1-2 hari)', days: '1-2 hari' },
     ],
   },
@@ -79,6 +79,8 @@ const ZONE_MULTIPLIERS: Record<string, number> = {
   jawa_barat: 1.3,
   jawa_tengah: 1.5,
   jawa_timur: 1.5,
+  bali: 1.6,
+  yogyakarta: 1.2,
   sumatera: 1.8,
   kalimantan: 2.0,
   sulawesi: 2.5,
@@ -179,6 +181,8 @@ function getZoneKey(province: string): string {
   if (p.includes('jawa barat')) return 'jawa_barat';
   if (p.includes('jawa tengah')) return 'jawa_tengah';
   if (p.includes('jawa timur')) return 'jawa_timur';
+  if (p.includes('bali')) return 'bali';
+  if (p.includes('yogyakarta') || p.includes('jogja') || p.includes('diy')) return 'yogyakarta';
   if (p.includes('sumatera') || p.includes('sumatra')) return 'sumatera';
   if (p.includes('kalimantan')) return 'kalimantan';
   if (p.includes('sulawesi')) return 'sulawesi';
