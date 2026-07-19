@@ -184,6 +184,7 @@ const DANGEROUS_HTML_PATTERNS = [
   /<form\b[^>]*>/i,
   /<input\b[^>]*>/i,
   /<base\b[^>]*href\s*=/i,
+  /<link\b[^>]*href\s*=/i,
 ] as const;
 
 /**
@@ -226,6 +227,7 @@ export function sanitizeHtml(html: string): string {
   result = result.replace(/<object\b[^>]*>[\s\S]*?<\/object>/gi, '');
   result = result.replace(/<embed\b[^>]*>/gi, '');
   result = result.replace(/<base\b[^>]*>/gi, '');
+  result = result.replace(/<link\b[^>]*>/gi, '');
   result = result.replace(/<meta\b[^>]*http-equiv\s*=\s*["']refresh["'][^>]*>/gi, '');
 
   return result;
