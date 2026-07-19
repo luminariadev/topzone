@@ -1,0 +1,88 @@
+<!-- src/components/ReviewPhotoUpload.astro -->
+<!-- Upload up to 3 review photos with preview — calls /api/upload/review-image -->
+<div class="mt-3">
+  <label class="block text-sm font-black uppercase tracking-wider mb-2">
+    📷 Foto Review (opsional, maks 3)
+  </label>
+
+  <input
+    type="file"
+    id="review-photo-input"
+    accept="image/jpeg,image/png,image/webp"
+    multiple
+    class="hidden"
+    aria-label="Upload foto review"
+  />
+
+  <button
+    type="button"
+    id="review-photo-trigger"
+    class="px-4 py-2 font-black text-sm border-2 border-black bg-gray-100 hover:bg-gray-200 transition-all"
+    aria-label="Klik untuk upload foto review"
+  >
+    + Tambah Foto
+  </button>
+
+  <div id="review-photo-previews" class="grid grid-cols-3 gap-2 mt-3"></div>
+  <p id="review-photo-status" class="mt-2 text-xs font-bold text-gray-500 hidden"></p>
+</div>
+
+<style>
+  #review-photo-previews img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 2px solid #000;
+    display: block;
+  }
+</style>
+
+<script>
+  (function() {
+    const MAX_PHOTOS = 3;
+    const uploadedUrls = [];
+    const fileInput = document.getElementById('review-photo-input') as HTMLInputElement;
+    const trigger = document.getElementById('review-photo-trigger');
+    const previews = document.getElementById('review-photo-previews');
+    const statusEl = document.getElementById('review-photo-status');
+
+    // Expose to parent so review submit can get URLs
+    (window as any).__reviewPhotoUrls = uploadedUrls;
+
+    trigger?.addEventListener('click', () => fileInput?.click());
+    fileInput?.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files || []);
+      const remaining = MAX_PHOTOS - uploadedUrls.length;
+      if (files.length > remaining) {
+        statusEl.textContent = `Maksimal ${MAX_PHOTOS} foto. Sisa slot: ${remaining}`;
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      for (const file of files.slice(0, remaining)) {
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const resp = await fetch('/api/upload/review-image', { method: 'POST', body: formData });
+          const data = await resp.json();
+          if (resp.ok && data.url) {
+            uploadedUrls.push(data.url);
+            renderPreview(data.url);
+            statusEl.textContent = `${uploadedUrls.length}/${MAX_PHOTOS} foto diupload`;
+            statusEl.classList.remove('hidden');
+          }
+        } catch (_) {}
+      }
+      fileInput.value = '';
+    });
+
+    function renderPreview(url: string) {
+      if (!previews) return;
+      const div = document.createElement('div');
+      div.style.position = 'relative';
+      div.style.display = 'inline-block';
+      div.innerHTML = `<img src="${url}" alt="Foto review" loading="lazy" />
+        <button type="button" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white font-black text-xs border-2 border-black rounded-full" onclick="this.closest('div').remove(); uploadedUrls.splice(uploadedUrls.indexOf('${url}'), 1);">✕</button>`;
+      previews.appendChild(div);
+    }
+  })();
+</script>
