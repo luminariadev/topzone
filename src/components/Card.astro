@@ -14,17 +14,17 @@ const {
 } = Astro.props;
 
 const bgColors = {
-  white: 'bg-white text-black',
-  green: 'bg-neon-green text-black',
+  white: 'bg-white text-black dark:bg-gray-800 dark:text-white',
+  green: 'bg-neon-green text-black dark:bg-green-700 dark:text-white',
   pink: 'bg-neon-pink text-white',
-  yellow: 'bg-neon-yellow text-black',
-  transparent: 'bg-transparent text-black',
+  yellow: 'bg-neon-yellow text-black dark:bg-yellow-600 dark:text-white',
+  transparent: 'bg-transparent text-black dark:text-white',
 };
 ---
 
 <div
   class:list={[
-    'p-6 border-4 border-black rounded-none shadow-[6px_6px_0px_0px_#000000] transition-all duration-200',
+    'p-6 border-4 border-black dark:border-gray-300 rounded-none shadow-[6px_6px_0px_0px_#000000] dark:shadow-[6px_6px_0px_0px_#888888] transition-all duration-200',
     bgColors[variant],
     interactive && 'hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[8px_8px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[4px_4px_0px_0px_#000000] cursor-pointer',
     className
