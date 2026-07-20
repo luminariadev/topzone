@@ -233,7 +233,7 @@ Setiap hari **minimal 10 commit** dengan format:
 
 **Target**: 80-120 commit | **Timeline**: 8-12 hari | **Priority**: HIGH
 
-### ☐ 3.1 User Profile & Account (12 commit)
+### ✅ 3.1 User Profile & Account (12/12 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
@@ -250,7 +250,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 11 | Add recent activity timeline | feat | ✅ |
 | 12 | Style profile page for all states (loading, empty, error) | style | ✅ |
 
-### ☐ 3.2 Email & Notification System (14 commit)
+### ✅ 3.2 Email & Notification System (13/14 commit) 🔄 — 1 test staging ☐
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
