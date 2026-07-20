@@ -44,3 +44,6 @@ note.txt
 
 # Vercel build output (generated on deploy)
 .vercel/
+
+# Playwright test results
+test-results/
