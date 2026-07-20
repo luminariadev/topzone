@@ -250,7 +250,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 11 | Add recent activity timeline | feat | ✅ |
 | 12 | Style profile page for all states (loading, empty, error) | style | ✅ |
 
-### ✅ 3.2 Email & Notification System (13/14 commit) 🔄 — 1 test staging ☐
+### ✅ 3.2 Email & Notification System (14/14 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
@@ -267,7 +267,7 @@ Setiap hari **minimal 10 commit** dengan format:
 | 11 | Add promotional email opt-in/out | feat | ✅ |
 | 12 | Add email delivery status tracking | feat | ✅ |
 | 13 | Add notification badge in navbar | feat | ✅ |
-| 14 | Test email delivery in staging | test | ☐ |
+| 14 | Test email delivery in staging | test | ✅ |
 
 ### ✅ 3.3 Points, Loyalty & Rewards (12 commit) ✅ DONE
 
@@ -510,20 +510,20 @@ Setiap hari **minimal 10 commit** dengan format:
 | 14 | Test voucher validation logic | test | ✅ |
 | 15 | Test payment & discount calculations | test | ✅ |
 
-### ✅ 6.2 Component Tests (10 commit) ✅ DONE
+### ✅ 6.2 Component Tests (10/10 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
 | 1 | Test Navbar component: render, mobile toggle | test | ✅ |
 | 2 | Test FeaturedGames: render games, filter tabs | test | ✅ |
 | 3 | Test FeaturedGears: render gears, filter tabs | test | ✅ |
-| 4 | Test CartIcon: badge count, empty state | test | ☐ |
-| 5 | Test SearchBar: input, results, empty, loading | test | ☐ |
-| 6 | Test ThemeToggle: click, icon change | test | ☐ |
-| 7 | Test Toast: show, auto-dismiss, types | test | ☐ |
-| 8 | Test Button: variants, sizes, click | test | ☐ |
-| 9 | Test Card: variants, interactive mode | test | ☐ |
-| 10 | Test Faq: expand, collapse, keyboard | test | ☐ |
+| 4 | Test CartIcon: badge count, empty state | test | ✅ |
+| 5 | Test SearchBar: input, results, empty, loading | test | ✅ |
+| 6 | Test ThemeToggle: click, icon change | test | ✅ |
+| 7 | Test Toast: show, auto-dismiss, types | test | ✅ |
+| 8 | Test Button: variants, sizes, click | test | ✅ |
+| 9 | Test Card: variants, interactive mode | test | ✅ |
+| 10 | Test Faq: expand, collapse, keyboard | test | ✅ |
 
 ### ✅ 6.3 E2E Testing — User Flows (16 commit) ✅ DONE
 
@@ -1134,11 +1134,11 @@ Fase 2: Catalog        ███████████████████
 Fase 3: User Features  ████████████████████  [192/192 ✅ 100% - SELESAI]
 Fase 4: Admin Panel    ████████████████████  [44/44 ✅ 100% - SELESAI]
 Fase 5: SEO & Perf     ████████████████████  [55/55 ✅ 100% - SELESAI]
-Fase 6: Testing        ████████████░░░░░░░░░░░░  [33/77 🔄 ~43%] ← Unit tests 15/15 done ✅, Component tests 2/10 done
+Fase 6: Testing        █████████████░░░░░░░░░░░  [53/85 🔄 ~62%] ← Component tests 10/10 ✅, Email staging test ✅, Unit tests 15/15 done
 Fase 7: Advanced       ░░░░░░░░░░░░░░░░░░░░  [0/110 ☐ ~0%]
 Fase 8: DevOps         ██████████░░░░░░░░░░░░  [108/135 🔄 ~80%]
 
-Total: 503/720 commit (~69.9%)
+Total: 513/730 commit (~70.3%)
 ```
 
 ---
@@ -1153,6 +1153,30 @@ Total: 503/720 commit (~69.9%)
 - Gunakan GitHub Issues untuk tracking bug & feature requests
 
 ---
+```
 
-*Last Updated: 2026-07-22 04:45*
-*TopZone Project v0.0.1*
+### Sheet Harian: 2026-07-21
+
+```
+Tanggal: 2026-07-21
+Hari ke: 28 / ___
+
+| # | Commit | Scope | Selesai? |
+|:-:|--------|-------|:--------:|
+| 1 | test(component): add FeaturedGears unit tests (filter, categories, item limit) | component | ✅ |
+| 2 | test(component): add CartIcon unit tests (badge count, empty state, link) | component | ✅ |
+| 3 | test(component): add SearchBar, ThemeToggle, Toast unit tests | component | ✅ |
+| 4 | test(component): add Button, Card, Faq unit tests | component | ✅ |
+| 5 | test(staging): add email delivery staging test with template validation | email | ✅ |
+| 6 | fix: game filter tabs with bg-neon-green active class, init All active on load | ui | ✅ |
+| 7 | fix: game filter tabs show active state via aria-selected:bg-neon-green | ui | ✅ |
+| 8 | fix: 404 kembali ke beranda button match Jelajahi/Beli Gear style | ui | ✅ |
+| 9 | fix: hamburger lines black in dark mode too | ui | ✅ |
+| 10 | fix: hamburger icon & button light mode match CartIcon style | ui | ✅ |
+| 11 | fix: FAQ question text color hitam di light mode | ui | ✅ |
+| 12 | docs(roadmap): mark 6.2 Component Tests 10/10 ✅, 3.2 Email 14/14 ✅, update progress graph | docs | ✅ |
+
+Total commit hari ini: 12/10 ✅
+Target tercapai? Hijau ✅
+Catatan: ALL 10 Component Tests (6.2) DONE. Fase 3.2 Email & Notification System 14/14 DONE. Fase 6 Testing ~62%. Progress naik ke ~70.3%.
+```
