@@ -87,7 +87,7 @@ const testimonials: Testimonial[] = [
           <div class="flex gap-1 mb-3" aria-label={`${t.rating} out of 5 stars`}>
             {Array.from({ length: 5 }).map((_, i) => (
               <svg
-                class={`w-5 h-5 ${i < t.rating ? 'text-black' : 'text-gray-300 dark:text-gray-600'}`}
+                class={`w-5 h-5 ${i < t.rating ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600'}`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 aria-hidden="true"

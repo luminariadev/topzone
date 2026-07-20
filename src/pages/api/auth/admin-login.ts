@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   // Hardcoded admin fallback - works when Supabase is not configured or env flag is set
   if (!supabase || import.meta.env.ADMIN_HARDCODED_FALLBACK === "true") {
-    const HARDCODED_ADMIN = { email: "admin@topzone.id", password: "admin123", name: "Admin TopZone" };
+    const HARDCODED_ADMIN = { email: "admin@topzone.id", password: "4189", name: "Admin TopZone" };
     const matchEmail = email === "admin@topzone.id" || email === "admin@topzone.com";
     if (matchEmail && password === HARDCODED_ADMIN.password) {
       cookies.set("sb-admin-token", "hardcoded-admin-token", { httpOnly: true, path: "/", maxAge: 60 * 30, sameSite: "lax" });
