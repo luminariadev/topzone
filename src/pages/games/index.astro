@@ -28,7 +28,7 @@ const categoryLabels: Record<string, string> = { all: '🎮 All', mobile: '📱 
             <button
               role="tab"
               aria-selected={idx === 0 ? "true" : "false"}
-              class="filter-tab px-5 py-2 font-black uppercase tracking-wider text-sm border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] transition-all"
+              class="filter-tab px-5 py-2 font-black uppercase tracking-wider text-sm border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] aria-selected:bg-neon-green aria-selected:translate-x-[2px] aria-selected:translate-y-[2px] aria-selected:shadow-[1px_1px_0px_0px_#000] aria-selected:border-black"
               data-cat={cat}
             >{categoryLabels[cat]}</button>
           ))}
