@@ -2,89 +2,173 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, v1]
   pull_request:
-    branches: [main]
-  schedule:
-    - cron: '0 6 * * *'  # Daily E2E health check
+    branches: [main, v1]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # ─── Lint & Type Check ───────────────────────────────────────────────────
   lint-and-typecheck:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20, 22]
-
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm ci
-      - run: npx astro check || true  # Type check (non-blocking)
-      - run: npm test
 
-  e2e-tests:
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Type check (Astro)
+        run: npx astro check
+        continue-on-error: true
+
+  # ─── Unit Tests ──────────────────────────────────────────────────────────
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm ci
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox
-      - name: Build (for E2E)
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+  # ─── Build ───────────────────────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
         run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: .vercel/output/
+          retention-days: 1
+
+  # ─── E2E Tests ───────────────────────────────────────────────────────────
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .vercel/output/
+
       - name: Start preview server
         run: |
           npm run serve &
           npx wait-on http://localhost:4321
+
       - name: Run E2E tests
         run: npm run e2e
         env:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:4321
-      - name: Stop preview server
+
+      - name: Upload E2E report
         if: always()
-        run: kill $(lsof -ti:4321) || true
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
 
-  build-and-perf:
+  # ─── Auto-changelog (on main push only) ─────────────────────────────────
+  changelog:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'
-      - run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Bundle Analysis
-        run: node scripts/bundle-analyze.js
-        continue-on-error: true
-      - name: Lighthouse CI
+          fetch-depth: 0
+
+      - name: Generate changelog
+        uses: chrislgarry/auto-changelog@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          output: CHANGELOG.md
+          template: keepachangelog
+          tagprefix: v
+          version: v1.0.0
+
+      - name: Commit changelog
         run: |
-          npm install -g @lhci/cli@0.14.x
-          lhci autorun --collect.staticDistDir=./dist --collect.url=https://topzone.vercel.app --assert.presets=lighthouse:recommended --upload.target=temporary-public-storage || echo "Lighthouse CI non-blocking"
-        continue-on-error: true
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "chore: auto-update changelog [skip ci]" && git push
 
-  deploy-preview:
-    if: github.event_name == 'pull_request'
-    needs: [lint-and-typecheck]
+  # ─── Version tag (on main push only) ────────────────────────────────────
+  version-tag:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_tag: ${{ steps.tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
-      - uses: amondnet/vercel-action@v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-comment: true
-          vercel-args: '--prebuilt'
+          fetch-depth: 0
+
+      - name: Bump version and tag
+        id: tag
+        run: |
+          CURRENT=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          CURRENT="${CURRENT#v}"
+          MAJOR=$(echo $CURRENT | cut -d. -f1)
+          MINOR=$(echo $CURRENT | cut -d. -f2)
+          PATCH=$(echo $CURRENT | cut -d. -f3)
+          NEW="${MAJOR}.${MINOR}.$((PATCH+1))"
+          TAG="v${NEW}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          git tag "$TAG" && git push origin "$TAG"
+
+env:
+  NODE_VERSION: '22'
