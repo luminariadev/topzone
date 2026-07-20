@@ -30,7 +30,7 @@ import SearchBar from './SearchBar.astro';
       <ThemeToggle />
       <button
         id="hamburger-btn"
-        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black dark:border-gray-600 bg-white dark:bg-gray-800 shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+        class="md:hidden flex flex-col gap-[5px] p-2 border-2 border-black hover:border-gray-600 bg-white hover:bg-gray-100 shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all dark:border-gray-600 dark:bg-gray-800"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -42,7 +42,7 @@ import SearchBar from './SearchBar.astro';
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white dark:bg-[#111] dark:border-[#27272a] text-black dark:text-gray-200" role="navigation" aria-label="Menu mobile">
+  <div id="mobile-menu" class="hidden md:hidden border-t-2 border-black bg-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:bg-[#111] dark:border-[#27272a] dark:shadow-none text-black dark:text-gray-200" role="navigation" aria-label="Menu mobile">
     <nav class="flex flex-col p-4 gap-3">
       <a href="/#hero" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Home</a>
       <a href="/#games" class="font-bold py-2 border-b-2 border-black/10 dark:border-gray-600 text-black dark:text-gray-200 hover:text-neon-pink transition-colors">Games</a>
