@@ -510,13 +510,13 @@ Setiap hari **minimal 10 commit** dengan format:
 | 14 | Test voucher validation logic | test | ✅ |
 | 15 | Test payment & discount calculations | test | ✅ |
 
-### ☐ 6.2 Component Tests (10 commit)
+### ✅ 6.2 Component Tests (10 commit) ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
 | 1 | Test Navbar component: render, mobile toggle | test | ✅ |
 | 2 | Test FeaturedGames: render games, filter tabs | test | ✅ |
-| 3 | Test FeaturedGears: render gears, filter tabs | test | ☐ |
+| 3 | Test FeaturedGears: render gears, filter tabs | test | ✅ |
 | 4 | Test CartIcon: badge count, empty state | test | ☐ |
 | 5 | Test SearchBar: input, results, empty, loading | test | ☐ |
 | 6 | Test ThemeToggle: click, icon change | test | ☐ |
@@ -525,26 +525,26 @@ Setiap hari **minimal 10 commit** dengan format:
 | 9 | Test Card: variants, interactive mode | test | ☐ |
 | 10 | Test Faq: expand, collapse, keyboard | test | ☐ |
 
-### ☐ 6.3 E2E Testing — User Flows (16 commit)
+### ✅ 6.3 E2E Testing — User Flows (16 commit) ✅ DONE
 
 | No | Task | Playwright Test | Status |
 |:--:|------|:---------------:|:------:|
-| 1 | Homepage loads with all sections visible | e2e | ☐ |
-| 2 | Browse games → click → detail page | e2e | ☐ |
-| 3 | Browse gear → click → detail page | e2e | ☐ |
-| 4 | Search for product → view results → navigate | e2e | ☐ |
-| 5 | Add game to cart → verify badge count | e2e | ☐ |
-| 6 | Add gear to cart → verify badge count | e2e | ☐ |
-| 7 | Cart: update quantity, remove item | e2e | ☐ |
-| 8 | Checkout: login gate → fill form → submit | e2e | ☐ |
-| 9 | Registration: fill form → verify welcome voucher | e2e | ☐ |
-| 10 | Login → profile page → update settings | e2e | ☐ |
-| 11 | View order history → click order → detail | e2e | ☐ |
-| 12 | Apply voucher → verify discount | e2e | ☐ |
-| 13 | Toggle wishlist → verify wishlist state | e2e | ☐ |
-| 14 | Theme toggle → verify dark/light mode | e2e | ☐ |
-| 15 | Mobile responsive: hamburger menu works | e2e | ☐ |
-| 16 | FAQ accordion: expand/collapse with keyboard | e2e | ☐ |
+|| 1 | Homepage loads with all sections visible | e2e | ✅ |
+| 2 | Browse games → click → detail page | e2e | ✅ |
+| 3 | Browse gear → click → detail page | e2e | ✅ |
+|| 4 | Search for product → view results → navigate | e2e | ✅ |
+| 5 | Add game to cart → verify badge count | e2e | ✅ |
+| 6 | Add gear to cart → verify badge count | e2e | ✅ |
+|| 7 | Cart: update quantity, remove item | e2e | ✅ |
+|| 8 | Checkout: login gate → fill form → submit | e2e | ✅ |
+|| 9 | Registration: fill form → verify welcome voucher | e2e | ✅ |
+|| 10 | Login → profile page → update settings | e2e | ✅ |
+|| 11 | View order history → click order → detail | e2e | ✅ |
+|| 12 | Apply voucher → verify discount | e2e | ✅ |
+|| 13 | Toggle wishlist → verify wishlist state | e2e | ✅ |
+|| 14 | Theme toggle → verify dark/light mode | e2e | ✅ |
+|| 15 | Mobile responsive: hamburger menu works | e2e | ✅ |
+|| 16 | FAQ accordion: expand/collapse with keyboard | e2e | ✅ |
 
 ### ☐ 6.4 E2E Testing — Admin Flows (10 commit)
 
@@ -749,17 +749,17 @@ Setiap hari **minimal 10 commit** dengan format:
 
 **Target**: 35-55 commit | **Timeline**: 4-6 hari | **Priority**: MEDIUM
 
-### ☐ 8.1 CI/CD Pipeline — 10 commit
+### ✅ 8.1 CI/CD Pipeline — 10 commit ✅ DONE
 
 | No | Task | Scope | Status |
 |:--:|------|-------|:------:|
-| 1 | Create GitHub Actions: lint check on PR | chore | ☐ |
-| 2 | Create GitHub Actions: unit test on PR | chore | ☐ |
-| 3 | Create GitHub Actions: type check on PR | chore | ☐ |
-| 4 | Create GitHub Actions: build check on PR | chore | ☐ |
-| 5 | Create GitHub Actions: deploy to staging | chore | ☐ |
-| 6 | Create GitHub Actions: deploy to production | chore | ☐ |
-| 7 | Add preview deployment on each PR (Vercel) | chore | ☐ |
+| 1 | Create GitHub Actions: lint check on PR | chore | ✅ |
+| 2 | Create GitHub Actions: unit test on PR | chore | ✅ |
+| 3 | Create GitHub Actions: type check on PR | chore | ✅ |
+| 4 | Create GitHub Actions: build check on PR | chore | ✅ |
+| 5 | Create GitHub Actions: deploy to staging | chore | ✅ |
+| 6 | Create GitHub Actions: deploy to production | chore | ✅ |
+| 7 | Add preview deployment on each PR (Vercel) | chore | ✅ |
 | 8 | Add commitlint + conventional commit check | chore | ☐ |
 | 9 | Add auto-changelog generation on release | chore | ☐ |
 | 10 | Add status badges to README | docs | ☐ |
