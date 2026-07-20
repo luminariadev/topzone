@@ -28,8 +28,9 @@ const categoryLabels: Record<string, string> = { all: '🎮 All', mobile: '📱 
             <button
               role="tab"
               aria-selected={idx === 0 ? "true" : "false"}
-              class="filter-tab px-5 py-2 font-black uppercase tracking-wider text-sm border-2 border-black bg-white dark:border-gray-600 dark:bg-gray-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] aria-selected:bg-neon-green aria-selected:translate-x-[2px] aria-selected:translate-y-[2px] aria-selected:shadow-none transition-all"
+              class="filter-tab px-5 py-2 font-black uppercase tracking-wider text-sm border-2 border-black bg-white dark:border-gray-600 dark:bg-gray-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] transition-all"
               data-cat={cat}
+              onclick={`filterGames('${cat}')`}
             >{categoryLabels[cat]}</button>
           ))}
         </div>
@@ -63,32 +64,24 @@ const categoryLabels: Record<string, string> = { all: '🎮 All', mobile: '📱 
 </Layout>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  window.filterGames = function(cat) {
     const tabs = document.querySelectorAll('.filter-tab');
     const cards = document.querySelectorAll('.game-card');
-    function selectTab(tab) {
-      for (const t of tabs) {
-        t.style.background = '';
-        t.style.transform = '';
-        t.style.boxShadow = '';
-      }
-      tab.style.background = '#39FF14';
-      tab.style.transform = 'translateY(2px)';
-      tab.style.boxShadow = 'none';
-      const cat = tab.getAttribute('data-cat') || 'all';
-      for (const c of cards) {
-        if (cat === 'all' || c.getAttribute('data-category') === cat) {
-          c.style.display = '';
-        } else {
-          c.style.display = 'none';
-        }
-      }
+    for (const t of tabs) {
+      t.style.background = '';
+      t.style.transform = '';
+      t.style.boxShadow = '';
     }
-    // init
-    const first = document.querySelector('[data-cat="all"]');
-    if (first) selectTab(first);
-    for (const tab of tabs) {
-      tab.addEventListener('click', function () { selectTab(this); });
+    const el = document.querySelector('[data-cat="' + cat + '"]');
+    if (el) {
+      el.style.background = '#39FF14';
+      el.style.transform = 'translateY(2px)';
+      el.style.boxShadow = 'none';
     }
-  });
+    for (const c of cards) {
+      c.style.display = (cat === 'all' || c.getAttribute('data-category') === cat) ? '' : 'none';
+    }
+  };
+  document.addEventListener('astro:page-load', function () { window.filterGames('all'); });
+  window.filterGames('all');
 </script>
