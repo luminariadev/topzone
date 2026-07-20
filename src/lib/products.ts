@@ -15,16 +15,17 @@ export async function fetchGames(): Promise<Game[]> {
   const cached = apiCache.get<Game[]>('products:games');
   if (cached) return cached;
 
-  // Check localStorage for admin-updated games
+  // Check localStorage for admin-updated games (client-side only)
   if (typeof window !== 'undefined') {
     try {
       const localGames = JSON.parse(localStorage.getItem("topzone_games") || "[]");
-    if (localGames && localGames.length > 0) {
-      apiCache.set('products:games', localGames, CACHE_TTL);
-      return localGames;
+      if (localGames && localGames.length > 0) {
+        apiCache.set('products:games', localGames, CACHE_TTL);
+        return localGames;
+      }
+    } catch (e) {
+      console.warn('Failed to parse localStorage topzone_games:', e);
     }
-  } catch (e) {
-    console.warn('Failed to parse localStorage topzone_games:', e);
   }
   if (!sb) return games;
 
@@ -78,16 +79,17 @@ export async function fetchGears(): Promise<Gear[]> {
   const cached = apiCache.get<Gear[]>('products:gears');
   if (cached) return cached;
 
-  // Check localStorage for admin-updated gear
+  // Check localStorage for admin-updated gear (client-side only)
   if (typeof window !== 'undefined') {
     try {
       const localGears = JSON.parse(localStorage.getItem("topzone_gears") || "[]");
-    if (localGears && localGears.length > 0) {
-      apiCache.set('products:gears', localGears, CACHE_TTL);
-      return localGears;
+      if (localGears && localGears.length > 0) {
+        apiCache.set('products:gears', localGears, CACHE_TTL);
+        return localGears;
+      }
+    } catch (e) {
+      console.warn('Failed to parse localStorage topzone_gears:', e);
     }
-  } catch (e) {
-    console.warn('Failed to parse localStorage topzone_gears:', e);
   }
   if (!sb) return gears;
 
