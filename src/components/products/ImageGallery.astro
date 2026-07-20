@@ -2,9 +2,10 @@
 interface Props {
   images: { id: string; image_url: string; alt_text: string; caption?: string; is_primary: boolean; sort_order: number; }[];
   productName: string;
+  fallbackImg?: string;
 }
 
-const { images, productName } = Astro.props;
+const { images, productName, fallbackImg } = Astro.props;
 
 // Sort images: primary first, then by sort_order, then by URL
 const sortedImages = [...images].sort((a, b) => {
@@ -13,8 +14,9 @@ const sortedImages = [...images].sort((a, b) => {
   return (a.sort_order || 0) - (b.sort_order || 0) || a.image_url.localeCompare(b.image_url);
 });
 
-const primaryImage = sortedImages.find(img => img.is_primary) || sortedImages[0];
-const thumbnails = sortedImages.filter(img => img.image_url !== primaryImage?.image_url);
+const hasImages = sortedImages.length > 0;
+const primaryImage = hasImages ? (sortedImages.find(img => img.is_primary) || sortedImages[0]) : null;
+const thumbnails = hasImages ? sortedImages.filter(img => img.image_url !== primaryImage?.image_url) : [];
 
 const defaultAltText = `Image of ${productName}`;
 const defaultThumbnailAltText = `Thumbnail of ${productName}`;
@@ -22,15 +24,31 @@ const defaultThumbnailAltText = `Thumbnail of ${productName}`;
 
 <div class="product-image-gallery flex flex-col items-center">
   <div class="main-image-container relative bg-neutral-800 rounded-lg overflow-hidden mb-4 shadow-lg w-full max-w-2xl">
-    <img
-      id="main-product-image"
-      src={primaryImage?.image_url}
-      alt={primaryImage?.alt_text || defaultAltText}
-      class="w-full h-96 object-contain cursor-pointer aspect-[4/3]"
-      loading="eager"
-      decoding="async"
-      data-product-name={productName}
-    />
+    {hasImages ? (
+      <img
+        id="main-product-image"
+        src={primaryImage?.image_url}
+        alt={primaryImage?.alt_text || defaultAltText}
+        class="w-full h-96 object-contain cursor-pointer aspect-[4/3]"
+        loading="eager"
+        decoding="async"
+        data-product-name={productName}
+      />
+    ) : fallbackImg ? (
+      <img
+        id="main-product-image"
+        src={fallbackImg}
+        alt={defaultAltText}
+        class="w-full h-96 object-contain aspect-[4/3]"
+        loading="eager"
+        decoding="async"
+        data-product-name={productName}
+      />
+    ) : (
+      <div class="w-full h-96 flex items-center justify-center bg-neutral-800 aspect-[4/3]">
+        <span class="text-6xl">🎮</span>
+      </div>
+    )}
     {primaryImage?.caption && (
       <p id="main-image-caption" class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-sm px-2 py-1 w-full text-center">
         {primaryImage.caption}
@@ -38,31 +56,33 @@ const defaultThumbnailAltText = `Thumbnail of ${productName}`;
     )}
   </div>
 
-  <div class="thumbnail-grid grid grid-cols-4 gap-2 w-full max-w-2xl">
-    {sortedImages.map((image, index) => (
-      <button
-        type="button"
-        class={`thumbnail-item block bg-neutral-800 rounded-lg overflow-hidden cursor-pointer
-          focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all duration-200
-          ${image.image_url === primaryImage?.image_url ? 'ring-2 ring-accent-500 scale-95' : 'hover:scale-105'}`}
-        aria-label={`View image ${index + 1} of ${productName}`}
-        data-image-url={image.image_url}
-        data-alt-text={image.alt_text || defaultAltText}
-        data-caption={image.caption || ''}
-        data-is-primary={image.image_url === primaryImage?.image_url}
-        role="tab"
-        aria-selected={image.image_url === primaryImage?.image_url ? "true" : "false"}
-      >
-        <img
-          src={image.image_url}
-          alt={image.alt_text || defaultThumbnailAltText}
-          class="w-full h-24 object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      </button>
-    ))}
-  </div>
+  {hasImages && (
+    <div class="thumbnail-grid grid grid-cols-4 gap-2 w-full max-w-2xl">
+      {sortedImages.map((image, index) => (
+        <button
+          type="button"
+          class={`thumbnail-item block bg-neutral-800 rounded-lg overflow-hidden cursor-pointer
+            focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all duration-200
+            ${image.image_url === primaryImage?.image_url ? 'ring-2 ring-accent-500 scale-95' : 'hover:scale-105'}`}
+          aria-label={`View image ${index + 1} of ${productName}`}
+          data-image-url={image.image_url}
+          data-alt-text={image.alt_text || defaultAltText}
+          data-caption={image.caption || ''}
+          data-is-primary={image.image_url === primaryImage?.image_url}
+          role="tab"
+          aria-selected={image.image_url === primaryImage?.image_url ? "true" : "false"}
+        >
+          <img
+            src={image.image_url}
+            alt={image.alt_text || defaultThumbnailAltText}
+            class="w-full h-24 object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+      ))}
+    </div>
+  )}
 
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {

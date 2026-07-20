@@ -156,6 +156,10 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/admin/voucher-assign/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/admin/vouchers/?$",
 			"dest": "_render"
 		},
@@ -220,6 +224,10 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/cron/check-birthdays/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/email/logs/?$",
 			"dest": "_render"
 		},
@@ -237,6 +245,10 @@
 		},
 		{
 			"src": "^/api/reviews/helpful/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/reviews/moderate/?$",
 			"dest": "_render"
 		},
 		{
@@ -268,6 +280,14 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/api/user/referral-code/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/referral-tracking/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/api/user/spend-points/?$",
 			"dest": "_render"
 		},
@@ -277,6 +297,10 @@
 		},
 		{
 			"src": "^/api/user/vouchers/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/user/wishlist-sync/?$",
 			"dest": "_render"
 		},
 		{
@@ -300,6 +324,10 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/birthday-bonus/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/cart/?$",
 			"dest": "_render"
 		},
@@ -309,6 +337,14 @@
 		},
 		{
 			"src": "^/checkout/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/forgot-password/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/games/?$",
 			"dest": "_render"
 		},
 		{
@@ -336,7 +372,15 @@
 			"dest": "_render"
 		},
 		{
+			"src": "^/referrals/?$",
+			"dest": "_render"
+		},
+		{
 			"src": "^/register/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/vouchers/?$",
 			"dest": "_render"
 		},
 		{

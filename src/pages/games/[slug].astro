@@ -118,7 +118,7 @@ const canonicalUrl = `https://topzone.id/games/${game.slug}`;
 
   <!-- Hero Banner -->
   <section class="relative h-64 md:h-80 flex items-end bg-black overflow-hidden border-b-4 border-black">
-    <ImageGallery images={images} productName={game.name} />
+    <ImageGallery images={images} productName={game.name} fallbackImg={game.img} />
     <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 w-full">
       <span class="inline-block px-3 py-1 text-xs font-black uppercase tracking-widest border-2 border-black shadow-[2px_2px_0px_0px_#000] mb-3" style={`background:${game.color}; color:#000;`}>
