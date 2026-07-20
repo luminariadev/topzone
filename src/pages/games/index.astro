@@ -1,0 +1,78 @@
+---
+// src/pages/games/index.astro — Semua game TopZone
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { fetchGames } from '../../lib/products';
+import ScrollToTop from '../../components/ScrollToTop.astro';
+
+const allGames = await fetchGames();
+const categories = ['all', 'mobile', 'pc', 'console'];
+const categoryLabels: Record<string, string> = { all: '🎮 All', mobile: '📱 Mobile', pc: '💻 PC', console: '🎮 Console' };
+---
+
+<Layout title="Semua Game Top Up — TopZone" canonical="https://topzone.id/games/">
+  <Navbar />
+  <section class="py-24 min-h-screen bg-white text-black border-t-4 border-black dark:bg-[#111] dark:text-gray-200 dark:border-[#27272a]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header class="text-center mb-12">
+        <h1 class="text-6xl font-black uppercase tracking-tighter mb-4">
+          Semua <span style="color:#39FF14; -webkit-text-stroke:1px #000;">Game</span>
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 font-bold text-lg">{allGames.length} game top up tersedia — instan, aman, terpercaya.</p>
+      </header>
+
+      <nav aria-label="Filter kategori game">
+        <div class="flex flex-wrap justify-center gap-3 mb-10" role="tablist">
+          {categories.map((cat, idx) => (
+            <button
+              role="tab"
+              aria-selected={idx === 0 ? "true" : "false"}
+              class="filter-tab px-5 py-2 font-black uppercase tracking-wider text-sm border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#333] hover:-translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] transition-all"
+              data-cat={cat}
+            >{categoryLabels[cat]}</button>
+          ))}
+        </div>
+      </nav>
+
+      <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {allGames.map((game) => (
+          <article class="game-card group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150" data-category={game.category}>
+            <a href={`/games/${game.slug}`} class="block">
+              <div class="relative">
+                <img src={game.img} alt={game.name} loading="lazy" decoding="async" class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]" width="400" height="300" />
+                <span class="absolute top-3 left-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black dark:border-gray-600 shadow-[2px_2px_0px_0px_#000]" style={`background:${game.color};`}>
+                  {game.badge}
+                </span>
+              </div>
+              <div class="p-5">
+                <h2 class="text-2xl font-black mb-1">{game.name}</h2>
+                <p class="text-gray-500 dark:text-gray-400 font-bold mb-4">Top up {game.currency}</p>
+                <div class="w-full py-3 font-black uppercase tracking-wider text-center border-2 border-black dark:border-gray-600 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#333] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all" style={`background:${game.color};`}>
+                  Top Up Sekarang &rarr;
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+  <Footer />
+  <ScrollToTop />
+</Layout>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.game-card');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const cat = tab.dataset.cat || 'all';
+        tabs.forEach(t => { t.style.background = ''; t.style.transform = ''; t.style.boxShadow = ''; });
+        tab.style.background = '#39FF14'; tab.style.transform = 'translateX(2px) translateY(2px)'; tab.style.boxShadow = '1px 1px 0px 0px #000';
+        cards.forEach(c => { c.style.display = cat === 'all' || c.dataset.category === cat ? '' : 'none'; });
+      });
+    });
+  });
+</script>

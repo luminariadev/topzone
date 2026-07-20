@@ -4,6 +4,7 @@ import { fetchGears } from '../lib/products';
 import Loading from './Loading.astro';
 import { formatCurrency } from '../utils/format';
 const allGears = await fetchGears();
+const visibleGears = allGears.slice(0, 9);
 
 const categories = [
   { key: 'all', label: '🎯 Semua' },
@@ -23,7 +24,6 @@ const categories = [
 const totalGears = allGears.length;
 const gearCountLabel = `${totalGears} produk gear tersedia`;
 ---
-
 <section id="gear" aria-labelledby="gear-heading" class="py-20 bg-neon-yellow text-black border-t-4 border-black dark:bg-[#111] dark:text-gray-200 dark:border-[#27272a]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <header class="text-center mb-12">
@@ -36,74 +36,77 @@ const gearCountLabel = `${totalGears} produk gear tersedia`;
 
     {allGears.length === 0 ? (
       <Loading text="Memuat gear..." />
-    ) : (
-      <>
-        <!-- Category filter tabs -->
-        <nav aria-label="Filter gear berdasarkan kategori">
-          <div class="flex flex-wrap justify-center gap-3 mb-10" role="tablist" aria-label="Kategori gear gaming">
-            {categories.map((cat, idx) => (
-              <button
-                role="tab"
-                aria-selected={idx === 0 ? "true" : "false"}
-                aria-controls="gear-grid-panel"
-                data-gear-filter={cat.key}
-                class={`gear-tab px-5 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all ${
-                  cat.key === 'all'
-                    ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
-                    : 'bg-white hover:bg-neon-pink hover:text-white'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </nav>
-
-        <!-- Product grid -->
-        <div id="gear-grid-panel" role="tabpanel" aria-labelledby="gear-heading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-live="polite" aria-atomic="false">
-          {allGears.map((gear) => (
-            <article
-              data-card-animate
-              data-gear-category={gear.category}
-              class="group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150"
-              role="article"
-              aria-label={`${gear.name} - ${gear.brand || 'Gaming Gear'} - ${formatCurrency(gear.price)}`}
+    ) : (<>
+      <!-- Category filter tabs -->
+      <nav aria-label="Filter gear berdasarkan kategori">
+        <div class="flex flex-wrap justify-center gap-3 mb-10" role="tablist" aria-label="Kategori gear gaming">
+          {categories.map((cat, idx) => (
+            <button
+              role="tab"
+              aria-selected={idx === 0 ? "true" : "false"}
+              aria-controls="gear-grid-panel"
+              data-gear-filter={cat.key}
+              class={`gear-tab px-5 py-2 font-black text-sm uppercase tracking-wider border-2 border-black transition-all ${
+                cat.key === 'all'
+                  ? 'bg-black text-neon-green shadow-[3px_3px_0px_0px_#39FF14]'
+                  : 'bg-white hover:bg-neon-pink hover:text-white'
+              }`}
             >
-              <a href={`/gear/${gear.slug}`} class="block" aria-label={`Lihat detail ${gear.name} - ${formatCurrency(gear.price)}`}>
-                <div class="relative">
-                  <img
-                    src={gear.img}
-                    alt={`${gear.name} - ${gear.brand || 'Gaming Gear'} ${gear.tag || ''}`}
-                    loading="lazy"
-                    decoding="async"
-                    class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]"
-                    width="400"
-                    height="300"
-                  />
-                  <span class="absolute top-3 right-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black dark:border-gray-600 bg-black dark:bg-gray-800 text-neon-yellow shadow-[2px_2px_0px_0px_#FFE600]">
-                    {gear.tag}
-                  </span>
-                  {gear.brand && (
-                    <span class="absolute top-3 left-3 px-2 py-1 text-[10px] font-black uppercase tracking-wider border border-black dark:border-gray-600 bg-white/90 dark:bg-gray-700/90">
-                      {gear.brand}
-                    </span>
-                  )}
-                </div>
-                <div class="p-5">
-                  <h3 class="text-2xl font-black mb-1 dark:text-white">{gear.name}</h3>
-                  <p class="font-bold text-xl mb-4" style="color:#FF007F;">
-                    {formatCurrency(gear.price)}
-                  </p>
-                  <div class="w-full py-3 font-black uppercase tracking-wider text-center bg-neon-pink text-white border-2 border-black dark:border-gray-600 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#333] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
-                    Lihat Detail →
-                  </div>
-                </div>
-              </a>
-            </article>
+              {cat.label}
+            </button>
           ))}
         </div>
-      </>
-    )}
+      </nav>
+
+      <!-- Product grid -->
+      <div id="gear-grid-panel" role="tabpanel" aria-labelledby="gear-heading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" aria-live="polite" aria-atomic="false">
+        {visibleGears.map((gear) => (
+          <article
+            data-card-animate
+            data-gear-category={gear.category}
+            class="group border-4 border-black dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#333] hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000] transition-all duration-150"
+            role="article"
+            aria-label={`${gear.name} - ${gear.brand || 'Gaming Gear'} - ${formatCurrency(gear.price)}`}
+          >
+            <a href={`/gear/${gear.slug}`} class="block" aria-label={`Lihat detail ${gear.name} - ${formatCurrency(gear.price)}`}>
+              <div class="relative">
+                <img
+                  src={gear.img}
+                  alt={`${gear.name} - ${gear.brand || 'Gaming Gear'} ${gear.tag || ''}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-52 object-cover border-b-4 border-black aspect-[4/3]"
+                  width="400"
+                  height="300"
+                />
+                <span class="absolute top-3 right-3 px-3 py-1 text-xs font-black uppercase tracking-wider border-2 border-black dark:border-gray-600 bg-black dark:bg-gray-800 text-neon-yellow shadow-[2px_2px_0px_0px_#FFE600]">
+                  {gear.tag}
+                </span>
+                {gear.brand && (
+                  <span class="absolute top-3 left-3 px-2 py-1 text-[10px] font-black uppercase tracking-wider border border-black dark:border-gray-600 bg-white/90 dark:bg-gray-700/90">
+                    {gear.brand}
+                  </span>
+                )}
+              </div>
+              <div class="p-5">
+                <h3 class="text-2xl font-black mb-1 dark:text-white">{gear.name}</h3>
+                <p class="font-bold text-xl mb-4" style="color:#FF007F;">
+                  {formatCurrency(gear.price)}
+                </p>
+                <div class="w-full py-3 font-black uppercase tracking-wider text-center bg-neon-pink text-white border-2 border-black dark:border-gray-600 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#333] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
+                  Lihat Detail →
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+      {allGears.length > 9 && (
+        <div class="mt-8 text-center">
+          <a href="/gear" class="inline-block px-8 py-3 font-black uppercase tracking-wider border-2 border-black bg-neon-pink text-white hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:-translate-x-[2px] hover:-translate-y-[2px]">Lihat Semua Gear ({allGears.length} total) &rarr;</a>
+        </div>
+      )}
+    </>)}
   </div>
 </section>
 
