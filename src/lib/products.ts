@@ -16,8 +16,9 @@ export async function fetchGames(): Promise<Game[]> {
   if (cached) return cached;
 
   // Check localStorage for admin-updated games
-  try {
-    const localGames = JSON.parse(localStorage.getItem("topzone_games") || "[]");
+  if (typeof window !== 'undefined') {
+    try {
+      const localGames = JSON.parse(localStorage.getItem("topzone_games") || "[]");
     if (localGames && localGames.length > 0) {
       apiCache.set('products:games', localGames, CACHE_TTL);
       return localGames;
@@ -78,8 +79,9 @@ export async function fetchGears(): Promise<Gear[]> {
   if (cached) return cached;
 
   // Check localStorage for admin-updated gear
-  try {
-    const localGears = JSON.parse(localStorage.getItem("topzone_gears") || "[]");
+  if (typeof window !== 'undefined') {
+    try {
+      const localGears = JSON.parse(localStorage.getItem("topzone_gears") || "[]");
     if (localGears && localGears.length > 0) {
       apiCache.set('products:gears', localGears, CACHE_TTL);
       return localGears;
