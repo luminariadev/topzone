@@ -66,39 +66,29 @@ const categoryLabels: Record<string, string> = { all: '🎮 All', mobile: '📱 
   document.addEventListener('astro:page-load', () => {
     const tabs = document.querySelectorAll('.filter-tab');
     const cards = document.querySelectorAll('.game-card');
-
-    function setActive(tab) {
-      tabs.forEach(t => {
-        t.classList.remove('bg-neon-green', '-translate-y-[1px]');
+    function selectTab(tab) {
+      for (const t of tabs) {
         t.style.background = '';
         t.style.transform = '';
         t.style.boxShadow = '';
-      });
-      tab.classList.add('bg-neon-green');
+      }
+      tab.style.background = '#39FF14';
       tab.style.transform = 'translateY(2px)';
       tab.style.boxShadow = 'none';
-    }
-
-    function filter(cat) {
-      cards.forEach(c => {
-        if (cat === 'all' || c.dataset.category === cat) {
+      const cat = tab.getAttribute('data-cat') || 'all';
+      for (const c of cards) {
+        if (cat === 'all' || c.getAttribute('data-category') === cat) {
           c.style.display = '';
         } else {
           c.style.display = 'none';
         }
-      });
+      }
     }
-
-    // init: "All" is active by default
-    const allTab = document.querySelector('[data-cat="all"]');
-    if (allTab) setActive(allTab as HTMLElement);
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const cat = (tab as HTMLElement).dataset.cat || 'all';
-        setActive(tab as HTMLElement);
-        filter(cat);
-      });
-    });
+    // init
+    const first = document.querySelector('[data-cat="all"]');
+    if (first) selectTab(first);
+    for (const tab of tabs) {
+      tab.addEventListener('click', function () { selectTab(this); });
+    }
   });
 </script>
