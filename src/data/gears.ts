@@ -17,7 +17,7 @@ export const gears: Gear[] = [
     id: 'b8c8d234-5678-4321-abcd-1234567890ab',
     slug: 'mechanical-keyboard',
     name: 'Mechanical Keyboard',
-    img: '/assets/keyboard.png',
+    img: '/assets/keyboard.webp',
     price: 350000,
     tag: 'RGB Ready',
     category: 'keyboard',
@@ -35,7 +35,7 @@ export const gears: Gear[] = [
   {
     slug: 'gaming-mouse',
     name: 'Gaming Mouse',
-    img: '/assets/mouse.png',
+    img: '/assets/mouse.webp',
     price: 250000,
     tag: '12000 DPI',
     category: 'mouse',
@@ -53,7 +53,7 @@ export const gears: Gear[] = [
   {
     slug: 'rgb-headset',
     name: 'RGB Headset',
-    img: '/assets/headset.png',
+    img: '/assets/headset.webp',
     price: 300000,
     tag: 'Surround Sound',
     category: 'headset',
@@ -485,7 +485,7 @@ export const gears: Gear[] = [
   {
     slug: 'mousepad-ergonomic',
     name: 'Mousepad Wrist Rest',
-    img: '/assets/mousepad-wrist.png',
+    img: '/assets/mousepad-wrist.svg',
     price: 85000,
     tag: 'Ergonomic',
     category: 'mousepad',
@@ -502,7 +502,7 @@ export const gears: Gear[] = [
   {
     slug: 'mousepad-mini',
     name: 'Mousepad Mini Travel',
-    img: '/assets/mousepad-mini.png',
+    img: '/assets/mousepad-mini.svg',
     price: 50000,
     tag: 'Portable',
     category: 'mousepad',
