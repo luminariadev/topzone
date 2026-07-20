@@ -5,6 +5,8 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 6 * * *'  # Daily E2E health check
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [20, 22]
 
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +29,31 @@ jobs:
       - run: npm ci
       - run: npx astro check || true  # Type check (non-blocking)
       - run: npm test
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
+      - name: Build (for E2E)
+        run: npm run build
+      - name: Start preview server
+        run: |
+          npm run serve &
+          npx wait-on http://localhost:4321
+      - name: Run E2E tests
+        run: npm run e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:4321
+      - name: Stop preview server
+        if: always()
+        run: kill $(lsof -ti:4321) || true
 
   build-and-perf:
     runs-on: ubuntu-latest
