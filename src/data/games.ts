@@ -1,23 +1,7 @@
 // src/data/games.ts
-import type { GameCategory } from '../types';
-export interface GamePackage {
-  id: string;
-  label: string;
-  price: number;
-}
+import type { Game, GameCategory, GamePackage } from '../types';
 
-export interface Game {
-  id: string; // Add id field here
-  slug: string;
-  name: string;
-  img: string;
-  color: string;
-  badge: string;
-  category: 'mobile' | 'pc' | 'console';
-  currency: string;
-  description: string;
-  packages: GamePackage[];
-}
+export type { Game, GameCategory, GamePackage };
 
 export const games: Game[] = [
   {

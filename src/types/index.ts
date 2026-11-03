@@ -26,6 +26,7 @@ export type GameCategory = 'mobile' | 'pc' | 'console';
 export type ProductStatus = 'draft' | 'published' | 'archived';
 
 export interface Game {
+  id?: string;
   slug: string;
   name: string;
   img: string;
@@ -56,6 +57,7 @@ export interface GearSpec {
 export type GearCategory = 'keyboard' | 'mouse' | 'headset' | 'monitor' | 'chair' | 'controller' | 'webcam' | 'microphone' | 'mousepad' | 'speaker' | 'streaming';
 
 export interface Gear {
+  id?: string;
   slug: string;
   name: string;
   img: string;
