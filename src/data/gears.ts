@@ -1,16 +1,7 @@
 // src/data/gears.ts
-import type { GearCategory } from '../types';
-export interface Gear {
-  id: string; // Add id field here
-  slug: string;
-  name: string;
-  img: string;
-  price: number;
-  tag: string;
-  category: 'keyboard' | 'mouse' | 'headset' | 'monitor';
-  description: string;
-  specs: { label: string; value: string }[];
-}
+import type { Gear, GearCategory, GearSpec } from '../types';
+
+export type { Gear, GearCategory, GearSpec };
 
 export const gears: Gear[] = [
   {
