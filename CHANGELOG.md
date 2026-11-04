@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Production .dockerignore to streamline containerized builds and exclude caches/artifacts
+
 ### Fixed
 - Comment syntax in commitlint.config.cjs from invalid Python hash comments to standard JavaScript slashes
 - Centralized type contract alignment in src/types, src/data/games.ts, and src/data/gears.ts
