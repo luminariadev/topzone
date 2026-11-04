@@ -243,15 +243,3 @@ Dibuat dengan ❤️ oleh [LuminariaDev](https://github.com/luminariadev).
 ---
 
 > **TopZone** — Your ultimate destination for game top-ups and premium gaming gear in Indonesia.
-
-<!-- Daily commit: Wed, Aug 26, 2026  2:02:28 PM -->
-
-<!-- Daily commit 2: Thu, Aug 27, 2026  2:35:08 AM -->
-
-<!-- Daily commit: Tue, Nov 03, 2026 10:20:00 AM -->
-
-<!-- Sync streak 2026-11-03: 10:23 WIB -->
-
-<!-- Daily commit: Wed, Nov 04, 2026  00:40:00 AM -->
-
-<!-- Sync streak 2026-11-04: 00:42 WIB -->

@@ -1,0 +1,12 @@
+name: topzone
+
+services:
+  web:
+    build: .
+    ports:
+      - "4321:4321"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+    restart: unless-stopped

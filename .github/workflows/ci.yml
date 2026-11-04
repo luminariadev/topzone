@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: '22'
+
 jobs:
   # ─── Lint & Type Check ───────────────────────────────────────────────────
   lint-and-typecheck:
@@ -115,60 +118,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
-  # ─── Auto-changelog (on main push only) ─────────────────────────────────
-  changelog:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Generate changelog
-        uses: chrislgarry/auto-changelog@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          output: CHANGELOG.md
-          template: keepachangelog
-          tagprefix: v
-          version: v1.0.0
-
-      - name: Commit changelog
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add CHANGELOG.md
-          git diff --staged --quiet || git commit -m "chore: auto-update changelog [skip ci]" && git push
-
-  # ─── Version tag (on main push only) ────────────────────────────────────
-  version-tag:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      new_tag: ${{ steps.tag.outputs.tag }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Bump version and tag
-        id: tag
-        run: |
-          CURRENT=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          CURRENT="${CURRENT#v}"
-          MAJOR=$(echo $CURRENT | cut -d. -f1)
-          MINOR=$(echo $CURRENT | cut -d. -f2)
-          PATCH=$(echo $CURRENT | cut -d. -f3)
-          NEW="${MAJOR}.${MINOR}.$((PATCH+1))"
-          TAG="v${NEW}"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          git tag "$TAG" && git push origin "$TAG"
-
-env:
-  NODE_VERSION: '22'

@@ -4,8 +4,7 @@
 TopZone adalah platform e-commerce untuk top-up game dan penjualan gear gaming. 
 Proyek ini dibangun dengan **Astro + Tailwind CSS v4** dan desain **Neubrutalism**.
 
-Roadmap ini berfungsi sebagai **acuan harian** untuk mencapai **minimal 10 commit/hari** 
-demi konsistensi aktivitas GitHub dan target **production-ready dalam 6-10 bulan**.
+Roadmap ini merangkum arsitektur teknis, rencana milestone, dan target keandalan platform **TopZone** menuju standar e-commerce modern yang siap produksi.
 
 ---
 
